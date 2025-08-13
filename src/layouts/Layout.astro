@@ -1,41 +1,89 @@
 ---
+import { translations } from '../i18n/translations';
+import { currentLanguage } from '../i18n/store';
+import '../styles/global.css';
+import { Analytics } from '@vercel/analytics/react';
+
 export interface Props {
-	title: string;
+	title?: string;
+	lang?: 'es' | 'en';
 }
 
-const { title } = Astro.props;
-import '../styles/global.css'
-import { Analytics } from '@vercel/analytics/react'
+// Get current language from store or use passed prop
+let lang = Astro.props.lang || 'es';
+
+// Determine if we're server-side or client-side
+if (Astro.request.headers.get('accept-language')) {
+	const acceptLang = Astro.request.headers.get('accept-language');
+	// Default to Spanish, but use English if browser prefers it
+	if (acceptLang && acceptLang.includes('en')) {
+		lang = 'en';
+	}
+}
+
+// Get translations for current language
+const t = translations[lang];
+
+// Default SEO metadata by language
+const seoData = {
+	es: {
+		title: "Martin - Desarrollador Full Stack & Diseñador UX/UI",
+		description: "Desarrollo web moderno con React y Node.js. Diseño UX/UI, aplicaciones web rápidas y soluciones personalizadas.",
+		keywords: "desarrollador web, full stack, diseño UX/UI, programador, javascript, react, typescript, portfolio, desarrollo web, frontend, backend"
+	},
+	en: {
+		title: "Martin - Full Stack Developer & UX/UI Designer",
+		description: "Modern web development with React and Node.js. UX/UI design, fast web applications, and custom solutions.",
+		keywords: "web developer, full stack, UX/UI design, programmer, javascript, react, typescript, portfolio, web development, frontend, backend"
+	}
+};
+
+// Use prop title if provided, otherwise use default for language
+const title = Astro.props.title || seoData[lang].title;
+const description = seoData[lang].description;
+const keywords = seoData[lang].keywords;
+const siteName = lang === 'es' ? "Martin - Portfolio" : "Martin - Portfolio";
+const logoUrl = new URL('/logoMadezdev-2.png', Astro.url).toString();
+const canonicalURL = Astro.url;
 ---
 
 <!doctype html>
-<html lang="es" class="scroll-smooth">
+<html lang={lang} class="scroll-smooth">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Martin - Desarrollador Full Stack & Diseñador UX/UI" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="keywords" content={keywords} />
+		<meta name="author" content="Martin Hernandez" />
+		<meta name="robots" content="index, follow" />
+		<link rel="canonical" href={canonicalURL} />
+		<link rel="alternate" hreflang="es" href={new URL(Astro.url.pathname, Astro.site || Astro.url).toString()} />
+		<link rel="alternate" hreflang="en" href={new URL(Astro.url.pathname, Astro.site || Astro.url).toString()} />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 		<link rel="manifest" href="/site.webmanifest">
+		<meta name="theme-color" content="#0f172a" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		
 		<!-- Open Graph / Facebook / WhatsApp -->
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content={Astro.url} />
+		<meta property="og:url" content={canonicalURL} />
 		<meta property="og:title" content={title} />
-		<meta property="og:description" content="Martin - Desarrollador Full Stack & Diseñador UX/UI" />
-		<meta property="og:image" content={new URL('/logoMadezdev-2.png', Astro.url)} />
-		<meta property="og:image:alt" content="Logo MadezDev" />
-		<meta property="og:site_name" content="Martin - Portfolio" />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={logoUrl} />
+		<meta property="og:image:alt" content={lang === 'es' ? "Martin Hernandez - Desarrollador" : "Martin Hernandez - Developer"} />
+		<meta property="og:site_name" content={siteName} />
+		<meta property="og:locale" content={lang === "es" ? "es_ES" : "en_US"} />
 		
 		<!-- Twitter -->
-		<meta property="twitter:card" content="summary_large_image" />
-		<meta property="twitter:url" content={Astro.url} />
-		<meta property="twitter:title" content={title} />
-		<meta property="twitter:description" content="Martin - Desarrollador Full Stack & Diseñador UX/UI" />
-		<meta property="twitter:image" content={new URL('/logoMadezdev-2.png', Astro.url)} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonicalURL} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={logoUrl} />
+		<meta name="twitter:creator" content="@madezdev" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">

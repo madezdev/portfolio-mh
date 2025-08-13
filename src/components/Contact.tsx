@@ -62,16 +62,23 @@ export default function Contact() {
 
   const contactMethods = [
     { key: 'email', icon: '📧', color: 'blue', href: 'mailto:madezdev@gmail.com', value: 'madezdev@gmail.com' },
-    { key: 'whatsapp', icon: '💬', color: 'green', href: 'https://wa.me/1234567890', value: '+54 9 11 3326-6874' },
+    // { key: 'whatsapp', icon: '💬', color: 'green', href: 'https://wa.me/1234567890', value: '+54 9 11 3326-6874' },
     { key: 'linkedin', icon: '💼', color: 'blue', href: 'https://linkedin.com/in/madezdev', value: '/in/madezdev' },
     { key: 'github', icon: '🐙', color: 'purple', href: 'https://github.com/madezdev', value: '/madezdev' }
   ];
 
   return (
-    <section id="contact" className="py-20 bg-slate-950">
+    <section 
+      id="contact" 
+      className="py-20 bg-slate-950"
+      aria-labelledby="contact-heading"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 
+            id="contact-heading"
+            className="text-4xl md:text-5xl font-bold text-white mb-6"
+          >
             {t('contact.title').split(' ').slice(0, -1).join(' ')}{' '}
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               {t('contact.title').split(' ').slice(-1)[0]}
@@ -80,31 +87,45 @@ export default function Contact() {
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             {t('contact.subtitle')}
           </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-purple-400 mx-auto rounded-full mt-6"></div>
+          <div 
+            className="w-24 h-1 bg-gradient-to-r from-blue-400 to-purple-400 mx-auto rounded-full mt-6"
+            aria-hidden="true"
+          ></div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Contact Information */}
           <div className="space-y-8">
             <div>
-              <h3 className="text-2xl font-bold text-white mb-6">{t('contact.getInTouch')}</h3>
+              <h3 id="contact-info-heading" className="text-2xl font-bold text-white mb-6">{t('contact.getInTouch')}</h3>
               <p className="text-gray-300 mb-8">
                 {t('contact.description')}
               </p>
             </div>
 
             {/* Contact Methods */}
-            <div className="space-y-6">
+            <div 
+              className="space-y-6"
+              aria-labelledby="contact-info-heading"
+              role="region"
+            >
               {contactMethods.map((method) => (
-                <div key={method.key} className={`flex items-center p-4 bg-slate-900/50 rounded-xl border border-slate-800 hover:border-${method.color}-500/50 transition-colors group`}>
-                  <div className={`w-12 h-12 bg-${method.color}-500/20 rounded-lg flex items-center justify-center mr-4 group-hover:bg-${method.color}-500/30 transition-colors`}>
-                    <span className={`text-${method.color}-400 text-xl`}>{method.icon}</span>
+                <div 
+                  key={method.key} 
+                  className={`flex items-center p-4 bg-slate-900/50 rounded-xl border border-slate-800 hover:border-${method.color}-500/50 transition-colors group`}
+                >
+                  <div 
+                    className={`w-12 h-12 bg-${method.color}-500/20 rounded-lg flex items-center justify-center mr-4 group-hover:bg-${method.color}-500/30 transition-colors`}
+                    aria-hidden="true"
+                  >
+                    <span className="text-2xl">{method.icon}</span>
                   </div>
                   <div>
-                    <h4 className="text-white font-semibold">{t(`contact.methods.${method.key}`)}</h4>
+                    <h4 className="text-white font-medium">{t(`contact.methods.${method.key}.title`)}</h4>
                     <a 
                       href={method.href} 
-                      className={`text-gray-400 hover:text-${method.color}-400 transition-colors`}
+                      className={`text-${method.color}-400 hover:text-${method.color}-300 transition-colors focus:outline-none focus:underline`}
+                      aria-label={`${t(`contact.methods.${method.key}.title`)}: ${method.value}`}
                     >
                       {method.value}
                     </a>
@@ -126,37 +147,53 @@ export default function Contact() {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8">
-            <h3 className="text-2xl font-bold text-white mb-6">{t('contact.form.title')}</h3>
+          <div>
+            <h3 id="contact-form-heading" className="text-2xl font-bold text-white mb-6">{t('contact.form.title')}</h3>
             
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form 
+              onSubmit={handleSubmit} 
+              className="space-y-6 bg-slate-900/50 p-8 backdrop-blur-sm rounded-2xl border border-slate-800"
+              aria-labelledby="contact-form-heading"
+              noValidate
+            >
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                    {t('contact.form.fields.name')}
+                    {t('contact.form.fields.name')} <span className="text-red-400">*</span>
                   </label>
                   <input 
-                    type="text" 
                     id="name" 
                     name="name" 
+                    type="text" 
                     required
+                    aria-required="true"
                     className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                     placeholder={t('contact.form.fields.namePlaceholder')}
+                    aria-describedby="name-error"
                   />
+                  <div id="name-error" className="hidden">
+                    {lang === 'es' ? 'Por favor ingrese su nombre' : 'Please enter your name'}
+                  </div>
                 </div>
                 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                    {t('contact.form.fields.email')}
+                    {t('contact.form.fields.email')} <span className="text-red-400">*</span>
                   </label>
                   <input 
-                    type="email" 
                     id="email" 
                     name="email" 
+                    type="email" 
                     required
+                    aria-required="true"
                     className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                     placeholder={t('contact.form.fields.emailPlaceholder')}
+                    autoComplete="email"
+                    aria-describedby="email-error"
                   />
+                  <div id="email-error" className="hidden">
+                    {lang === 'es' ? 'Por favor ingrese un correo electrónico válido' : 'Please enter a valid email address'}
+                  </div>
                 </div>
               </div>
 
@@ -200,16 +237,21 @@ export default function Contact() {
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                  {t('contact.form.fields.message')}
+                  {t('contact.form.fields.message')} <span className="text-red-400">*</span>
                 </label>
                 <textarea 
                   id="message" 
                   name="message" 
                   rows={5}
                   required
+                  aria-required="true"
                   className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors resize-none"
                   placeholder={t('contact.form.fields.messagePlaceholder')}
+                  aria-describedby="message-error"
                 />
+                <div id="message-error" className="hidden">
+                  {lang === 'es' ? 'Por favor ingrese su mensaje' : 'Please enter your message'}
+                </div>
               </div>
 
               <button 

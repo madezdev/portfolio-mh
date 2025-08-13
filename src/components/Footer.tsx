@@ -41,14 +41,14 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-slate-950 border-t border-slate-800">
+      <footer className="bg-slate-950 border-t border-slate-800" role="contentinfo" aria-label={lang === 'es' ? "Pie de página" : "Footer"}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid md:grid-cols-4 gap-8">
             {/* Brand & Description */}
             <div className="md:col-span-2">
               <div className="flex items-center mb-4">
-                <a href="#home" className="flex items-center space-x-2">
-                  <img src="/logoMadezdev-3.png" alt="Logo MadezDev" className="w-auto h-12" />
+                <a href="#home" className="flex items-center space-x-2" aria-label="Logo">
+                  <img src="/logoMadezdev-3.png" alt="Logo MadezDev" className="w-auto h-12" width="48" height="48" />
                   <p className="text-xl font-bold">Martin Hernandez</p>
                 </a>
               </div>
@@ -57,37 +57,51 @@ export default function Footer() {
               </p>
 
               {/* Social Links */}
-              <div className="flex space-x-4">
-                {socialLinks.map((link, index) => (
-                  <a
-                    key={index}
-                    href={link.href}
-                    className={`w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-${link.color}-400 hover:bg-slate-700 transition-all duration-300 group`}
-                  >
-                    <span className="text-lg group-hover:scale-110 transition-transform">{link.icon}</span>
-                  </a>
-                ))}
+              <div className="flex space-x-4" aria-label={lang === 'es' ? "Redes sociales" : "Social media links"}>
+                {socialLinks.map((link, index) => {
+                  let ariaLabel = '';
+                  if (link.href.includes('linkedin')) ariaLabel = 'LinkedIn';
+                  else if (link.href.includes('github')) ariaLabel = 'GitHub';
+                  else if (link.href.includes('twitter')) ariaLabel = 'Twitter';
+                  else if (link.href.includes('mailto')) ariaLabel = lang === 'es' ? 'Correo electrónico' : 'Email';
+                  
+                  return (
+                    <a
+                      key={index}
+                      href={link.href}
+                      className={`w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-${link.color}-400 hover:bg-slate-700 transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-${link.color}-400 focus:ring-offset-2 focus:ring-offset-slate-900`}
+                      aria-label={ariaLabel}
+                    >
+                      <span className="text-lg group-hover:scale-110 transition-transform" aria-hidden="true">{link.icon}</span>
+                    </a>
+                  );
+                })}
               </div>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-white font-semibold mb-4">{t('footer.navigation')}</h4>
-              <ul className="space-y-2">
-                {navLinks.map((link) => (
-                  <li key={link.href}>
-                    <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
-                      {t(link.key)}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <h2 className="text-white text-lg font-semibold mb-4">{t('footer.navigation')}</h2>
+              <nav aria-label={lang === 'es' ? "Navegación del pie de página" : "Footer navigation"}>
+                <ul className="space-y-2">
+                  {navLinks.map((link) => (
+                    <li key={link.href}>
+                      <a 
+                        href={link.href} 
+                        className="text-gray-400 hover:text-white transition-colors focus:outline-none focus:underline"
+                      >
+                        {t(link.key)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
             </div>
 
             {/* Services */}
             <div>
-              <h4 className="text-white font-semibold mb-4">{t('footer.services')}</h4>
-              <ul className="space-y-2">
+              <h2 className="text-white text-lg font-semibold mb-4">{t('footer.services')}</h2>
+              <ul className="space-y-2" aria-label={lang === 'es' ? "Servicios ofrecidos" : "Services offered"}>
                 {['frontend', 'backend', 'design', 'mobile', 'saas'].map((service, index) => (
                   <li key={service}>
                     <span className="text-gray-400">{t(`footer.servicesList.${index}`)}</span>
@@ -119,10 +133,11 @@ export default function Footer() {
         {/* Scroll to top button */}
         <button
           onClick={scrollToTop}
-          className={`fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40 ${showScrollTop ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
+          aria-label={lang === 'es' ? "Volver al inicio de la página" : "Back to top of page"}
+          className={`fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40 focus:outline-none focus:ring-2 focus:ring-blue-400 ${showScrollTop ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
             }`}
         >
-          <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
           </svg>
         </button>

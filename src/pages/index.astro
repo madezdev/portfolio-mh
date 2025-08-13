@@ -8,9 +8,27 @@ import TeamWork from '../components/TeamWork.tsx';
 import Skills from '../components/Skills.tsx';
 import Contact from '../components/Contact.tsx';
 import Footer from '../components/Footer.tsx';
+
+// Determine language from request headers for SEO
+let lang: 'es' | 'en' = 'es';
+if (Astro.request.headers.get('accept-language')?.includes('en')) {
+	lang = 'en';
+}
+
+// SEO titles and descriptions by language
+const seoContent = {
+	es: {
+		title: "Martin - Desarrollador Full Stack & Diseñador UX/UI",
+		description: "Desarrollo web moderno con React y Node.js. Diseño UX/UI, aplicaciones web rápidas y soluciones personalizadas."
+	},
+	en: {
+		title: "Martin - Full Stack Developer & UX/UI Designer",
+		description: "Modern web development with React and Node.js. UX/UI design, fast web applications, and custom solutions."
+	}
+};
 ---
 
-<Layout title="Martin - Desarrollador Full Stack & Diseñador UX/UI">
+<Layout title={seoContent[lang].title} lang={lang}>
 	<Navigation client:load />
 	<main>
 		<Hero client:load />

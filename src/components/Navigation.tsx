@@ -11,33 +11,75 @@ export default function Navigation() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
+  
+  // Function to handle keyboard navigation for accessibility
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      closeMenu();
+    }
+  };
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+    <nav 
+      className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800"
+      role="navigation"
+      aria-label={lang === 'es' ? "Navegación principal" : "Main navigation"}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <a href="#home" className="flex items-center space-x-2">
-              <img src="/logoMadezdev-3.png" alt="Logo MadezDev" className="w-auto h-12" />
-              <p className="text-xl font-bold">Martin Hernandez</p>
+            <a 
+              href="#home" 
+              className="flex items-center space-x-2"
+              aria-label={lang === 'es' ? "Inicio" : "Home"}
+            >
+              <img 
+                src="/logoMadezdev-3.png" 
+                alt="Logo MadezDev" 
+                className="w-auto h-12" 
+                width="48" 
+                height="48" 
+                loading="eager" 
+              />
+              <span className="text-xl font-bold">Martin Hernandez</span>
             </a>
           </div>
           
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8" role="menubar">
             <div className="flex items-baseline space-x-8">
-              <a href="#home" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <a 
+                href="#home" 
+                className="text-gray-300 hover:text-white transition-colors duration-300 px-3 py-2"
+                role="menuitem"
+              >
                 {t('nav.home')}
               </a>
-              <a href="#about" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <a 
+                href="#about" 
+                className="text-gray-300 hover:text-white transition-colors duration-300 px-3 py-2"
+                role="menuitem"
+              >
                 {t('nav.about')}
               </a>
-              <a href="#services" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <a 
+                href="#services" 
+                className="text-gray-300 hover:text-white transition-colors duration-300 px-3 py-2"
+                role="menuitem"
+              >
                 {t('nav.services')}
               </a>
-              <a href="#skills" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <a 
+                href="#skills" 
+                className="text-gray-300 hover:text-white transition-colors duration-300 px-3 py-2"
+                role="menuitem"
+              >
                 {t('nav.skills')}
               </a>
-              <a href="#contact" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <a 
+                href="#contact" 
+                className="text-gray-300 hover:text-white transition-colors duration-300 px-3 py-2"
+                role="menuitem"
+              >
                 {t('nav.contact')}
               </a>
             </div>
@@ -50,9 +92,18 @@ export default function Navigation() {
             <button 
               type="button" 
               onClick={toggleMenu}
-              className="text-gray-400 hover:text-white focus:outline-none focus:text-white"
+              onKeyDown={handleKeyDown}
+              className="text-gray-400 hover:text-white focus:outline-none focus:text-white p-2"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label={isMenuOpen ? 
+                (lang === 'es' ? "Cerrar menú" : "Close menu") : 
+                (lang === 'es' ? "Abrir menú" : "Open menu")}
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <span className="sr-only">{isMenuOpen ? 
+                (lang === 'es' ? "Cerrar menú" : "Close menu") : 
+                (lang === 'es' ? "Abrir menú" : "Open menu")}</span>
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
@@ -61,40 +112,51 @@ export default function Navigation() {
       </div>
 
       {/* Mobile menu */}
-      <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
+      <div 
+        className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}
+        id="mobile-menu"
+        role="menu"
+        aria-labelledby="mobile-menu-button"
+        onKeyDown={handleKeyDown}
+      >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-slate-900/95">
           <a 
             href="#home" 
             onClick={closeMenu}
-            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300"
+            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300 rounded-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            role="menuitem"
           >
             {t('nav.home')}
           </a>
           <a 
             href="#about" 
             onClick={closeMenu}
-            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300"
+            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300 rounded-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            role="menuitem"
           >
             {t('nav.about')}
           </a>
           <a 
             href="#services" 
             onClick={closeMenu}
-            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300"
+            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300 rounded-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            role="menuitem"
           >
             {t('nav.services')}
           </a>
           <a 
             href="#skills" 
             onClick={closeMenu}
-            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300"
+            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300 rounded-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            role="menuitem"
           >
             {t('nav.skills')}
           </a>
           <a 
             href="#contact" 
             onClick={closeMenu}
-            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300"
+            className="block px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300 rounded-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            role="menuitem"
           >
             {t('nav.contact')}
           </a>
