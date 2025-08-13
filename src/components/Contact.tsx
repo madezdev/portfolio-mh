@@ -62,9 +62,9 @@ export default function Contact() {
 
   const contactMethods = [
     { key: 'email', icon: '📧', color: 'blue', href: 'mailto:madezdev@gmail.com', value: 'madezdev@gmail.com' },
-    { key: 'whatsapp', icon: '💬', color: 'green', href: 'https://wa.me/1234567890', value: '+1 (234) 567-8900' },
-    { key: 'linkedin', icon: '💼', color: 'blue', href: 'https://linkedin.com/in/martin-dev', value: '/in/martin-dev' },
-    { key: 'github', icon: '🐙', color: 'purple', href: 'https://github.com/martin-dev', value: '/martin-dev' }
+    { key: 'whatsapp', icon: '💬', color: 'green', href: 'https://wa.me/1234567890', value: '+54 9 11 3326-6874' },
+    { key: 'linkedin', icon: '💼', color: 'blue', href: 'https://linkedin.com/in/madezdev', value: '/in/madezdev' },
+    { key: 'github', icon: '🐙', color: 'purple', href: 'https://github.com/madezdev', value: '/madezdev' }
   ];
 
   return (
