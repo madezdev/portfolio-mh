@@ -141,10 +141,18 @@ export const translations = {
       getInTouch: 'Ponte en contacto',
       description: 'Junto a mi equipo, somos comunicadores abiertos y colaboradores comprometidos, listos para enfrentar desafíos y llevar tus conceptos digitales al siguiente nivel. Contamos con desarrolladores especializados para acelerar los tiempos de entrega.',
       methods: {
-        email: 'Email',
-        whatsapp: 'WhatsApp',
-        linkedin: 'LinkedIn',
-        github: 'GitHub'
+        email: {
+          title: 'Email'
+        },
+        whatsapp: {
+          title: 'WhatsApp'
+        },
+        linkedin: {
+          title: 'LinkedIn'
+        },
+        github: {
+          title: 'GitHub'
+        }
       },
       availability: {
         status: 'Disponible para proyectos',
@@ -345,10 +353,18 @@ export const translations = {
       getInTouch: 'Get in touch',
       description: 'Together with my team, we are open communicators and committed collaborators, ready to face challenges and take your digital concepts to the next level. We have specialized developers to accelerate delivery times.',
       methods: {
-        email: 'Email',
-        whatsapp: 'WhatsApp',
-        linkedin: 'LinkedIn',
-        github: 'GitHub'
+        email: {
+          title: 'Email'
+        },
+        whatsapp: {
+          title: 'WhatsApp'
+        },
+        linkedin: {
+          title: 'LinkedIn'
+        },
+        github: {
+          title: 'GitHub'
+        }
       },
       availability: {
         status: 'Available for projects',
