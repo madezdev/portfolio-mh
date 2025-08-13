@@ -58,7 +58,7 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up delay-600">
             <a 
               href="#contact" 
-              className="group px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-500/25"
+              className="group px-8 py-4 w-[300px] bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-500/25"
             >
               <span className="flex items-center gap-2">
                 {t('hero.cta.primary')}
@@ -70,7 +70,7 @@ export default function Hero() {
             
             <a 
               href="#about" 
-              className="px-8 py-4 border-2 border-gray-600 text-white font-semibold rounded-xl hover:bg-white hover:text-slate-900 transform hover:scale-105 transition-all duration-300"
+              className="px-8 py-4 w-[300px] border-2 border-gray-600 text-white font-semibold rounded-xl hover:bg-white hover:text-slate-900 transform hover:scale-105 transition-all duration-300"
             >
               {t('hero.cta.secondary')}
             </a>
