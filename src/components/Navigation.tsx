@@ -17,8 +17,9 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <a href="#home" className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Martin
+            <a href="#home" className="flex items-center space-x-2">
+              <img src="/logoMadezdev-3.png" alt="Logo MadezDev" className="w-auto h-12" />
+              <p className="text-xl font-bold">Martin Hernandez</p>
             </a>
           </div>
           

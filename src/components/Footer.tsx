@@ -47,20 +47,21 @@ export default function Footer() {
             {/* Brand & Description */}
             <div className="md:col-span-2">
               <div className="flex items-center mb-4">
-                <a href="#home" className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  Martin
+                <a href="#home" className="flex items-center space-x-2">
+                  <img src="/logoMadezdev-3.png" alt="Logo MadezDev" className="w-auto h-12" />
+                  <p className="text-xl font-bold">Martin Hernandez</p>
                 </a>
               </div>
               <p className="text-gray-400 mb-6 max-w-md">
                 {t('footer.description')}
               </p>
-              
+
               {/* Social Links */}
               <div className="flex space-x-4">
                 {socialLinks.map((link, index) => (
-                  <a 
+                  <a
                     key={index}
-                    href={link.href} 
+                    href={link.href}
                     className={`w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-${link.color}-400 hover:bg-slate-700 transition-all duration-300 group`}
                   >
                     <span className="text-lg group-hover:scale-110 transition-transform">{link.icon}</span>
@@ -102,7 +103,7 @@ export default function Footer() {
               <div className="text-gray-400 text-sm mb-4 md:mb-0">
                 {t('footer.copyright')}
               </div>
-              
+
               <div className="flex items-center space-x-6 text-sm text-gray-400">
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
@@ -116,11 +117,10 @@ export default function Footer() {
         </div>
 
         {/* Scroll to top button */}
-        <button 
+        <button
           onClick={scrollToTop}
-          className={`fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40 ${
-            showScrollTop ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
-          }`}
+          className={`fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40 ${showScrollTop ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
+            }`}
         >
           <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />

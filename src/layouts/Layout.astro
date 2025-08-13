@@ -14,9 +14,28 @@ import { Analytics } from '@vercel/analytics/react'
 		<meta charset="UTF-8" />
 		<meta name="description" content="Martin - Desarrollador Full Stack & Diseñador UX/UI" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		
+		<!-- Open Graph / Facebook / WhatsApp -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content="Martin - Desarrollador Full Stack & Diseñador UX/UI" />
+		<meta property="og:image" content={new URL('/logoMadezdev.png', Astro.url)} />
+		<meta property="og:image:alt" content="Logo MadezDev" />
+		<meta property="og:site_name" content="Martin - Portfolio" />
+		
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={Astro.url} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content="Martin - Desarrollador Full Stack & Diseñador UX/UI" />
+		<meta property="twitter:image" content={new URL('/logoMadezdev.png', Astro.url)} />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
