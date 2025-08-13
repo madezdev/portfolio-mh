@@ -9,6 +9,20 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.12.9"
+    "@astrojs/react": "^4.3.0",
+    "@astrojs/vercel": "^8.2.5",
+    "@nanostores/react": "^1.0.0",
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/nodemailer": "^6.4.17",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vercel/analytics": "^1.5.0",
+    "astro": "^5.12.9",
+    "dotenv": "^17.2.1",
+    "nanostores": "^1.0.1",
+    "nodemailer": "^7.0.5",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tailwindcss": "^4.1.11"
   }
 }
