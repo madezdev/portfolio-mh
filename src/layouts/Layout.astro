@@ -5,6 +5,7 @@ export interface Props {
 
 const { title } = Astro.props;
 import '../styles/global.css'
+import { Analytics } from '@vercel/analytics/react'
 ---
 
 <!doctype html>
@@ -22,6 +23,7 @@ import '../styles/global.css'
 	</head>
 	<body class="bg-slate-950 text-white font-sans antialiased">
 		<slot />
+		<Analytics />
 		<script>
 			// Initialize language on page load
 			import { currentLanguage } from '../i18n/store.ts';
