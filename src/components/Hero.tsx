@@ -40,10 +40,10 @@ export default function Hero() {
             className="text-5xl md:text-7xl font-bold leading-tight animate-fade-in-up delay-200"
           >
             <span className="block text-white">{t('hero.title.line1')}</span>
-            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent animate-pulse">
               {t('hero.title.line2')}
             </span>
-            <span className="block text-white">{t('hero.title.line3')}</span>
+            {/* <span className="block text-white">{t('hero.title.line3')}</span> */}
           </h1>
 
           {/* Subtitle */}

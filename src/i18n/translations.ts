@@ -15,7 +15,6 @@ export const translations = {
       title: {
         line1: 'Desarrollador',
         line2: 'Full Stack',
-        line3: '& Diseñador UX/UI'
       },
       subtitle: 'Junto a mi equipo, creamos experiencias digitales modernas y funcionales utilizando React y Node.js',
       cta: {
