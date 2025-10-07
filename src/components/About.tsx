@@ -108,7 +108,11 @@ export default function About() {
                 role="img"
                 aria-label={lang === 'es' ? "Emoji de desarrollador" : "Developer emoji"}
               >
-                👨‍💻
+                <img 
+                src="/mh.png" 
+                alt="Profile" 
+                className="w-full h-full object-cover rounded-full"
+                />
               </div>
               
               {/* Stats */}
