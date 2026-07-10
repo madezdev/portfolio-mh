@@ -1,13 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.tsx';
-import Hero from '../components/Hero.tsx';
-import About from '../components/About.tsx';
-import Services from '../components/Services.tsx';
-import TeamWork from '../components/TeamWork.tsx';
-import Skills from '../components/Skills.tsx';
-import Contact from '../components/Contact.tsx';
-import Footer from '../components/Footer.tsx';
+import StudioNav from '../components/StudioNav.tsx';
+import StudioHero from '../components/StudioHero.tsx';
+import StudioFooter from '../components/StudioFooter.tsx';
 
 // Determine language from request headers for SEO
 let lang: 'es' | 'en' = 'es';
@@ -15,66 +10,41 @@ if (Astro.request.headers.get('accept-language')?.includes('en')) {
 	lang = 'en';
 }
 
-// SEO titles and descriptions by language
 const seoContent = {
 	es: {
-		title: "Martin - Desarrollador Full Stack & Diseñador UX/UI",
-		description: "Desarrollo web moderno con React y Node.js. Diseño UX/UI, aplicaciones web rápidas y soluciones personalizadas."
+		title: 'madezdev — Estudio de producto digital | Del concepto a la realidad',
+		description: 'Estudio que diseña y construye productos web, SaaS y automatizaciones con IA. Del concepto a la realidad.'
 	},
 	en: {
-		title: "Martin - Full Stack Developer & UX/UI Designer",
-		description: "Modern web development with React and Node.js. UX/UI design, fast web applications, and custom solutions."
+		title: 'madezdev — Digital product studio | From concept to reality',
+		description: 'A studio that designs and builds web products, SaaS, and AI automations. From concept to reality.'
 	}
+};
+
+const orgJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: 'madezdev',
+	url: 'https://www.madez.dev',
+	description: seoContent[lang].description,
+	sameAs: [
+		'https://github.com/madezdev',
+		'https://www.linkedin.com/company/madezdev'
+	]
 };
 ---
 
 <Layout title={seoContent[lang].title} lang={lang}>
-	<Navigation client:load />
+	<StudioNav client:idle />
 	<main>
-		<Hero client:load />
-		<About client:load />
-		<Services client:load />
-		<TeamWork client:load />
-		<Skills client:load />
-		<Contact client:load />
+		<StudioHero client:visible />
+		<!-- Phase B/C placeholder anchors so hero/nav CTAs resolve -->
+		<section id="ai" class="min-h-[40vh]"></section>
+		<section id="services" class="min-h-[40vh]"></section>
+		<section id="process" class="min-h-[40vh]"></section>
+		<section id="cases" class="min-h-[40vh]"></section>
+		<section id="contact" class="min-h-[40vh]"></section>
 	</main>
-	<Footer client:load />
-	
-	<style>
-		@keyframes fade-in-up {
-			from {
-				opacity: 0;
-				transform: translateY(30px);
-			}
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
-		}
-
-		.animate-fade-in-up {
-			animation: fade-in-up 0.8s ease-out forwards;
-			opacity: 0;
-		}
-
-		.delay-200 {
-			animation-delay: 0.2s;
-		}
-
-		.delay-400 {
-			animation-delay: 0.4s;
-		}
-
-		.delay-600 {
-			animation-delay: 0.6s;
-		}
-
-		.delay-700 {
-			animation-delay: 0.7s;
-		}
-
-		.delay-1000 {
-			animation-delay: 1s;
-		}
-	</style>
+	<StudioFooter client:visible />
+	<script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
 </Layout>
