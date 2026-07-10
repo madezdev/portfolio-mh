@@ -118,6 +118,31 @@ export const translations = {
       emptyLabel: 'Casos en camino.',
     },
 
+    // Process Section
+    process: {
+      eyebrow: '// proceso',
+      title: 'Del concepto a la realidad, paso a paso',
+      subtitle: 'Un proceso claro: sabés qué pasa en cada etapa y ves avances seguido.',
+      steps: {
+        idea: {
+          title: 'Idea',
+          description: 'Entendemos tu negocio y definimos el problema real antes de escribir una línea de código.',
+        },
+        design: {
+          title: 'Diseño',
+          description: 'UX/UI y arquitectura primero: prototipamos y decidimos antes de construir.',
+        },
+        build: {
+          title: 'Construcción',
+          description: 'Desarrollo iterativo con entregas frecuentes. Vas viendo el producto tomar forma.',
+        },
+        ship: {
+          title: 'Producción',
+          description: 'Deploy, medición y escala. Tu producto vivo y listo para crecer.',
+        },
+      },
+    },
+
     // Trust Section
     trust: {
       title: 'Confían en nosotros',
@@ -291,6 +316,31 @@ export const translations = {
       subtitle: 'A few products we took from idea to production.',
       liveLabel: 'View live',
       emptyLabel: 'Case studies coming soon.',
+    },
+
+    // Process Section
+    process: {
+      eyebrow: '// process',
+      title: 'From concept to reality, step by step',
+      subtitle: 'A clear process: you know what happens at each stage and see progress often.',
+      steps: {
+        idea: {
+          title: 'Idea',
+          description: 'We understand your business and define the real problem before writing a line of code.',
+        },
+        design: {
+          title: 'Design',
+          description: 'UX/UI and architecture first: we prototype and decide before building.',
+        },
+        build: {
+          title: 'Build',
+          description: 'Iterative development with frequent releases. You watch the product take shape.',
+        },
+        ship: {
+          title: 'Production',
+          description: 'Deploy, measure, and scale. Your product live and ready to grow.',
+        },
+      },
     },
 
     // Trust Section
