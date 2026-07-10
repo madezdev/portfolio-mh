@@ -44,7 +44,7 @@ export default function StudioContact() {
   return (
     <Section id="contact">
       <Container className="max-w-xl">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-blueprint-300 mb-4">// contacto</p>
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-blueprint-300 mb-4">{t('contact.eyebrow')}</p>
         <h2 className="font-display text-4xl md:text-5xl font-bold text-fg">{t('contact.title')}</h2>
         <p className="mt-4 text-lg text-fg-muted">{t('contact.subtitle')}</p>
 

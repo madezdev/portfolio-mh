@@ -8,6 +8,7 @@ describe('StudioServices', () => {
     expect(screen.getByText(/IA aplicada|Applied AI/i)).toBeInTheDocument();
     expect(screen.getByText(/Productos y SaaS|Products & custom SaaS/i)).toBeInTheDocument();
     expect(screen.getByText(/Automatizaciones|Automations/i)).toBeInTheDocument();
+    expect(screen.getByText(/Webs y sitios que venden|Websites that sell/i)).toBeInTheDocument();
     const section = screen.getByText(/IA aplicada|Applied AI/i).closest('section');
     expect(section).toHaveAttribute('id', 'services');
   });

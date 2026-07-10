@@ -60,6 +60,7 @@ export const translations = {
 
     // Services Section
     services: {
+      eyebrow: '// servicios',
       title: 'Lo que construimos',
       subtitle: 'Diseñamos y desarrollamos el producto completo — de la idea a producción — y lo dejamos listo para crecer.',
       pillars: {
@@ -88,6 +89,7 @@ export const translations = {
 
     // Cases Section
     cases: {
+      eyebrow: '// casos',
       title: 'Del concepto a la realidad',
       subtitle: 'Algunos productos que llevamos de la idea a producción.',
       liveLabel: 'Ver en vivo',
@@ -114,6 +116,7 @@ export const translations = {
 
     // Contact Section
     contact: {
+      eyebrow: '// contacto',
       title: 'Contanos tu proyecto',
       subtitle: 'Contanos qué tenés en mente y te respondemos con los próximos pasos. Normalmente en 24 h.',
       subjects: {
@@ -210,6 +213,7 @@ export const translations = {
 
     // Services Section
     services: {
+      eyebrow: '// services',
       title: 'What we build',
       subtitle: 'We design and build the whole product — from idea to production — and leave it ready to grow.',
       pillars: {
@@ -238,6 +242,7 @@ export const translations = {
 
     // Cases Section
     cases: {
+      eyebrow: '// work',
       title: 'From concept to reality',
       subtitle: 'A few products we took from idea to production.',
       liveLabel: 'View live',
@@ -264,6 +269,7 @@ export const translations = {
 
     // Contact Section
     contact: {
+      eyebrow: '// contact',
       title: 'Tell us about your project',
       subtitle: 'Tell us what you have in mind and we’ll reply with the next steps. Usually within 24h.',
       subjects: {

@@ -12,7 +12,7 @@ export default function StudioCases() {
   return (
     <Section id="cases" className="bg-ink-900/40">
       <Container>
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-blueprint-300 mb-4">// casos</p>
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-blueprint-300 mb-4">{t('cases.eyebrow')}</p>
         <h2 className="font-display text-4xl md:text-5xl font-bold text-fg">{t('cases.title')}</h2>
         <p className="mt-4 max-w-2xl text-lg text-fg-muted">{t('cases.subtitle')}</p>
 
