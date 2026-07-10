@@ -54,10 +54,7 @@ export default function StudioCases() {
               >
                 <CaseVisual item={c} />
                 <div className="p-6">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-mono text-xs uppercase tracking-widest text-ember-400">{c.client}</p>
-                    {c.tag && <span className="font-mono text-[10px] uppercase tracking-widest text-fg-muted/70">{c.tag}</span>}
-                  </div>
+                  <p className="font-mono text-xs uppercase tracking-widest text-ember-400">{c.client}</p>
                   <h3 className="mt-2 font-display text-xl font-semibold text-fg">{c.title}</h3>
                   <p className="mt-2 text-sm text-fg-muted">{c.summary}</p>
                   {c.testimonial && (
