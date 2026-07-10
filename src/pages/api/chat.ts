@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const result = streamText({
       model: INTAKE_MODEL,
       instructions: intakeInstructions(),
-      messages: convertToModelMessages(messages),
+      messages: await convertToModelMessages(messages),
       maxOutputTokens: MAX_OUTPUT_TOKENS,
     });
     return result.toUIMessageStreamResponse({
