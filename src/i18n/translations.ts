@@ -86,6 +86,20 @@ export const translations = {
       },
     },
 
+    // Cases Section
+    cases: {
+      title: 'Del concepto a la realidad',
+      subtitle: 'Algunos productos que llevamos de la idea a producción.',
+      liveLabel: 'Ver en vivo',
+      emptyLabel: 'Casos en camino.',
+    },
+
+    // Trust Section
+    trust: {
+      title: 'Confían en nosotros',
+      subtitle: 'Marcas y equipos que ya construyeron con madezdev.',
+    },
+
     // Skills Section
     skills: {
       title: 'Habilidades Clave',
@@ -252,6 +266,20 @@ export const translations = {
           outcomes: { 0: 'Assistants & agents', 1: 'AI automation', 2: 'Model integration' },
         },
       },
+    },
+
+    // Cases Section
+    cases: {
+      title: 'From concept to reality',
+      subtitle: 'A few products we took from idea to production.',
+      liveLabel: 'View live',
+      emptyLabel: 'Case studies coming soon.',
+    },
+
+    // Trust Section
+    trust: {
+      title: 'Trusted by',
+      subtitle: 'Brands and teams that already built with madezdev.',
     },
 
     // Skills Section
