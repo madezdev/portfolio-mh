@@ -28,7 +28,29 @@ export const translations = {
       },
     },
 
-    // About Section  
+    // AI Front Door
+    ai: {
+      eyebrow: '// definí tu idea',
+      title: 'Definamos tu proyecto',
+      subtitle: 'Contanos qué tenés en mente y nuestra IA te ayuda a darle forma. Después el equipo sigue la conversación.',
+      chips: { 0: 'Quiero un SaaS', 1: 'Automatizar un proceso', 2: 'Rehacer mi web' },
+      inputPlaceholder: 'Escribí tu idea...',
+      send: 'Enviar',
+      capture: {
+        prompt: '¿Seguimos? Dejanos tu contacto y el equipo te escribe.',
+        name: 'Tu nombre',
+        email: 'tu@email.com',
+        submit: 'Enviar a madezdev',
+        success: '¡Listo! Te contactamos pronto.',
+      },
+      fallback: {
+        text: 'La IA no está disponible en este momento.',
+        cta: 'Contanos tu proyecto por el formulario',
+      },
+      disclosure: 'Conversación procesada por IA.',
+    },
+
+    // About Section
     about: {
       title: 'Sobre mí',
       description1: 'Soy un apasionado desarrollador Full Stack con experiencia en la creación de interfaces web atractivas y funcionales utilizando React y Node.js. Mi enfoque no se limita solo al código, también soy un diseñador UX/UI que se preocupa por crear experiencias digitales intuitivas y atractivas.',
@@ -179,6 +201,28 @@ export const translations = {
         primary: 'Define your project',
         secondary: 'See our work',
       },
+    },
+
+    // AI Front Door
+    ai: {
+      eyebrow: '// define your idea',
+      title: "Let's define your project",
+      subtitle: 'Tell us what you have in mind and our AI helps you shape it. Then the team picks up the conversation.',
+      chips: { 0: 'I want a SaaS', 1: 'Automate a process', 2: 'Rebuild my website' },
+      inputPlaceholder: 'Type your idea...',
+      send: 'Send',
+      capture: {
+        prompt: 'Want to continue? Leave your contact and the team will reach out.',
+        name: 'Your name',
+        email: 'you@email.com',
+        submit: 'Send to madezdev',
+        success: "Done! We'll be in touch soon.",
+      },
+      fallback: {
+        text: 'The AI is unavailable right now.',
+        cta: 'Tell us about your project via the form',
+      },
+      disclosure: 'Conversation processed by AI.',
     },
 
     // About Section
