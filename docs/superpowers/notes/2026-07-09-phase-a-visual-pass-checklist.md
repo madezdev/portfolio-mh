@@ -24,6 +24,10 @@ invoking the design skills (`frontend-design`, `motion-graphics`, `ui-ux-pro-max
   eyebrow/subtitle read well at real sizes.
 - [ ] **Reduced-motion + mobile degradation** verified visually across Nav/Hero/Footer.
 
+## From the live hero checkpoint (owner review)
+- [ ] **Hero has a large empty lower half on desktop** — content clusters upper-center with a black void below the CTAs. Tighten vertical rhythm OR let the next section (AI panel, Phase C) peek from the bottom to invite scroll; consider a scroll cue. The hero currently "floats in space."
+- [ ] **Confirm the ES/EN toggle actually flips page content** — in the live checkpoint the body rendered English while the toggle showed "ES". Correct only if the button shows the TARGET language; verify a click swaps all copy.
+
 ## Confirmed data (already applied)
 - Footer socials: `github.com/madezdev`, `linkedin.com/company/madezdev` (owner-confirmed).
 - Footer: only GitHub + LinkedIn for now (no X/Instagram).
