@@ -1,26 +1,31 @@
 export const translations = {
   es: {
+    // Brand
+    brand: {
+      name: 'madezdev',
+      tagline: 'Del concepto a la realidad.',
+    },
+
     // Navigation
     nav: {
-      home: 'Inicio',
-      about: 'Sobre mí',
-      services: 'Servicios', 
-      skills: 'Habilidades',
-      contact: 'Contacto'
+      services: 'Servicios',
+      cases: 'Casos',
+      process: 'Proceso',
+      contactCta: 'Agendá una llamada',
     },
-    
+
     // Hero Section
     hero: {
-      greeting: '👋 ¡Hola! Soy Martin',
+      eyebrow: 'Estudio de producto digital',
       title: {
-        line1: 'Desarrollador',
-        line2: 'Full Stack',
+        line1: 'Del concepto',
+        line2: 'la realidad',
       },
-      subtitle: 'Junto a mi equipo, creamos experiencias digitales modernas y funcionales utilizando React y Node.js',
+      subtitle: 'Diseñamos y construimos productos, SaaS y automatizaciones con IA — de la idea a producción.',
       cta: {
-        primary: '📬 Trabajemos juntos',
-        secondary: 'Conoce más sobre mí'
-      }
+        primary: 'Definí tu proyecto',
+        secondary: 'Ver casos',
+      },
     },
 
     // About Section  
@@ -194,45 +199,41 @@ export const translations = {
 
     // Footer
     footer: {
-      description: 'Desarrollador Full Stack y Diseñador UX/UI apasionado por crear experiencias digitales excepcionales que combinan funcionalidad y estética.',
-      navigation: 'Navegación',
-      services: 'Servicios',
-      servicesList: {
-        0: 'Desarrollo Frontend',
-        1: 'Desarrollo Backend',
-        2: 'Diseño UX/UI',
-        3: 'Aplicaciones Móviles',
-        4: 'Desarrollo SaaS'
-      },
-      copyright: '© 2024 Martin. Todos los derechos reservados.',
-      availableForProjects: 'Disponible para proyectos',
-      madeWith: 'Hecho con ❤️ y Astro'
+      tagline: 'Llevamos tus ideas digitales del concepto a la realidad.',
+      navTitle: 'Navegación',
+      servicesTitle: 'Servicios',
+      rights: 'Todos los derechos reservados.',
+      builtWith: 'Diseñado y construido por madezdev.',
     }
   },
   
   en: {
+    // Brand
+    brand: {
+      name: 'madezdev',
+      tagline: 'From concept to reality.',
+    },
+
     // Navigation
     nav: {
-      home: 'Home',
-      about: 'About',
       services: 'Services',
-      skills: 'Skills',
-      contact: 'Contact'
+      cases: 'Work',
+      process: 'Process',
+      contactCta: 'Book a call',
     },
-    
+
     // Hero Section
     hero: {
-      greeting: '👋 Hi! I\'m Martin',
+      eyebrow: 'Digital product studio',
       title: {
-        line1: 'Full Stack',
-        line2: 'Developer',
-        line3: '& UX/UI Designer'
+        line1: 'From concept',
+        line2: 'to reality',
       },
-      subtitle: 'Together with my team, we create modern and functional digital experiences using React and Node.js',
+      subtitle: 'We design and build products, SaaS, and AI automations — from idea to production.',
       cta: {
-        primary: '📬 Let\'s work together',
-        secondary: 'Learn more about me'
-      }
+        primary: 'Define your project',
+        secondary: 'See our work',
+      },
     },
 
     // About Section
@@ -406,19 +407,11 @@ export const translations = {
 
     // Footer
     footer: {
-      description: 'Full Stack Developer and UX/UI Designer passionate about creating exceptional digital experiences that combine functionality and aesthetics.',
-      navigation: 'Navigation',
-      services: 'Services',
-      servicesList: {
-        0: 'Frontend Development',
-        1: 'Backend Development',
-        2: 'UX/UI Design',
-        3: 'Mobile Applications',
-        4: 'SaaS Development'
-      },
-      copyright: '© 2024 Martin. All rights reserved.',
-      availableForProjects: 'Available for projects',
-      madeWith: 'Made with ❤️ and Astro'
+      tagline: 'We turn your digital ideas from concept into reality.',
+      navTitle: 'Navigation',
+      servicesTitle: 'Services',
+      rights: 'All rights reserved.',
+      builtWith: 'Designed and built by madezdev.',
     }
   }
 } as const;
