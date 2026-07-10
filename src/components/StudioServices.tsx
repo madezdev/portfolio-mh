@@ -23,7 +23,7 @@ export default function StudioServices() {
           {PILLARS.map((key) => (
             <div
               key={key}
-              className="rounded-2xl border border-ink-800 bg-ink-900/60 p-8 transition-colors hover:border-ember-500/50"
+              className="reveal rounded-2xl border border-ink-800 bg-ink-900/60 p-8 transition-colors hover:border-ember-500/50"
             >
               <h3 className="font-display text-2xl font-semibold text-fg">
                 {t(`services.pillars.${key}.title`)}

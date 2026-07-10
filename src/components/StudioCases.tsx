@@ -50,7 +50,7 @@ export default function StudioCases() {
             {cases.map((c) => (
               <article
                 key={c.id}
-                className="group overflow-hidden rounded-2xl border border-ink-800 bg-ink-950 transition-colors hover:border-ember-500/40"
+                className="reveal group overflow-hidden rounded-2xl border border-ink-800 bg-ink-950 transition-colors hover:border-ember-500/40"
               >
                 <CaseVisual item={c} />
                 <div className="p-6">
