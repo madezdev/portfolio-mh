@@ -3,7 +3,7 @@ import type { Language } from './translations';
 
 // Get initial language from localStorage or default to Spanish
 const getInitialLanguage = (): Language => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
     const stored = localStorage.getItem('portfolio-language');
     if (stored === 'en' || stored === 'es') {
       return stored;
@@ -20,7 +20,9 @@ export const currentLanguage = atom<Language>(getInitialLanguage());
 // Save language preference to localStorage when it changes
 currentLanguage.subscribe((lang) => {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('portfolio-language', lang);
+    if (typeof window.localStorage !== 'undefined') {
+      localStorage.setItem('portfolio-language', lang);
+    }
     document.documentElement.lang = lang;
   }
 });
