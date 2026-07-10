@@ -5,6 +5,7 @@ import StudioHero from '../components/StudioHero.tsx';
 import StudioFooter from '../components/StudioFooter.tsx';
 import StudioServices from '../components/StudioServices.tsx';
 import StudioCases from '../components/StudioCases.tsx';
+import StudioAI from '../components/StudioAI.tsx';
 import StudioTrust from '../components/StudioTrust.tsx';
 import StudioContact from '../components/StudioContact.tsx';
 
@@ -43,7 +44,7 @@ const orgJsonLd = {
 	<main>
 		<StudioHero client:visible />
 		<!-- Phase C/D placeholder anchors so hero/nav CTAs resolve -->
-		<section id="ai" class="min-h-[40vh]"></section>
+		<StudioAI client:visible />
 		<StudioServices client:visible />
 		<section id="process" class="min-h-[40vh]"></section>
 		<StudioCases client:visible />
