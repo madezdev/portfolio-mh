@@ -60,70 +60,30 @@ export const translations = {
 
     // Services Section
     services: {
-      title: 'Mis Servicios',
-      subtitle: 'Junto a mi equipo, ofrecemos soluciones completas de desarrollo y diseño para llevar tus ideas digitales al siguiente nivel. Para proyectos grandes, colaboramos con otros desarrolladores especializados para acelerar los procesos.',
-      items: {
-        frontend: {
-          title: 'Desarrollo Frontend',
-          description: 'Desarrollamos aplicaciones web modernas y receptivas utilizando React, garantizando una experiencia de usuario suave y eficiente.',
-          features: {
-            0: 'Aplicaciones React modernas',
-            1: 'Componentes reutilizables',
-            2: 'Diseño responsive',
-            3: 'Optimización de performance'
-          }
+      title: 'Lo que construimos',
+      subtitle: 'Diseñamos y desarrollamos el producto completo — de la idea a producción — y lo dejamos listo para crecer.',
+      pillars: {
+        web: {
+          title: 'Webs y sitios que venden',
+          description: 'Sitios y landing pages rápidos, medibles y hechos para convertir, no solo para verse bien.',
+          outcomes: { 0: 'Diseño a medida', 1: 'Performance y SEO', 2: 'Listos para escalar' },
         },
-        backend: {
-          title: 'Desarrollo Backend',
-          description: 'Desarrollo de backend ligero y escalable utilizando Node.js para complementar las aplicaciones frontend.',
-          features: {
-            0: 'APIs RESTful con Node.js',
-            1: 'Bases de datos optimizadas',
-            2: 'Autenticación y seguridad',
-            3: 'Arquitectura escalable'
-          }
+        product: {
+          title: 'Productos y SaaS a medida',
+          description: 'Del concepto al producto en producción: arquitectura sólida, pagos, paneles y multi-tenant.',
+          outcomes: { 0: 'MVP a producción', 1: 'Suscripciones y pagos', 2: 'Arquitectura escalable' },
         },
-        design: {
-          title: 'Diseño UX/UI',
-          description: 'Diseño interfaces atractivas y fáciles de usar que satisfacen las necesidades de los usuarios y los objetivos del negocio.',
-          features: {
-            0: 'Investigación de usuarios',
-            1: 'Wireframes y prototipos',
-            2: 'Interfaces intuitivas',
-            3: 'Design systems'
-          }
+        automation: {
+          title: 'Automatizaciones',
+          description: 'Conectamos tus herramientas y eliminamos el trabajo manual repetitivo que te frena.',
+          outcomes: { 0: 'Integraciones a medida', 1: 'Flujos automáticos', 2: 'Menos errores, más tiempo' },
         },
-        mobile: {
-          title: 'Desarrollo Móvil',
-          description: 'Aplicaciones móviles nativas y híbridas para iOS y Android con experiencias de usuario excepcionales.',
-          features: {
-            0: 'React Native',
-            1: 'iOS & Android',
-            2: 'Push notifications',
-            3: 'App store deployment'
-          }
+        ai: {
+          title: 'IA aplicada',
+          description: 'Asistentes, agentes y features con IA que mueven de verdad el negocio, no demos de laboratorio.',
+          outcomes: { 0: 'Asistentes y agentes', 1: 'Automatización con IA', 2: 'Integración de modelos' },
         },
-        saas: {
-          title: 'Desarrollo SaaS',
-          description: 'Plataformas SaaS completas con sistemas de suscripción, dashboard de administración y escalabilidad.',
-          features: {
-            0: 'Multi-tenancy',
-            1: 'Sistemas de pago',
-            2: 'Analytics dashboard',
-            3: 'Cloud deployment'
-          }
-        },
-        custom: {
-          title: 'Software Personalizado',
-          description: 'Soluciones de software a medida que se adaptan perfectamente a las necesidades específicas de tu negocio.',
-          features: {
-            0: 'Análisis de requisitos',
-            1: 'Arquitectura personalizada',
-            2: 'Integración de sistemas',
-            3: 'Soporte continuo'
-          }
-        }
-      }
+      },
     },
 
     // Skills Section
@@ -268,70 +228,30 @@ export const translations = {
 
     // Services Section
     services: {
-      title: 'My Services',
-      subtitle: 'Together with my team, we offer complete development and design solutions to take your digital ideas to the next level. For large projects, we collaborate with other specialized developers to accelerate processes.',
-      items: {
-        frontend: {
-          title: 'Frontend Development',
-          description: 'We develop modern and responsive web applications using React, ensuring a smooth and efficient user experience.',
-          features: {
-            0: 'Modern React applications',
-            1: 'Reusable components',
-            2: 'Responsive design',
-            3: 'Performance optimization'
-          }
+      title: 'What we build',
+      subtitle: 'We design and build the whole product — from idea to production — and leave it ready to grow.',
+      pillars: {
+        web: {
+          title: 'Websites that sell',
+          description: 'Fast, measurable sites and landing pages built to convert, not just to look good.',
+          outcomes: { 0: 'Custom design', 1: 'Performance & SEO', 2: 'Ready to scale' },
         },
-        backend: {
-          title: 'Backend Development',
-          description: 'Lightweight and scalable backend development using Node.js to complement frontend applications.',
-          features: {
-            0: 'RESTful APIs with Node.js',
-            1: 'Optimized databases',
-            2: 'Authentication and security',
-            3: 'Scalable architecture'
-          }
+        product: {
+          title: 'Products & custom SaaS',
+          description: 'From concept to production: solid architecture, payments, dashboards, and multi-tenant.',
+          outcomes: { 0: 'MVP to production', 1: 'Subscriptions & payments', 2: 'Scalable architecture' },
         },
-        design: {
-          title: 'UX/UI Design',
-          description: 'I design attractive and user-friendly interfaces that meet user needs while fulfilling business objectives.',
-          features: {
-            0: 'User research',
-            1: 'Wireframes and prototypes',
-            2: 'Intuitive interfaces',
-            3: 'Design systems'
-          }
+        automation: {
+          title: 'Automations',
+          description: 'We connect your tools and remove the repetitive manual work that slows you down.',
+          outcomes: { 0: 'Custom integrations', 1: 'Automated workflows', 2: 'Fewer errors, more time' },
         },
-        mobile: {
-          title: 'Mobile Development',
-          description: 'Native and hybrid mobile applications for iOS and Android with exceptional user experiences.',
-          features: {
-            0: 'React Native',
-            1: 'iOS & Android',
-            2: 'Push notifications',
-            3: 'App store deployment'
-          }
+        ai: {
+          title: 'Applied AI',
+          description: 'Assistants, agents, and AI features that actually move the business — not lab demos.',
+          outcomes: { 0: 'Assistants & agents', 1: 'AI automation', 2: 'Model integration' },
         },
-        saas: {
-          title: 'SaaS Development',
-          description: 'Complete SaaS platforms with subscription systems, admin dashboards and scalability.',
-          features: {
-            0: 'Multi-tenancy',
-            1: 'Payment systems',
-            2: 'Analytics dashboard',
-            3: 'Cloud deployment'
-          }
-        },
-        custom: {
-          title: 'Custom Software',
-          description: 'Tailored software solutions that perfectly adapt to your business specific needs.',
-          features: {
-            0: 'Requirements analysis',
-            1: 'Custom architecture',
-            2: 'System integration',
-            3: 'Ongoing support'
-          }
-        }
-      }
+      },
     },
 
     // Skills Section
