@@ -7,13 +7,13 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 rounded-lg transition-all duration-300 group"
+      className="flex items-center gap-2 rounded-full border border-ink-700 bg-ink-800/60 px-3 py-2 transition-colors duration-300 hover:border-ember-500/50 group"
       aria-label={`Switch to ${lang === 'es' ? 'English' : 'Spanish'}`}
     >
-      <span className="text-lg group-hover:scale-110 transition-transform">
+      <span className="text-base transition-transform group-hover:scale-110">
         {lang === 'es' ? '🇺🇸' : '🇪🇸'}
       </span>
-      <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+      <span className="font-mono text-xs font-medium tracking-wide text-fg-muted transition-colors group-hover:text-fg">
         {lang === 'es' ? 'EN' : 'ES'}
       </span>
     </button>

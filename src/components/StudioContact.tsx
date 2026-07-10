@@ -42,13 +42,19 @@ export default function StudioContact() {
   const field = 'w-full rounded-lg border border-ink-700 bg-ink-900 px-4 py-3 text-fg placeholder-fg-muted/60 focus:border-ember-500 focus:outline-none';
 
   return (
-    <Section id="contact">
-      <Container className="max-w-xl">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-blueprint-300 mb-4">{t('contact.eyebrow')}</p>
-        <h2 className="font-display text-4xl md:text-5xl font-bold text-fg">{t('contact.title')}</h2>
-        <p className="mt-4 text-lg text-fg-muted">{t('contact.subtitle')}</p>
+    <Section id="contact" className="border-t border-ink-800">
+      <Container>
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-blueprint-300">{t('contact.eyebrow')}</p>
+          <h2 className="font-display text-4xl font-bold text-fg md:text-5xl">{t('contact.title')}</h2>
+          <p className="mx-auto mt-4 max-w-xl text-lg text-fg-muted">{t('contact.subtitle')}</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="mt-10 space-y-5" noValidate>
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto mt-10 max-w-xl space-y-5 rounded-2xl border border-ink-800 bg-ink-900/40 p-6 text-left md:p-8"
+          noValidate
+        >
           <div>
             <label htmlFor="name" className="mb-2 block text-sm text-fg-muted">{t('contact.form.name')}</label>
             <input id="name" name="name" type="text" required className={field} placeholder={t('contact.form.namePlaceholder')} />

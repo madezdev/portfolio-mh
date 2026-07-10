@@ -30,3 +30,43 @@
 html {
   font-family: var(--font-sans);
 }
+
+/* Hero accent-word entrance — CSS-based so it never flashes on SSR/hydration. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-reveal {
+  animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Ambient down-drift for the scroll cue. */
+@keyframes scroll-cue {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(4px);
+  }
+}
+
+.scroll-cue-line {
+  animation: scroll-cue 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-reveal,
+  .scroll-cue-line {
+    animation: none;
+  }
+}
