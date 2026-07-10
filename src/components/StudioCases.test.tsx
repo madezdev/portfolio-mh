@@ -4,18 +4,23 @@ import StudioCases from './StudioCases';
 import { cases } from '../data/cases';
 
 describe('StudioCases', () => {
-  it('renders a card for every case with an accessible image and title', () => {
+  it('renders one card per case with its title', () => {
     render(<StudioCases />);
-    const section = document.getElementById('cases');
-    expect(section).not.toBeNull();
-    // one img per case (alt = client or title)
-    expect(screen.getAllByRole('img').length).toBe(cases.length);
-    // each case title appears
-    for (const c of cases) expect(screen.getByText(c.title)).toBeInTheDocument();
+    expect(document.getElementById('cases')).not.toBeNull();
+    const articles = document.querySelectorAll('#cases article');
+    expect(articles.length).toBe(cases.length);
+    for (const c of cases) expect(screen.getByRole('heading', { name: c.title })).toBeInTheDocument();
   });
+
+  it('renders an <img> only for cases that have a screenshot (fallback otherwise)', () => {
+    render(<StudioCases />);
+    const withImage = cases.filter((c) => c.image).length;
+    expect(screen.queryAllByRole('img')).toHaveLength(withImage);
+  });
+
   it('renders a live link only for cases that have a liveUrl', () => {
     render(<StudioCases />);
     const withLive = cases.filter((c) => c.liveUrl).length;
-    expect(screen.getAllByRole('link', { name: /ver en vivo|view live/i })).toHaveLength(withLive);
+    expect(screen.queryAllByRole('link', { name: /ver en vivo|view live/i })).toHaveLength(withLive);
   });
 });

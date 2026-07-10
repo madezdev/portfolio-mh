@@ -3,40 +3,59 @@ export type Case = {
   client: string;
   title: string;
   category: 'web' | 'product' | 'automation' | 'ai';
+  /** Short human-readable type label shown on the card, e.g. "Fintech · Wallet". */
+  tag?: string;
   summary: string;
-  image: string;
+  /** Product screenshot. When absent, the card shows a branded fallback tile. */
+  image?: string;
   liveUrl?: string;
   logo?: string;
   testimonial?: { quote: string; author: string; role: string };
 };
 
-// PLACEHOLDER DATA — replace with real case studies (owner has screenshots,
-// live links, client logos, and testimonials; no metrics). Keep the shape.
+// Real case studies. DRAFT summaries (Spanish) — owner to refine, and to add
+// `image` (product screenshot), `liveUrl`, `logo`, and `testimonial` when available.
+// Trust section (logos + testimonials) stays hidden until those are provided.
 export const cases: Case[] = [
   {
-    id: 'placeholder-1',
-    client: 'Cliente ejemplo',
-    title: 'Plataforma SaaS de gestión',
+    id: 'billetera-pais',
+    client: 'Billetera País',
+    title: 'Billetera País',
     category: 'product',
-    summary:
-      'Placeholder — reemplazar. Qué construimos y qué resolvió para el cliente, en 1–2 frases.',
-    image: '/cases/placeholder-1.png',
-    liveUrl: 'https://example.com',
-    logo: '/cases/logos/placeholder-1.svg',
-    testimonial: {
-      quote: 'Placeholder — cita real del cliente sobre trabajar con madezdev.',
-      author: 'Nombre Apellido',
-      role: 'CEO, Cliente ejemplo',
-    },
+    tag: 'Fintech · Wallet',
+    summary: 'Billetera digital y medios de pago para el día a día.',
   },
   {
-    id: 'placeholder-2',
-    client: 'Cliente ejemplo 2',
-    title: 'Sitio de alto rendimiento',
+    id: 'totalpay',
+    client: 'TotalPay',
+    title: 'TotalPay',
+    category: 'product',
+    tag: 'Fintech · Wallet',
+    summary: 'Plataforma de pagos y billetera virtual.',
+  },
+  {
+    id: 'ses-sa',
+    client: 'SES-SA',
+    title: 'SES-SA',
+    category: 'product',
+    tag: 'SaaS',
+    summary: 'Plataforma SaaS a medida para gestión operativa.',
+  },
+  {
+    id: 'consultora-mutual',
+    client: 'Consultora Mutual',
+    title: 'Consultora Mutual',
+    category: 'product',
+    tag: 'SaaS',
+    summary: 'Plataforma de gestión para una mutual.',
+  },
+  {
+    id: 'mercado-solar',
+    client: 'Mercado Solar',
+    title: 'Mercado Solar',
     category: 'web',
-    summary: 'Placeholder — reemplazar con el segundo caso real.',
-    image: '/cases/placeholder-2.png',
-    liveUrl: 'https://example.com',
+    tag: 'E-commerce',
+    summary: 'Tienda online de productos de energía solar.',
   },
 ];
 
