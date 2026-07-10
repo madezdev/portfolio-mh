@@ -1,1 +1,32 @@
 @import "tailwindcss";
+
+@theme {
+  /* Base — deep, slightly warm ink (not the bluish slate-950) */
+  --color-ink-950: #0a0a0b;
+  --color-ink-900: #111113;
+  --color-ink-800: #1a1a1e;
+  --color-ink-700: #26262c;
+
+  /* Signature accent — electric orange / amber (the brand mark color) */
+  --color-ember-600: #e5551a;
+  --color-ember-500: #ff6a1a;
+  --color-ember-400: #ff8a3d;
+  --color-ember-300: #ffb37a;
+
+  /* Concept / blueprint — cool tones used sparingly at the "top" of the journey */
+  --color-blueprint-400: #6b8aff;
+  --color-blueprint-300: #9db0ff;
+
+  /* Foreground */
+  --color-fg: #f5f5f4;
+  --color-fg-muted: #a1a1aa;
+
+  /* Typography */
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+}
+
+html {
+  font-family: var(--font-sans);
+}
