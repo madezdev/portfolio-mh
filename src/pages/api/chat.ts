@@ -31,7 +31,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       messages: convertToModelMessages(messages),
       maxOutputTokens: MAX_OUTPUT_TOKENS,
     });
-    return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse({
+      onError: (error) => {
+        console.error('AI chat stream error:', error);
+        return 'ai_unavailable';
+      },
+    });
   } catch {
     return new Response(JSON.stringify({ error: 'ai_unavailable' }), { status: 503 });
   }
