@@ -114,61 +114,29 @@ export const translations = {
 
     // Contact Section
     contact: {
-      title: 'Trabajemos Juntos',
-      subtitle: '¿Tienes un proyecto en mente? ¡Estoy disponible para colaborar en proyectos emocionantes y llevar tus ideas digitales a la vida! Para proyectos grandes, trabajo con un equipo especializado.',
-      getInTouch: 'Ponte en contacto',
-      description: 'Junto a mi equipo, somos comunicadores abiertos y colaboradores comprometidos, listos para enfrentar desafíos y llevar tus conceptos digitales al siguiente nivel. Contamos con desarrolladores especializados para acelerar los tiempos de entrega.',
-      methods: {
-        email: {
-          title: 'Email'
-        },
-        whatsapp: {
-          title: 'WhatsApp'
-        },
-        linkedin: {
-          title: 'LinkedIn'
-        },
-        github: {
-          title: 'GitHub'
-        }
-      },
-      availability: {
-        status: 'Disponible para proyectos',
-        description: 'Actualmente acepto nuevos proyectos freelance. Tiempo de respuesta promedio: 24 horas.'
+      title: 'Contanos tu proyecto',
+      subtitle: 'Contanos qué tenés en mente y te respondemos con los próximos pasos. Normalmente en 24 h.',
+      subjects: {
+        web: 'Web o sitio',
+        product: 'Producto / SaaS',
+        automation: 'Automatización',
+        ai: 'IA aplicada',
+        other: 'Otro',
       },
       form: {
-        title: 'Envíame un mensaje',
-        fields: {
-          name: 'Nombre',
-          namePlaceholder: 'Tu nombre',
-          email: 'Email',
-          emailPlaceholder: 'tu@email.com',
-          subject: 'Asunto',
-          subjectPlaceholder: 'Selecciona un tema',
-          budget: 'Presupuesto estimado',
-          budgetPlaceholder: 'Selecciona un rango',
-          message: 'Mensaje',
-          messagePlaceholder: 'Cuéntame sobre tu proyecto...'
-        },
-        subjects: {
-          frontend: 'Desarrollo Frontend',
-          fullstack: 'Proyecto Full Stack',
-          design: 'Diseño UX/UI',
-          mobile: 'Aplicación Móvil',
-          saas: 'Desarrollo SaaS',
-          other: 'Otro'
-        },
-        budgets: {
-          under1k: 'Menos de $1,000',
-          '1k5k': '$1,000 - $5,000',
-          '5k10k': '$5,000 - $10,000',
-          '10kplus': 'Más de $10,000',
-          discuss: 'Prefiero discutirlo'
-        },
-        submit: 'Enviar mensaje',
+        name: 'Nombre',
+        namePlaceholder: 'Tu nombre',
+        email: 'Email',
+        emailPlaceholder: 'tu@email.com',
+        subject: '¿Qué necesitás?',
+        subjectPlaceholder: 'Elegí una opción',
+        message: 'Mensaje',
+        messagePlaceholder: 'Contanos sobre tu proyecto...',
+        submit: 'Enviar',
         sending: 'Enviando...',
-        success: '¡Mensaje enviado correctamente! Te responderé pronto.'
-      }
+        success: '¡Mensaje enviado! Te respondemos pronto.',
+        error: 'No se pudo enviar. Probá de nuevo en un momento.',
+      },
     },
 
     // Footer
@@ -296,61 +264,29 @@ export const translations = {
 
     // Contact Section
     contact: {
-      title: 'Let\'s Work Together',
-      subtitle: 'Do you have a project in mind? I\'m available to collaborate on exciting projects and bring your digital ideas to life! For large projects, I work with a specialized team.',
-      getInTouch: 'Get in touch',
-      description: 'Together with my team, we are open communicators and committed collaborators, ready to face challenges and take your digital concepts to the next level. We have specialized developers to accelerate delivery times.',
-      methods: {
-        email: {
-          title: 'Email'
-        },
-        whatsapp: {
-          title: 'WhatsApp'
-        },
-        linkedin: {
-          title: 'LinkedIn'
-        },
-        github: {
-          title: 'GitHub'
-        }
-      },
-      availability: {
-        status: 'Available for projects',
-        description: 'Currently accepting new freelance projects. Average response time: 24 hours.'
+      title: 'Tell us about your project',
+      subtitle: 'Tell us what you have in mind and we’ll reply with the next steps. Usually within 24h.',
+      subjects: {
+        web: 'Website',
+        product: 'Product / SaaS',
+        automation: 'Automation',
+        ai: 'Applied AI',
+        other: 'Other',
       },
       form: {
-        title: 'Send me a message',
-        fields: {
-          name: 'Name',
-          namePlaceholder: 'Your name',
-          email: 'Email',
-          emailPlaceholder: 'your@email.com',
-          subject: 'Subject',
-          subjectPlaceholder: 'Select a topic',
-          budget: 'Estimated budget',
-          budgetPlaceholder: 'Select a range',
-          message: 'Message',
-          messagePlaceholder: 'Tell me about your project...'
-        },
-        subjects: {
-          frontend: 'Frontend Development',
-          fullstack: 'Full Stack Project',
-          design: 'UX/UI Design',
-          mobile: 'Mobile Application',
-          saas: 'SaaS Development',
-          other: 'Other'
-        },
-        budgets: {
-          under1k: 'Under $1,000',
-          '1k5k': '$1,000 - $5,000',
-          '5k10k': '$5,000 - $10,000',
-          '10kplus': 'Over $10,000',
-          discuss: 'Prefer to discuss'
-        },
-        submit: 'Send message',
+        name: 'Name',
+        namePlaceholder: 'Your name',
+        email: 'Email',
+        emailPlaceholder: 'you@email.com',
+        subject: 'What do you need?',
+        subjectPlaceholder: 'Pick one',
+        message: 'Message',
+        messagePlaceholder: 'Tell us about your project...',
+        submit: 'Send',
         sending: 'Sending...',
-        success: 'Message sent successfully! I\'ll respond soon.'
-      }
+        success: 'Message sent! We’ll get back to you soon.',
+        error: 'Could not send. Please try again in a moment.',
+      },
     },
 
     // Footer
