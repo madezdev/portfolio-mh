@@ -19,6 +19,7 @@ export default function StudioAI() {
   });
   const [input, setInput] = useState('');
   const [captured, setCaptured] = useState(false);
+  const [captureError, setCaptureError] = useState(false);
 
   const assistantReplies = messages.filter((m) => m.role === 'assistant').length;
   const showCapture = assistantReplies >= 2 && !captured;
@@ -36,18 +37,25 @@ export default function StudioAI() {
     const transcript = messages
       .map((m) => `${m.role === 'user' ? 'Visitante' : 'IA'}: ${messageText(m)}`)
       .join('\n');
-    await fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: String(data.get('name') ?? ''),
-        email: String(data.get('email') ?? ''),
-        subject: 'Lead desde la IA',
-        message: `Conversación de intake:\n\n${transcript}`,
-        language: lang,
-      }),
-    });
-    setCaptured(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: String(data.get('name') ?? ''),
+          email: String(data.get('email') ?? ''),
+          subject: 'Lead desde la IA',
+          message: `Conversación de intake:\n\n${transcript}`,
+          language: lang,
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok || !result.success) throw new Error('failed');
+      setCaptureError(false);
+      setCaptured(true);
+    } catch {
+      setCaptureError(true);
+    }
   }
 
   const field = 'w-full rounded-lg border border-ink-700 bg-ink-900 px-4 py-3 text-fg placeholder-fg-muted/60 focus:border-ember-500 focus:outline-none';
@@ -105,6 +113,13 @@ export default function StudioAI() {
                 {showCapture ? (
                   captured ? (
                     <p className="text-sm text-ember-400">{t('ai.capture.success')}</p>
+                  ) : captureError ? (
+                    <div className="py-4 text-center">
+                      <p className="text-sm text-fg-muted">{t('ai.fallback.text')}</p>
+                      <a href="#contact" className="mt-2 inline-block font-semibold text-ember-500 hover:text-ember-400">
+                        {t('ai.fallback.cta')} →
+                      </a>
+                    </div>
                   ) : (
                     <form onSubmit={handleCapture} className="space-y-3">
                       <p className="text-sm text-fg-muted">{t('ai.capture.prompt')}</p>

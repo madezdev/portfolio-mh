@@ -50,4 +50,25 @@ describe('StudioAI', () => {
     expect(body.subject).toBeTruthy();
     expect(body.message).toContain('un saas'); // transcript included
   });
+
+  it('shows the fallback CTA instead of the success message when /api/contact fails', async () => {
+    mockState = {
+      status: 'ready',
+      messages: [
+        { id: '1', role: 'user', parts: [{ type: 'text', text: 'hola' }] },
+        { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'contame mas' }] },
+        { id: '3', role: 'user', parts: [{ type: 'text', text: 'un saas' }] },
+        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'genial, dejame tu contacto' }] },
+      ],
+    };
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, json: async () => ({ success: false }) })) as any);
+    render(<StudioAI />);
+    fireEvent.change(screen.getByPlaceholderText(/tu nombre|your name/i), { target: { value: 'Ada' } });
+    fireEvent.change(screen.getByPlaceholderText(/@email/i), { target: { value: 'ada@x.com' } });
+    fireEvent.click(screen.getByRole('button', { name: /enviar a madezdev|send to madezdev/i }));
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/contact', expect.objectContaining({ method: 'POST' })));
+    const cta = await screen.findByRole('link', { name: /formulario|form/i });
+    expect(cta).toHaveAttribute('href', '#contact');
+    expect(screen.queryByText(/contactamos pronto|in touch soon/i)).not.toBeInTheDocument();
+  });
 });
