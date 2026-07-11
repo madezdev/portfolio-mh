@@ -12,7 +12,14 @@ export default defineConfig({
   }),
   site: 'https://www.madez.dev',
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    // gsap ships its plugin subpaths as CommonJS; without this the Vercel
+    // SSR build externalizes them and Node ESM can't read the named exports
+    // (`Named export 'ScrollTrigger' not found`), 500-ing every page. Bundling
+    // gsap into the server output lets Vite apply the CJS interop, as in dev.
+    ssr: {
+      noExternal: ['gsap', '@gsap/react'],
+    },
   },
 
   integrations: [react()],
