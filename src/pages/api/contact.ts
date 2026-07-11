@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 import { transporter, mailOptions } from '@server/nodemailer';
+import { escapeHtml, isValidEmail } from '@server/security';
+import { checkContactRateLimit } from '../../server/ai/rate-limit';
 const emailUser = import.meta.env.PUBLIC_EMAIL_USER
 // Para las imágenes de correo electrónico usamos una URL de imagen pública
 const logoUrl = 'https://raw.githubusercontent.com/madezdev/portfolio-assets/main/logoMadezdev.png';
@@ -201,30 +203,52 @@ const emailTemplates = {
   }
 };
 
-export const POST: APIRoute = async ({ request }) => {
+const json = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
     const formData = await request.json() as ContactFormData;
+    const subject = formData.subject ?? '';
 
     // Validate required fields
     if (!formData.name || !formData.email || !formData.message) {
-      return new Response(JSON.stringify({
-        success: false,
-        message: 'Missing required fields'
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ success: false, message: 'Missing required fields' }, 400);
+    }
+    if (!isValidEmail(formData.email)) {
+      return json({ success: false, message: 'Invalid email' }, 400);
+    }
+    // Reject oversized payloads (abuse / cost control).
+    if (formData.name.length > 200 || subject.length > 300 || formData.message.length > 5000 || (formData.budget?.length ?? 0) > 100) {
+      return json({ success: false, message: 'Field too long' }, 400);
+    }
+
+    // Throttle: this endpoint sends real email, so keep it strict.
+    const ip = clientAddress || request.headers.get('x-forwarded-for') || 'anonymous';
+    const { success } = await checkContactRateLimit(ip);
+    if (!success) {
+      return json({ success: false, message: 'Too many requests' }, 429);
     }
 
     const templates = emailTemplates[formData.language || 'es'];
+
+    // Escaped copy for HTML bodies; headers use the raw (already-validated) values.
+    const safe: ContactFormData = {
+      ...formData,
+      name: escapeHtml(formData.name),
+      email: escapeHtml(formData.email),
+      subject: escapeHtml(subject),
+      message: escapeHtml(formData.message),
+      budget: formData.budget ? escapeHtml(formData.budget) : undefined,
+    };
 
     // Email to owner (you)
     const ownerMailOptions = {
       ...mailOptions,
       from: emailUser,
       to: 'madezdev@gmail.com',
-      subject: templates.toOwner.subject(formData.subject),
-      html: templates.toOwner.html(formData),
+      subject: templates.toOwner.subject(subject),
+      html: templates.toOwner.html(safe),
       replyTo: formData.email
     };
 
@@ -234,7 +258,7 @@ export const POST: APIRoute = async ({ request }) => {
       from: emailUser,
       to: formData.email,
       subject: templates.toSender.subject,
-      html: templates.toSender.html(formData.name)
+      html: templates.toSender.html(safe.name)
     };
 
     // Send emails
@@ -243,23 +267,9 @@ export const POST: APIRoute = async ({ request }) => {
       transporter.sendMail(senderMailOptions)
     ]);
 
-    return new Response(JSON.stringify({
-      success: true,
-      message: 'Emails sent successfully'
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
+    return json({ success: true, message: 'Emails sent successfully' }, 200);
   } catch (error) {
     console.error('Email sending error:', error);
-
-    return new Response(JSON.stringify({
-      success: false,
-      message: 'Failed to send email'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ success: false, message: 'Failed to send email' }, 500);
   }
 };
