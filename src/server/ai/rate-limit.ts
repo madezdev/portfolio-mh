@@ -5,8 +5,10 @@ let limiter: Ratelimit | null = null;
 
 function getLimiter(): Ratelimit | null {
   if (limiter) return limiter;
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // Accept the standard Upstash names OR the ones the Vercel Upstash
+  // Marketplace integration injects (KV_REST_API_*), so it works either way.
+  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
   if (!url || !token) return null; // dev fallback: no limiting
   limiter = new Ratelimit({
     redis: new Redis({ url, token }),
