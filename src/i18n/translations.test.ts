@@ -4,7 +4,8 @@ import { t } from './utils';
 
 describe('studio shell translations', () => {
   it('exposes the studio tagline verbatim in both languages', () => {
-    expect(t('hero.title.line2', 'es')).toBe('la realidad');
+    expect(t('hero.title.line1', 'es')).toBe('Del concepto');
+    expect(t('hero.title.line2', 'es')).toBe('a la realidad');
     expect(t('brand.name', 'es')).toBe('madezdev');
     expect(t('brand.name', 'en')).toBe('madezdev');
   });
