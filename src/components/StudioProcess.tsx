@@ -27,8 +27,10 @@ export default function StudioProcess() {
     const update = () => {
       const rect = el.getBoundingClientRect();
       if (rect.height === 0) return;
-      const line = window.innerHeight * 0.6;
-      const p = (line - rect.top) / rect.height;
+      // Fill maps the connector's top position as it travels up the viewport:
+      // ~0 when it enters from the bottom, ~1 as it nears the top.
+      const vh = window.innerHeight;
+      const p = (vh * 0.85 - rect.top) / (vh * 0.7);
       setProgress(Math.min(1, Math.max(0, p)));
     };
     update();
