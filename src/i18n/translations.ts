@@ -21,7 +21,7 @@ export const translations = {
         line1: 'Del concepto',
         line2: 'la realidad',
       },
-      subtitle: 'Diseñamos y construimos productos, SaaS y automatizaciones con IA — de la idea a producción.',
+      subtitle: 'Diseñamos y construimos productos, SaaS y automatizaciones con IA. De la idea a producción.',
       cta: {
         primary: 'Definí tu proyecto',
         secondary: 'Ver casos',
@@ -221,7 +221,7 @@ export const translations = {
         line1: 'From concept',
         line2: 'to reality',
       },
-      subtitle: 'We design and build products, SaaS, and AI automations — from idea to production.',
+      subtitle: 'We design and build products, SaaS, and AI automations. From idea to production.',
       cta: {
         primary: 'Define your project',
         secondary: 'See our work',
