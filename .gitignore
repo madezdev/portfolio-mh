@@ -13,12 +13,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# environment variables
+# environment variables — ignore every .env file (incl. .env.local from
+# `vercel env pull`, which holds the OIDC token); keep the committed example.
 .env
-.env.production
-# local env files (vercel env pull writes .env.local — contains the OIDC token)
-.env.local
-.env*.local
+.env.*
+!.env.example
 
 # vercel
 .vercel
@@ -31,5 +30,3 @@ pnpm-debug.log*
 
 .Claude.md
 claude*
-.env.*
-!.env.example
