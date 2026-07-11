@@ -94,3 +94,29 @@ html {
     }
   }
 }
+
+/* Process connector — a scroll-driven fill that "draws" the journey concept→reality.
+   Graceful: unsupported browsers show the full line; reduced-motion opts out. */
+@keyframes process-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.process-progress {
+  transform-origin: top;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .process-progress {
+      transform: scaleY(0);
+      animation: process-fill linear both;
+      animation-timeline: view();
+      animation-range: entry 30% exit 70%;
+    }
+  }
+}
