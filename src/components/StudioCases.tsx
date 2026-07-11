@@ -2,13 +2,14 @@ import { useStore } from '@nanostores/react';
 import { currentLanguage } from '../i18n/store';
 import { useTranslations } from '../i18n/utils';
 import { useReveal } from '../hooks/useReveal';
+import { gsap, useGSAP } from '../lib/gsap';
 import { cases, type Case } from '../data/cases';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
 
 function CaseVisual({ item }: { item: Case }) {
   if (item.image) {
-    return <img src={item.image} alt={item.client} className="aspect-[16/10] w-full object-cover" />;
+    return <img src={item.image} alt={item.client} className="case-media aspect-[16/10] w-full scale-110 object-cover" />;
   }
   // Branded fallback tile when no product screenshot is available yet.
   return (
@@ -21,7 +22,7 @@ function CaseVisual({ item }: { item: Case }) {
           backgroundSize: '32px 32px',
         }}
       />
-      <span className="absolute inset-0 flex items-center justify-center font-display text-8xl font-bold text-ink-700 select-none">
+      <span className="case-media absolute inset-0 flex items-center justify-center font-display text-8xl font-bold text-ink-700 select-none">
         {item.client.charAt(0)}
       </span>
       {item.tag && (
@@ -37,6 +38,24 @@ export default function StudioCases() {
   const lang = useStore(currentLanguage);
   const { t } = useTranslations(lang);
   useReveal('cases');
+
+  // Depth: each case visual drifts against its card as it scrolls through view.
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.utils.toArray<HTMLElement>('#cases .case-media').forEach((media) => {
+        gsap.fromTo(
+          media,
+          { yPercent: -6 },
+          {
+            yPercent: 6,
+            ease: 'none',
+            scrollTrigger: { trigger: media.closest('article'), start: 'top bottom', end: 'bottom top', scrub: true },
+          },
+        );
+      });
+    });
+  });
 
   return (
     <Section id="cases" className="bg-ink-900/40">
