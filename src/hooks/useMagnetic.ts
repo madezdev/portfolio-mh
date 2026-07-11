@@ -31,6 +31,10 @@ export function useMagnetic<T extends HTMLElement>(strength = 0.35) {
       };
       el.addEventListener('mousemove', onMove);
       el.addEventListener('mouseleave', onLeave);
+      return () => {
+        el.removeEventListener('mousemove', onMove);
+        el.removeEventListener('mouseleave', onLeave);
+      };
     },
     { scope: ref },
   );

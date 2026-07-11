@@ -23,6 +23,7 @@ export default function StudioNav() {
     () => {
       const el = headerRef.current;
       if (!el) return;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       gsap.set(el, { backgroundColor: 'rgba(10,10,11,0)', borderColor: 'rgba(38,38,44,0)' });
       ScrollTrigger.create({
         start: 60,
@@ -31,7 +32,7 @@ export default function StudioNav() {
           gsap.to(el, {
             backgroundColor: self.isActive ? 'rgba(10,10,11,0.85)' : 'rgba(10,10,11,0)',
             borderColor: self.isActive ? 'rgba(38,38,44,1)' : 'rgba(38,38,44,0)',
-            duration: 0.35,
+            duration: reduce ? 0 : 0.35,
             ease: 'power2.out',
           }),
       });
