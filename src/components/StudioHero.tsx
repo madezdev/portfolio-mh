@@ -17,16 +17,15 @@ export default function StudioHero() {
     () => {
       const mm = gsap.matchMedia();
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        // Per-character reveal of the headline.
+        // "Concept" assembles char by char; "reality" arrives as one solid block.
         const split1 = SplitText.create('.hero-line1-inner', { type: 'chars' });
-        const split2 = SplitText.create('.hero-line2-inner', { type: 'chars' });
 
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
         tl.from('.hero-grid', { autoAlpha: 0, scale: 1.08, duration: 1.4, ease: 'power2.out' })
           .from('.hero-glow', { autoAlpha: 0, scale: 0.5, duration: 1.4, ease: 'power2.out' }, 0.15)
           .from('.hero-eyebrow', { autoAlpha: 0, y: 16, duration: 0.6 }, 0.35)
           .from(split1.chars, { yPercent: 130, autoAlpha: 0, stagger: 0.025, duration: 0.7 }, 0.45)
-          .from(split2.chars, { yPercent: 130, autoAlpha: 0, stagger: 0.03, duration: 0.8 }, 0.62)
+          .from('.hero-line2-inner', { yPercent: 120, duration: 0.9 }, 0.66)
           .from('.hero-sub', { autoAlpha: 0, y: 18, duration: 0.7 }, 1.05)
           .from('.hero-cta', { autoAlpha: 0, y: 18, stagger: 0.12, duration: 0.6 }, 1.2)
           .from('.hero-scrollcue', { autoAlpha: 0, duration: 0.6 }, 1.45);
@@ -64,11 +63,35 @@ export default function StudioHero() {
         return () => {
           root.current?.removeEventListener('mousemove', onMove);
           split1.revert();
-          split2.revert();
         };
       });
     },
     { scope: root },
+  );
+
+  // Ember light sweep across "reality": the word sits solid, and every few
+  // seconds a warm highlight travels across it. Lives in its own effect keyed
+  // to `lang` so it re-attaches when the <h1> remounts on a language toggle.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const sweep = gsap.fromTo(
+          '.hero-line2-inner',
+          { backgroundPosition: '100% 0' },
+          {
+            backgroundPosition: '-45% 0',
+            duration: 1.9,
+            ease: 'power2.inOut',
+            repeat: -1,
+            repeatDelay: 2.8,
+            delay: 2.4,
+          },
+        );
+        return () => sweep.kill();
+      });
+    },
+    { dependencies: [lang], scope: root },
   );
 
   return (
@@ -90,7 +113,21 @@ export default function StudioHero() {
             <span className="hero-line1-inner block text-fg">{t('hero.title.line1')}</span>
           </span>
           <span className="block overflow-hidden pb-[0.08em]">
-            <span className="hero-line2-inner block text-ember-500">{t('hero.title.line2')}</span>
+            <span
+              className="hero-line2-inner block"
+              style={{
+                backgroundImage:
+                  'linear-gradient(100deg, #ff6a1a 0%, #ff6a1a 42%, #ffe4cf 50%, #ff6a1a 58%, #ff6a1a 100%)',
+                backgroundSize: '250% 100%',
+                backgroundPosition: '100% 0',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                color: 'transparent',
+              }}
+            >
+              {t('hero.title.line2')}
+            </span>
           </span>
         </h1>
         <p className="hero-sub mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-fg-muted md:text-xl">
