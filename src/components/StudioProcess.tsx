@@ -3,6 +3,7 @@ import { useStore } from '@nanostores/react';
 import { currentLanguage } from '../i18n/store';
 import { useTranslations } from '../i18n/utils';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { useReveal } from '../hooks/useReveal';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
 
@@ -14,6 +15,7 @@ export default function StudioProcess() {
   const reduced = usePrefersReducedMotion();
   const trackRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  useReveal('process');
 
   // Reliable JS scroll-driven fill: the connector "draws" from blueprint→ember
   // as the section scrolls past a reference line. Reduced-motion → full line.

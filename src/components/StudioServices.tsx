@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react';
 import { currentLanguage } from '../i18n/store';
 import { useTranslations } from '../i18n/utils';
+import { useReveal } from '../hooks/useReveal';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
 
@@ -9,6 +10,7 @@ const PILLARS = ['web', 'product', 'automation', 'ai'] as const;
 export default function StudioServices() {
   const lang = useStore(currentLanguage);
   const { t } = useTranslations(lang);
+  useReveal('services');
 
   return (
     <Section id="services">

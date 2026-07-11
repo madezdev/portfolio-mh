@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react';
 import { currentLanguage } from '../i18n/store';
 import { useTranslations } from '../i18n/utils';
+import { useReveal } from '../hooks/useReveal';
 import { cases, type Case } from '../data/cases';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
@@ -35,6 +36,7 @@ function CaseVisual({ item }: { item: Case }) {
 export default function StudioCases() {
   const lang = useStore(currentLanguage);
   const { t } = useTranslations(lang);
+  useReveal('cases');
 
   return (
     <Section id="cases" className="bg-ink-900/40">
