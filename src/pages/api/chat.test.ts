@@ -39,4 +39,10 @@ describe('POST /api/chat', () => {
     const res = await POST(req({ messages: many }));
     expect(res.status).toBe(400);
   });
+
+  it('returns 400 when a single message exceeds the per-message char cap', async () => {
+    const huge = 'x'.repeat(5000);
+    const res = await POST(req({ messages: [{ role: 'user', parts: [{ type: 'text', text: huge }] }] }));
+    expect(res.status).toBe(400);
+  });
 });

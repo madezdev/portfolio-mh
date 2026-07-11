@@ -1,6 +1,8 @@
 export const INTAKE_MODEL = 'anthropic/claude-haiku-4.5';
 export const MAX_INPUT_MESSAGES = 24;
 export const MAX_OUTPUT_TOKENS = 600;
+/** Reject a single message longer than this (cost / abuse control). */
+export const MAX_MESSAGE_CHARS = 2000;
 
 export function intakeInstructions(): string {
   return [
