@@ -19,7 +19,7 @@ export const translations = {
       eyebrow: 'Estudio de producto digital',
       title: {
         line1: 'Del concepto',
-        line2: 'la realidad',
+        line2: 'a la realidad',
       },
       subtitle: 'Diseñamos y construimos productos, SaaS y automatizaciones con IA. De la idea a producción.',
       cta: {
