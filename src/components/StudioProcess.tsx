@@ -48,13 +48,23 @@ export default function StudioProcess() {
         <p className="mt-4 max-w-2xl text-lg text-fg-muted">{t('process.subtitle')}</p>
 
         <div ref={trackRef} className="relative mt-16 pl-10">
-          {/* Connector: static track (dim) + scroll-driven fill (blueprint→ember) */}
-          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-blueprint-400/25 to-ember-500/25" aria-hidden="true" />
-          <div
-            className="absolute left-[7px] top-2 bottom-2 w-px origin-top bg-gradient-to-b from-blueprint-400 to-ember-500 transition-transform duration-150 ease-out"
-            style={{ transform: `scaleY(${progress})` }}
-            aria-hidden="true"
-          />
+          {/* Connector: visible track + scroll-driven ember fill + a glowing head
+              that descends as you scroll (concept→reality "drawing itself"). */}
+          <div className="pointer-events-none absolute left-1.5 top-2 bottom-2 w-[3px]" aria-hidden="true">
+            <div className="absolute inset-0 rounded-full bg-ink-700" />
+            <div
+              className="absolute inset-x-0 top-0 h-full origin-top rounded-full bg-gradient-to-b from-blueprint-400 to-ember-500"
+              style={{ transform: `scaleY(${progress})` }}
+            />
+            <div
+              className="absolute left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ember-400"
+              style={{
+                top: `${progress * 100}%`,
+                boxShadow: '0 0 16px 4px rgba(255, 138, 61, 0.7)',
+                opacity: reduced ? 0 : 1,
+              }}
+            />
+          </div>
 
           <ol className="space-y-14">
             {STEPS.map((key, i) => (
