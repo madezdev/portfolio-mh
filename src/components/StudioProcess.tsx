@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useStore } from '@nanostores/react';
 import { currentLanguage } from '../i18n/store';
 import { useTranslations } from '../i18n/utils';
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { useReveal } from '../hooks/useReveal';
+import { gsap, useGSAP } from '../lib/gsap';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
 
@@ -12,37 +12,28 @@ const STEPS = ['idea', 'design', 'build', 'ship'] as const;
 export default function StudioProcess() {
   const lang = useStore(currentLanguage);
   const { t } = useTranslations(lang);
-  const reduced = usePrefersReducedMotion();
   const trackRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
+  const fillRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
   useReveal('process');
 
-  // Reliable JS scroll-driven fill: the connector "draws" from blueprint→ember
-  // as the section scrolls past a reference line. Reduced-motion → full line.
-  useEffect(() => {
-    if (reduced) {
-      setProgress(1);
-      return;
-    }
-    const el = trackRef.current;
-    if (!el) return;
-    const update = () => {
-      const rect = el.getBoundingClientRect();
-      if (rect.height === 0) return;
-      // Fill maps the connector's top position as it travels up the viewport:
-      // ~0 when it enters from the bottom, ~1 as it nears the top.
-      const vh = window.innerHeight;
-      const p = (vh * 0.85 - rect.top) / (vh * 0.7);
-      setProgress(Math.min(1, Math.max(0, p)));
-    };
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
-    };
-  }, [reduced]);
+  // The connector "draws" concept→reality: an ember fill + a glowing head that
+  // descend as the section scrolls, scrubbed by GSAP. Reduced-motion → full line,
+  // no head (the fill's default state is already full; GSAP only runs otherwise).
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.set(fillRef.current, { scaleY: 0, transformOrigin: 'top' });
+        gsap.set(headRef.current, { top: '0%', autoAlpha: 1 });
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: trackRef.current, start: 'top 78%', end: 'bottom 55%', scrub: 0.4 },
+        });
+        tl.to(fillRef.current, { scaleY: 1, ease: 'none' }, 0).to(headRef.current, { top: '100%', ease: 'none' }, 0);
+      });
+    },
+    { scope: trackRef },
+  );
 
   return (
     <Section id="process" className="border-t border-ink-800">
@@ -52,21 +43,16 @@ export default function StudioProcess() {
         <p className="mt-4 max-w-2xl text-lg text-fg-muted">{t('process.subtitle')}</p>
 
         <div ref={trackRef} className="relative mt-16 pl-10">
-          {/* Connector: visible track + scroll-driven ember fill + a glowing head
-              that descends as you scroll (concept→reality "drawing itself"). */}
           <div className="pointer-events-none absolute left-1.5 top-2 bottom-2 w-[3px]" aria-hidden="true">
             <div className="absolute inset-0 rounded-full bg-ink-700" />
             <div
+              ref={fillRef}
               className="absolute inset-x-0 top-0 h-full origin-top rounded-full bg-gradient-to-b from-blueprint-400 to-ember-500"
-              style={{ transform: `scaleY(${progress})` }}
             />
             <div
-              className="absolute left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ember-400"
-              style={{
-                top: `${progress * 100}%`,
-                boxShadow: '0 0 16px 4px rgba(255, 138, 61, 0.7)',
-                opacity: reduced ? 0 : 1,
-              }}
+              ref={headRef}
+              className="absolute left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ember-400 opacity-0"
+              style={{ top: '0%', boxShadow: '0 0 16px 4px rgba(255, 138, 61, 0.7)' }}
             />
           </div>
 
