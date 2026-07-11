@@ -3,7 +3,7 @@ import { useStore } from '@nanostores/react';
 import { currentLanguage } from '../i18n/store';
 import { useTranslations } from '../i18n/utils';
 import { Container } from './primitives/Container';
-import { BlueprintGrid } from './primitives/BlueprintGrid';
+import { InteractiveBlueprint } from './InteractiveBlueprint';
 import { gsap, SplitText, useGSAP } from '../lib/gsap';
 import { useMagnetic } from '../hooks/useMagnetic';
 import { useLanguageSync } from '../hooks/useLanguageSync';
@@ -44,14 +44,12 @@ export default function StudioHero() {
           repeat: -1,
         });
 
-        // Cursor-reactive depth: the grid drifts and the glow follows the pointer.
-        const gridX = gsap.quickTo('.hero-grid', 'xPercent', { duration: 0.9, ease: 'power3' });
+        // Cursor-reactive glow (the grid reacts on its own canvas layer).
         const glowX = gsap.quickTo('.hero-glow', 'x', { duration: 1.1, ease: 'power3' });
         const glowY = gsap.quickTo('.hero-glow', 'y', { duration: 1.1, ease: 'power3' });
         const onMove = (e: MouseEvent) => {
           const rx = e.clientX / window.innerWidth - 0.5;
           const ry = e.clientY / window.innerHeight - 0.5;
-          gridX(rx * -2.5);
           glowX(rx * 60);
           glowY(ry * 60);
         };
@@ -72,13 +70,13 @@ export default function StudioHero() {
         };
       });
     },
-    { dependencies: [lang], scope: root },
+    { scope: root },
   );
 
   return (
     <section ref={root} id="top" className="relative flex min-h-[90vh] items-center overflow-hidden pb-24 pt-28">
       <div className="hero-grid absolute inset-0">
-        <BlueprintGrid />
+        <InteractiveBlueprint />
       </div>
       <div
         className="hero-glow pointer-events-none absolute inset-0 m-auto h-[44vh] w-[44vh] rounded-full opacity-40 blur-[110px]"
