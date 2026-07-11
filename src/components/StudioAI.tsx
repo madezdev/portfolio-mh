@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
@@ -23,6 +23,13 @@ export default function StudioAI() {
 
   const assistantReplies = messages.filter((m) => m.role === 'assistant').length;
   const showCapture = assistantReplies >= 2 && !captured;
+
+  // Keep the newest message and streaming tokens in view as they arrive.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, status]);
 
   function send(text: string) {
     const value = text.trim();
@@ -79,7 +86,7 @@ export default function StudioAI() {
             ) : (
               <>
                 {messages.length > 0 && (
-                  <div className="mb-4 max-h-80 space-y-4 overflow-y-auto">
+                  <div ref={scrollRef} className="mb-4 max-h-80 space-y-4 overflow-y-auto">
                     {messages.map((m) => (
                       <div key={m.id} className={m.role === 'user' ? 'text-right' : 'text-left'}>
                         <span
@@ -115,7 +122,7 @@ export default function StudioAI() {
 
                 {messages.length === 0 && (
                   <div className="mb-4 flex flex-wrap gap-2">
-                    {[0, 1, 2].map((i) => (
+                    {[0, 1, 2, 3].map((i) => (
                       <button
                         key={i}
                         type="button"

@@ -33,7 +33,7 @@ export const translations = {
       eyebrow: '// definí tu idea',
       title: 'Definamos tu proyecto',
       subtitle: 'Contanos qué tenés en mente y nuestra IA te ayuda a darle forma. Después el equipo sigue la conversación.',
-      chips: { 0: 'Quiero un SaaS', 1: 'Automatizar un proceso', 2: 'Rehacer mi web' },
+      chips: { 0: 'Quiero un SaaS', 1: 'Automatizar un proceso', 2: 'Rehacer mi web', 3: 'Quiero una web nueva' },
       inputPlaceholder: 'Escribí tu idea...',
       send: 'Enviar',
       capture: {
@@ -233,7 +233,7 @@ export const translations = {
       eyebrow: '// define your idea',
       title: "Let's define your project",
       subtitle: 'Tell us what you have in mind and our AI helps you shape it. Then the team picks up the conversation.',
-      chips: { 0: 'I want a SaaS', 1: 'Automate a process', 2: 'Rebuild my website' },
+      chips: { 0: 'I want a SaaS', 1: 'Automate a process', 2: 'Rebuild my website', 3: 'I want a new website' },
       inputPlaceholder: 'Type your idea...',
       send: 'Send',
       capture: {
