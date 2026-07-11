@@ -16,6 +16,12 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+# local env files (vercel env pull writes .env.local — contains the OIDC token)
+.env.local
+.env*.local
+
+# vercel
+.vercel
 
 # macOS-specific files
 .DS_Store
@@ -23,5 +29,7 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-.Claude.md 
+.Claude.md
 claude*
+.env.*
+!.env.example
