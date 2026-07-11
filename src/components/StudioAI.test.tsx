@@ -71,4 +71,13 @@ describe('StudioAI', () => {
     expect(cta).toHaveAttribute('href', '#contact');
     expect(screen.queryByText(/contactamos pronto|in touch soon/i)).not.toBeInTheDocument();
   });
+
+  it('shows a typing indicator while the assistant is responding', () => {
+    mockState = {
+      status: 'submitted',
+      messages: [{ id: '1', role: 'user', parts: [{ type: 'text', text: 'hola' }] }],
+    };
+    render(<StudioAI />);
+    expect(screen.getByLabelText(/escribiendo|typing/i)).toBeInTheDocument();
+  });
 });

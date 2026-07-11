@@ -95,6 +95,24 @@ export default function StudioAI() {
                   </div>
                 )}
 
+                {(status === 'submitted' || status === 'streaming') && (
+                  <div className="mb-4 text-left">
+                    <span
+                      role="status"
+                      aria-label={lang === 'es' ? 'La IA está escribiendo' : 'AI is typing'}
+                      className="inline-flex items-center gap-1 rounded-2xl bg-ink-800 px-4 py-3"
+                    >
+                      {[0, 1, 2].map((i) => (
+                        <span
+                          key={i}
+                          className="typing-dot h-1.5 w-1.5 rounded-full bg-fg-muted"
+                          style={{ animationDelay: `${i * 0.15}s` }}
+                        />
+                      ))}
+                    </span>
+                  </div>
+                )}
+
                 {messages.length === 0 && (
                   <div className="mb-4 flex flex-wrap gap-2">
                     {[0, 1, 2].map((i) => (
