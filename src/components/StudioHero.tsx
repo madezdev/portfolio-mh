@@ -6,14 +6,12 @@ import { Container } from './primitives/Container';
 import { InteractiveBlueprint } from './InteractiveBlueprint';
 import { gsap, SplitText, useGSAP } from '../lib/gsap';
 import { useMagnetic } from '../hooks/useMagnetic';
-import { useLanguageSync } from '../hooks/useLanguageSync';
 
 export default function StudioHero() {
   const lang = useStore(currentLanguage);
   const { t } = useTranslations(lang);
   const root = useRef<HTMLElement>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.4);
-  useLanguageSync();
 
   useGSAP(
     () => {
