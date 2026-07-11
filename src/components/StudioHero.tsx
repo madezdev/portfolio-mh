@@ -5,11 +5,13 @@ import { useTranslations } from '../i18n/utils';
 import { Container } from './primitives/Container';
 import { BlueprintGrid } from './primitives/BlueprintGrid';
 import { gsap, useGSAP } from '../lib/gsap';
+import { useMagnetic } from '../hooks/useMagnetic';
 
 export default function StudioHero() {
   const lang = useStore(currentLanguage);
   const { t } = useTranslations(lang);
   const root = useRef<HTMLElement>(null);
+  const ctaRef = useMagnetic<HTMLAnchorElement>(0.4);
 
   useGSAP(
     () => {
@@ -60,8 +62,9 @@ export default function StudioHero() {
         </p>
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
           <a
+            ref={ctaRef}
             href="#ai"
-            className="hero-cta rounded-full bg-ember-500 px-8 py-4 font-semibold text-ink-950 transition-colors hover:bg-ember-400"
+            className="hero-cta inline-block rounded-full bg-ember-500 px-8 py-4 font-semibold text-ink-950 transition-colors hover:bg-ember-400"
           >
             {t('hero.cta.primary')}
           </a>
