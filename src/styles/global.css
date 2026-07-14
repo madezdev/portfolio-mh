@@ -71,6 +71,48 @@ html {
   }
 }
 
+/* Ambient ember light beams rising behind the hero headline. Count and
+   positions are generated on the client; each beam reads its own duration and
+   delay from CSS custom properties so the motion never looks uniform. */
+.hero-beam {
+  position: absolute;
+  bottom: -18%;
+  height: 46vh;
+  border-radius: 9999px;
+  background: linear-gradient(to top, transparent, rgba(255, 138, 61, 0.5), transparent);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: hero-beam-rise var(--beam-dur, 7s) linear var(--beam-delay, 0s) infinite;
+}
+
+.hero-beam--accent {
+  background: linear-gradient(to top, transparent, rgba(255, 227, 207, 0.7), transparent);
+}
+
+@keyframes hero-beam-rise {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-165%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-beam {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* Section reveals are driven by GSAP ScrollTrigger (see src/hooks/useReveal.ts)
    for reliable cross-browser behavior + stagger. The `.reveal` class is just a
    hook target; GSAP sets the initial hidden state at runtime. */

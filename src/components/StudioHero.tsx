@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useStore } from '@nanostores/react';
 import { currentLanguage } from '../i18n/store';
 import { useTranslations } from '../i18n/utils';
@@ -12,6 +12,25 @@ export default function StudioHero() {
   const { t } = useTranslations(lang);
   const root = useRef<HTMLElement>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.4);
+
+  // Ambient ember light beams that rise behind the headline. Generated on the
+  // client only (Math.random), so the server renders none and hydration stays
+  // identical — no SSR mismatch. Each beam carries its own duration/delay via
+  // CSS custom properties so the motion never looks mechanically uniform.
+  const [beams, setBeams] = useState<Array<{ id: number; accent: boolean; style: CSSProperties }>>([]);
+  useEffect(() => {
+    const generated = Array.from({ length: 14 }).map((_, i) => ({
+      id: i,
+      accent: Math.random() < 0.18,
+      style: {
+        left: `${Math.random() * 100}%`,
+        width: Math.random() < 0.28 ? '2px' : '1px',
+        '--beam-dur': `${(Math.random() * 3 + 6).toFixed(2)}s`,
+        '--beam-delay': `${(Math.random() * 7).toFixed(2)}s`,
+      } as CSSProperties,
+    }));
+    setBeams(generated);
+  }, []);
 
   useGSAP(
     () => {
@@ -96,12 +115,50 @@ export default function StudioHero() {
 
   return (
     <section ref={root} id="top" className="relative flex min-h-[90vh] items-center overflow-hidden pb-24 pt-28">
+      {/* Blueprint grid — cool structural underlayer (cursor-reactive canvas). */}
       <div className="hero-grid absolute inset-0">
         <InteractiveBlueprint />
       </div>
+
+      {/* Studio lighting rig: a warm key light and a cool fill light, framed by a
+          vignette and finished with film grain, so the section reads like a lit
+          set rather than a flat dark page. Ambient layers stay static — the
+          "room lights" are on while the headline assembles over them. */}
       <div
-        className="hero-glow pointer-events-none absolute inset-0 m-auto h-[44vh] w-[44vh] rounded-full opacity-40 blur-[110px]"
-        style={{ background: 'radial-gradient(circle, rgba(255,106,26,0.5), transparent 70%)' }}
+        className="hero-wash pointer-events-none absolute left-1/2 top-[-18%] h-[78vh] w-[78vh] -translate-x-1/2 rounded-full opacity-30 blur-[130px]"
+        style={{ background: 'radial-gradient(circle, rgba(255,138,61,0.32), transparent 68%)' }}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute bottom-[-12%] left-[10%] h-[46vh] w-[46vh] rounded-full opacity-25 blur-[120px]"
+        style={{ background: 'radial-gradient(circle, rgba(107,138,255,0.30), transparent 70%)' }}
+        aria-hidden="true"
+      />
+      <div
+        className="hero-glow pointer-events-none absolute inset-0 m-auto h-[44vh] w-[44vh] rounded-full opacity-50 blur-[110px]"
+        style={{ background: 'radial-gradient(circle, rgba(255,106,26,0.55), transparent 70%)' }}
+        aria-hidden="true"
+      />
+
+      {/* Rising ember light beams — the "come to life" layer, adapted to the
+          studio's warm palette and kept restrained (14, thin, slow). */}
+      <div className="hero-beams pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        {beams.map((b) => (
+          <span key={b.id} className={b.accent ? 'hero-beam hero-beam--accent' : 'hero-beam'} style={b.style} />
+        ))}
+      </div>
+
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: 'radial-gradient(125% 90% at 50% 36%, transparent 42%, rgba(5,5,6,0.6) 100%)' }}
+        aria-hidden="true"
+      />
+      <div
+        className="hero-grain pointer-events-none absolute inset-0 opacity-[0.07] mix-blend-soft-light"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+        }}
         aria-hidden="true"
       />
       <Container className="hero-content relative z-10 text-center">
