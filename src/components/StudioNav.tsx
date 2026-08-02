@@ -42,23 +42,31 @@ export default function StudioNav() {
 
   return (
     <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 border-b border-transparent backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <a href="#top" className="font-display text-lg font-bold tracking-tight text-fg">
+      {/* Three tracks with equal outer columns, so the links land on the page's true
+          centre line and read as aligned with the hero. `justify-between` centred them
+          in the leftover space instead, which the wide language toggle and CTA pushed
+          off-centre by half their excess width over the wordmark. Columns are placed
+          explicitly because the links are display:none below md. */}
+      <nav className="mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-6">
+        <a href="#top" className="justify-self-start font-display text-lg font-bold tracking-tight text-fg">
           {t('brand.name')}
         </a>
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="col-start-2 hidden items-center gap-8 md:flex">
           {links.map((link) => (
             <a key={link.href} href={link.href} className="text-sm text-fg-muted transition-colors hover:text-fg">
               {link.label}
             </a>
           ))}
         </div>
-        <div className="flex items-center gap-4">
+        <div className="col-start-3 flex items-center justify-self-end gap-4">
           <LanguageToggle />
           <a
             ref={ctaRef}
             href="#contact"
-            className="inline-block rounded-full bg-ember-500 px-4 py-2 text-sm font-semibold text-ink-950 transition-colors hover:bg-ember-400"
+            // Without nowrap the label is allowed to wrap, so the equal-width outer
+            // track squeezes the pill into two lines on narrow desktops instead of
+            // claiming the width it needs.
+            className="inline-block whitespace-nowrap rounded-full bg-ember-500 px-4 py-2 text-sm font-semibold text-ink-950 transition-colors hover:bg-ember-400"
           >
             {t('nav.contactCta')}
           </a>
