@@ -6,16 +6,29 @@ export type Case = {
   /** Short human-readable type label shown on the card, e.g. "Fintech · Wallet". */
   tag?: string;
   summary: string;
-  /** Product screenshot. When absent, the card shows a branded fallback tile. */
+  /**
+   * Product screenshot, served from `public/cases/`, e.g. `/cases/totalpay.webp`.
+   * Export at 2x the render box (featured ~1600x800, standard ~1200x750) and crop
+   * so the product's own header stays in frame — the card anchors it to the top.
+   * When absent, the card shows a branded fallback tile.
+   */
   image?: string;
+  /** Intrinsic size of `image`, in px. Set both to reserve layout space and avoid CLS. */
+  imageWidth?: number;
+  imageHeight?: number;
+  /** Two or three technologies shown as chips on the card, e.g. ['React', 'Node', 'Postgres']. */
+  stack?: string[];
   liveUrl?: string;
   logo?: string;
   testimonial?: { quote: string; author: string; role: string };
 };
 
 // Real case studies. DRAFT summaries (Spanish) — owner to refine, and to add
-// `image` (product screenshot), `liveUrl`, `logo`, and `testimonial` when available.
+// `image` (product screenshot), `stack`, `liveUrl`, `logo`, and `testimonial` when
+// available. Every one of those fields degrades on its own: a case with no image gets
+// the fallback tile, one with no `liveUrl` renders as a non-interactive card.
 // Trust section (logos + testimonials) stays hidden until those are provided.
+// The first entry renders as the featured card — keep the strongest case at the top.
 export const cases: Case[] = [
   {
     id: 'billetera-pais',
