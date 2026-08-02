@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.23",
-    "@astrojs/react": "^4.3.0",
-    "@astrojs/vercel": "^8.2.5",
+    "@astrojs/react": "^6.0.2",
+    "@astrojs/vercel": "^11.0.4",
     "@gsap/react": "^2.1.2",
     "@nanostores/react": "^1.0.0",
     "@tailwindcss/vite": "^4.1.11",
@@ -24,7 +24,7 @@
     "@upstash/redis": "^1.38.0",
     "@vercel/analytics": "^1.5.0",
     "ai": "^7.0.22",
-    "astro": "^5.12.9",
+    "astro": "^7.1.6",
     "dotenv": "^17.2.1",
     "gsap": "^3.15.0",
     "motion": "^11.15.0",
@@ -35,11 +35,13 @@
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^25.0.1",
+    "typescript": "^6.0.3",
     "vitest": "^2.1.8"
   }
 }
