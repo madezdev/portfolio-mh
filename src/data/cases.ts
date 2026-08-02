@@ -59,6 +59,8 @@ export const cases: Case[] = [
     image: '/cases/ses-sa.webp',
     imageWidth: 1230,
     imageHeight: 828,
+    stack: ['React', 'NestJS', 'Supabase'],
+    liveUrl: 'https://www.ses-sa.app',
   },
   {
     id: 'consultora-mutual',
