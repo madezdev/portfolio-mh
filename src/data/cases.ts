@@ -53,6 +53,12 @@ export const cases: Case[] = [
     category: 'product',
     tag: 'SaaS',
     summary: 'Plataforma SaaS a medida para gestión operativa.',
+    // Cropped to the assignments panel, at the card's own aspect. The supervisor
+    // sidebar and the detail header are outside the frame, so the published file
+    // holds no personal data — the schools and addresses are public record.
+    image: '/cases/ses-sa.webp',
+    imageWidth: 1230,
+    imageHeight: 828,
   },
   {
     id: 'consultora-mutual',

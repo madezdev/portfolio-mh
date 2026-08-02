@@ -73,8 +73,10 @@ function CaseVisual({ item, featured }: { item: Case; featured: boolean }) {
             decoding="async"
             // `object-top` keeps the product's own header in frame; a centered crop
             // reduces a UI screenshot to a meaningless middle band at this size.
-            // `scale-110` is the overscan that hides the parallax drift below.
-            className="case-media h-full w-full scale-110 object-cover object-top"
+            // `scale-105` is the overscan that hides the parallax drift below. Keep
+            // the two in step: the overscan has to cover the drift, and every extra
+            // percent is content eaten off all four edges of a curated crop.
+            className="case-media h-full w-full scale-105 object-cover object-top"
           />
         ) : (
           <FallbackTile item={item} />
@@ -95,15 +97,17 @@ export default function StudioCases() {
   useReveal('cases');
 
   // Depth: each case visual drifts against its card as it scrolls through view.
+  // The drift is deliberately small — it must stay inside the `scale-105` overscan
+  // on the media, and every percent of overscan crops a curated screenshot.
   useGSAP(() => {
     const mm = gsap.matchMedia();
     mm.add('(prefers-reduced-motion: no-preference)', () => {
       gsap.utils.toArray<HTMLElement>('#cases .case-media').forEach((media) => {
         gsap.fromTo(
           media,
-          { yPercent: -6 },
+          { yPercent: -3 },
           {
-            yPercent: 6,
+            yPercent: 3,
             ease: 'none',
             scrollTrigger: { trigger: media.closest('article'), start: 'top bottom', end: 'bottom top', scrub: true },
           },
