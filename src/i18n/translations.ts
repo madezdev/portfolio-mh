@@ -117,6 +117,7 @@ export const translations = {
       title: 'Del concepto a la realidad',
       subtitle: 'Algunos productos que llevamos de la idea a producción.',
       liveLabel: 'Ver en vivo',
+      privateLabel: 'En producción · acceso privado',
       emptyLabel: 'Casos en camino.',
     },
 
@@ -319,6 +320,7 @@ export const translations = {
       title: 'From concept to reality',
       subtitle: 'A few products we took from idea to production.',
       liveLabel: 'View live',
+      privateLabel: 'In production · private access',
       emptyLabel: 'Case studies coming soon.',
     },
 

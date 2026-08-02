@@ -21,10 +21,23 @@ describe('StudioCases', () => {
     expect(screen.queryAllByRole('img')).toHaveLength(withImage);
   });
 
-  it('renders a live link only for cases that have a liveUrl', () => {
+  it('links out only for cases that are reachable, not merely deployed', () => {
     render(<StudioCases />);
-    const withLive = cases.filter((c) => c.liveUrl).length;
-    expect(screen.queryAllByRole('link', { name: /ver en vivo|view live/i })).toHaveLength(withLive);
+    const reachable = cases.filter((c) => c.liveUrl && c.access !== 'private').length;
+    expect(screen.queryAllByRole('link', { name: /ver en vivo|view live/i })).toHaveLength(reachable);
+  });
+
+  it('never links a private case, however live it is', () => {
+    // A private product resolves to a login form; sending a prospect there spends
+    // the card's only click on a credentials screen.
+    render(<StudioCases />);
+    for (const c of cases.filter((x) => x.access === 'private')) {
+      expect(screen.queryByRole('link', { name: new RegExp(c.client, 'i') })).toBeNull();
+      const article = Array.from(document.querySelectorAll('#cases article')).find((a) =>
+        a.querySelector('h3')?.textContent === c.title,
+      );
+      expect(article?.querySelector(':scope > div')?.className).not.toContain('hover:-translate-y-1');
+    }
   });
 
   it('spans the lead case across two columns so the grid has no orphan cell', () => {

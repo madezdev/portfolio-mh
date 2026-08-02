@@ -18,6 +18,13 @@ export type Case = {
   imageHeight?: number;
   /** Two or three technologies shown as chips on the card, e.g. ['React', 'Node', 'Postgres']. */
   stack?: string[];
+  /**
+   * Whether a visitor can actually see the product. Private ones sit behind a
+   * login, so the card states that it is in production instead of offering a link
+   * into a credentials form. Defaults to public.
+   */
+  access?: 'public' | 'private';
+  /** Linked from the card only when `access` is public. */
   liveUrl?: string;
   logo?: string;
   testimonial?: { quote: string; author: string; role: string };
@@ -60,6 +67,9 @@ export const cases: Case[] = [
     imageWidth: 1230,
     imageHeight: 828,
     stack: ['React', 'NestJS', 'Supabase'],
+    // The root redirects straight to /login: there is no public surface to send a
+    // prospect to, so the card reports that it ships instead of linking out.
+    access: 'private',
     liveUrl: 'https://www.ses-sa.app',
   },
   {

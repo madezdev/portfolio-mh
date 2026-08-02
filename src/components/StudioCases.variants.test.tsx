@@ -88,4 +88,13 @@ describe('StudioCases — optional case fields', () => {
     expect(linked.className).toContain('hover:-translate-y-1');
     expect(plain.className).not.toContain('hover:-translate-y-1');
   });
+
+  it('states that a private case is in production instead of linking to its login', () => {
+    setCases({ ...base, liveUrl: 'https://acme.test', access: 'private' });
+    render(<StudioCases />);
+
+    expect(screen.getByText(/en producción · acceso privado|in production · private access/i)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /ver en vivo|view live/i })).toBeNull();
+    expect(document.querySelector('#cases article > div')?.className).not.toContain('hover:-translate-y-1');
+  });
 });

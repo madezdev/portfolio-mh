@@ -134,7 +134,9 @@ export default function StudioCases() {
               // total six slots — 3+3 on lg, 2+2+2 on md — and no orphan cell is
               // left over at either breakpoint.
               const featured = index === 0;
-              const isLinked = Boolean(c.liveUrl);
+              // A private product has a URL but nothing a visitor can reach, so it
+              // must not get the affordance — the click would land on a login form.
+              const isLinked = Boolean(c.liveUrl) && c.access !== 'private';
 
               return (
                 // `reveal` stays on the <article>, and nothing else does: useReveal
@@ -210,7 +212,17 @@ export default function StudioCases() {
                         </blockquote>
                       )}
 
-                      {c.liveUrl && (
+                      {c.access === 'private' && (
+                        // Being deployed for a real client is the proof here; being
+                        // reachable is not. Say so rather than spend the card's one
+                        // click on a credentials form.
+                        <p className="mt-5 inline-flex items-center gap-2 self-start font-mono text-[10px] uppercase tracking-[0.15em] text-fg-muted">
+                          <span className="h-1.5 w-1.5 rounded-full bg-ember-500" aria-hidden="true" />
+                          {t('cases.privateLabel')}
+                        </p>
+                      )}
+
+                      {isLinked && c.liveUrl && (
                         // Stretched link: one focus target, semantic markup, and the
                         // whole card is clickable via the ::after overlay.
                         <a
