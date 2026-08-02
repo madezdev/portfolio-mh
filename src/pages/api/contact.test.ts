@@ -7,6 +7,10 @@ vi.mock('../../server/ai/rate-limit', () => ({ checkContactRateLimit: vi.fn(asyn
 import { POST } from './contact';
 import { checkContactRateLimit } from '../../server/ai/rate-limit';
 
+// Mirrors @astrojs/vercel v11, where `clientAddress` is a getter that throws:
+// destructuring it in the route signature blows up before the body runs, and
+// before any try/catch inside it. Keeping that shape here means reintroducing
+// the dependency fails this suite instead of 500-ing production.
 function req(body: unknown, ip = '1.2.3.4') {
   return {
     request: new Request('http://localhost/api/contact', {
@@ -14,7 +18,9 @@ function req(body: unknown, ip = '1.2.3.4') {
       headers: { 'content-type': 'application/json', 'x-forwarded-for': ip },
       body: JSON.stringify(body),
     }),
-    clientAddress: ip,
+    get clientAddress(): string {
+      throw new Error('`Astro.clientAddress` is not available in the `@astrojs/vercel` adapter.');
+    },
   } as any;
 }
 

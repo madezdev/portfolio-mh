@@ -2,8 +2,9 @@ import type { APIRoute } from 'astro';
 import { convertToModelMessages, streamText, type UIMessage } from 'ai';
 import { intakeInstructions, INTAKE_MODEL, MAX_INPUT_MESSAGES, MAX_MESSAGE_CHARS, MAX_OUTPUT_TOKENS } from '../../server/ai/intake';
 import { checkRateLimit } from '../../server/ai/rate-limit';
+import { getClientIp } from '../../server/security';
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+export const POST: APIRoute = async ({ request }) => {
   let messages: UIMessage[];
   try {
     ({ messages } = (await request.json()) as { messages: UIMessage[] });
@@ -24,8 +25,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     return new Response(JSON.stringify({ error: 'too_long' }), { status: 400 });
   }
 
-  const ip = clientAddress || request.headers.get('x-forwarded-for') || 'anonymous';
-  const { success } = await checkRateLimit(ip);
+  const { success } = await checkRateLimit(getClientIp(request));
   if (!success) {
     return new Response(JSON.stringify({ error: 'rate_limited' }), { status: 429 });
   }

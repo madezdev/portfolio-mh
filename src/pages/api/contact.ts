@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { transporter, mailOptions } from '@server/nodemailer';
-import { escapeHtml, isValidEmail } from '@server/security';
+import { escapeHtml, getClientIp, isValidEmail } from '@server/security';
 import { checkContactRateLimit } from '../../server/ai/rate-limit';
 const emailUser = import.meta.env.PUBLIC_EMAIL_USER
 // Para las imágenes de correo electrónico usamos una URL de imagen pública
@@ -206,7 +206,7 @@ const emailTemplates = {
 const json = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     const formData = await request.json() as ContactFormData;
     const subject = formData.subject ?? '';
@@ -224,8 +224,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     }
 
     // Throttle: this endpoint sends real email, so keep it strict.
-    const ip = clientAddress || request.headers.get('x-forwarded-for') || 'anonymous';
-    const { success } = await checkContactRateLimit(ip);
+    const { success } = await checkContactRateLimit(getClientIp(request));
     if (!success) {
       return json({ success: false, message: 'Too many requests' }, 429);
     }
