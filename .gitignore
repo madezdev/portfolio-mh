@@ -30,3 +30,16 @@ pnpm-debug.log*
 
 .Claude.md
 claude*
+
+# agent skills — version the input, ignore the materialized tree, exactly as
+# with package-lock.json and node_modules. `.agents/` is installed from
+# skills-lock.json (source repo + content hash per skill) and `.claude/skills/*`
+# are symlinks into it. `.atl/skill-registry.md` is auto-generated and pins
+# absolute paths from the machine that generated it, so it is never portable —
+# regenerate with `gentle-ai skill-registry refresh --force`.
+.agents/
+.claude/skills/
+.atl/
+
+# browser verification output (Playwright MCP page snapshots + console logs)
+.playwright-mcp/
