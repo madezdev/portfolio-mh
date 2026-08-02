@@ -26,6 +26,8 @@ export const translations = {
         primary: 'Definí tu proyecto',
         secondary: 'Ver casos',
       },
+      scroll: 'scroll',
+      scrollAria: 'Bajar a servicios',
     },
 
     // AI Front Door
@@ -226,6 +228,8 @@ export const translations = {
         primary: 'Define your project',
         secondary: 'See our work',
       },
+      scroll: 'scroll',
+      scrollAria: 'Scroll to services',
     },
 
     // AI Front Door

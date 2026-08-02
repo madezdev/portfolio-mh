@@ -1,36 +1,23 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useRef } from 'react';
 import { useStore } from '@nanostores/react';
 import { currentLanguage } from '../i18n/store';
 import { useTranslations } from '../i18n/utils';
 import { Container } from './primitives/Container';
-import { InteractiveBlueprint } from './InteractiveBlueprint';
+import { HeroField, HERO_IGNITE_AT, HERO_HORIZON } from './HeroField';
 import { gsap, SplitText, useGSAP } from '../lib/gsap';
 import { useMagnetic } from '../hooks/useMagnetic';
+
+/** Width of the headline spotlight, matching `--hero-spot` in global.css. */
+const SPOT = 460;
 
 export default function StudioHero() {
   const lang = useStore(currentLanguage);
   const { t } = useTranslations(lang);
   const root = useRef<HTMLElement>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.4);
-
-  // Ambient ember light beams that rise behind the headline. Generated on the
-  // client only (Math.random), so the server renders none and hydration stays
-  // identical — no SSR mismatch. Each beam carries its own duration/delay via
-  // CSS custom properties so the motion never looks mechanically uniform.
-  const [beams, setBeams] = useState<Array<{ id: number; accent: boolean; style: CSSProperties }>>([]);
-  useEffect(() => {
-    const generated = Array.from({ length: 14 }).map((_, i) => ({
-      id: i,
-      accent: Math.random() < 0.18,
-      style: {
-        left: `${Math.random() * 100}%`,
-        width: Math.random() < 0.28 ? '2px' : '1px',
-        '--beam-dur': `${(Math.random() * 3 + 6).toFixed(2)}s`,
-        '--beam-delay': `${(Math.random() * 7).toFixed(2)}s`,
-      } as CSSProperties,
-    }));
-    setBeams(generated);
-  }, []);
+  // The headline spotlight can only be armed once SplitText has been reverted —
+  // `background-clip: text` and transformed per-char spans do not coexist.
+  const litReady = useRef(false);
 
   useGSAP(
     () => {
@@ -38,59 +25,117 @@ export default function StudioHero() {
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         // "Concept" assembles char by char; "reality" arrives as one solid block.
         const split1 = SplitText.create('.hero-line1-inner', { type: 'chars' });
+        let splitReverted = false;
+        const revertSplit = () => {
+          if (splitReverted) return;
+          splitReverted = true;
+          split1.revert();
+        };
 
-        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-        tl.from('.hero-grid', { autoAlpha: 0, scale: 1.08, duration: 1.4, ease: 'power2.out' })
-          .from('.hero-glow', { autoAlpha: 0, scale: 0.5, duration: 1.4, ease: 'power2.out' }, 0.15)
-          .from('.hero-eyebrow', { autoAlpha: 0, y: 16, duration: 0.6 }, 0.35)
-          .from(split1.chars, { yPercent: 130, autoAlpha: 0, stagger: 0.025, duration: 0.7 }, 0.45)
-          .from('.hero-line2-inner', { yPercent: 120, duration: 0.9 }, 0.66)
-          .from('.hero-sub', { autoAlpha: 0, y: 18, duration: 0.7 }, 1.05)
-          .from('.hero-cta', { autoAlpha: 0, y: 18, stagger: 0.12, duration: 0.6 }, 1.2)
-          .from('.hero-scrollcue', { autoAlpha: 0, duration: 0.6 }, 1.45);
+        // The room switches on at HERO_IGNITE_AT, in step with the canvas
+        // wavefront, and the headline lands into an already-lit set.
+        const tl = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          onComplete: () => {
+            revertSplit();
+            litReady.current = true;
+            root.current?.querySelector('.hero-line1-inner')?.classList.add('is-lit');
+          },
+        });
+        tl.from('.hero-wash', { autoAlpha: 0, duration: 1.6, ease: 'power2.out' }, HERO_IGNITE_AT)
+          .from('.hero-fill', { autoAlpha: 0, duration: 1.8, ease: 'power2.out' }, HERO_IGNITE_AT)
+          .from('.hero-pulse', { autoAlpha: 0, duration: 1.8, ease: 'power2.out' }, HERO_IGNITE_AT)
+          .from('.hero-glow', { autoAlpha: 0, scale: 0.5, duration: 1.4, ease: 'power2.out' }, HERO_IGNITE_AT)
+          .from(
+            '.hero-horizon-line',
+            { scaleX: 0, autoAlpha: 0, duration: 1.2, ease: 'power2.out' },
+            HERO_IGNITE_AT + 0.05,
+          )
+          .from('.hero-horizon-bloom', { autoAlpha: 0, duration: 1.6 }, HERO_IGNITE_AT + 0.15)
+          .from('.hero-eyebrow', { autoAlpha: 0, y: 16, duration: 0.6 }, 0.55)
+          .from(split1.chars, { yPercent: 130, autoAlpha: 0, stagger: 0.025, duration: 0.7 }, 0.65)
+          .from('.hero-line2-inner', { yPercent: 120, duration: 0.9 }, 0.86)
+          .from('.hero-sub', { autoAlpha: 0, y: 18, duration: 0.7 }, 1.25)
+          .from('.hero-cta', { autoAlpha: 0, y: 18, stagger: 0.12, duration: 0.6 }, 1.4)
+          .from('.hero-scrollcue', { autoAlpha: 0, duration: 0.6 }, 1.65);
 
-        // The ember glow breathes behind the headline (starts after the entrance).
+        // Two lights breathing on different periods, so the room never pulses
+        // metronomically. They live on separate elements on purpose: .hero-glow
+        // is already driven by the entrance, this tween, and quickTo x/y.
         gsap.to('.hero-glow', {
-          scale: 1.15,
-          opacity: 0.55,
-          duration: 3.6,
-          delay: 1.7,
+          scale: 1.12,
+          opacity: 0.62,
+          duration: 5.2,
+          delay: 2,
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        gsap.to('.hero-pulse', {
+          scale: 1.18,
+          opacity: 0.3,
+          duration: 7.4,
+          delay: 1.2,
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        gsap.to('.hero-horizon-line', {
+          opacity: 1,
+          duration: 4.4,
+          delay: 2.4,
           ease: 'sine.inOut',
           yoyo: true,
           repeat: -1,
         });
 
-        // Cursor-reactive glow (the grid reacts on its own canvas layer).
-        const glowX = gsap.quickTo('.hero-glow', 'x', { duration: 1.1, ease: 'power3' });
-        const glowY = gsap.quickTo('.hero-glow', 'y', { duration: 1.1, ease: 'power3' });
+        // Cursor parallax at different rates per layer — opposing directions on
+        // the soft layers is what reads as depth. The grid reacts further on its
+        // own canvas layer.
+        const layer = (selector: string, duration: number, ax: number, ay: number) => ({
+          x: gsap.quickTo(selector, 'x', { duration, ease: 'power3' }),
+          y: gsap.quickTo(selector, 'y', { duration, ease: 'power3' }),
+          ax,
+          ay,
+        });
+        const layers = [
+          layer('.hero-grid', 1.3, 10, 10),
+          layer('.hero-glow', 1.1, 60, 60),
+          layer('.hero-pulse', 1.5, -34, -20),
+          layer('.hero-horizon', 1.35, -26, -14),
+          layer('.hero-content', 1.6, 5, 4),
+        ];
         const onMove = (e: MouseEvent) => {
           const rx = e.clientX / window.innerWidth - 0.5;
           const ry = e.clientY / window.innerHeight - 0.5;
-          glowX(rx * 60);
-          glowY(ry * 60);
+          for (const l of layers) {
+            l.x(rx * l.ax);
+            l.y(ry * l.ay);
+          }
         };
-        root.current?.addEventListener('mousemove', onMove);
+        root.current?.addEventListener('mousemove', onMove, { passive: true });
 
-        // Scroll parallax: content recedes + fades, grid drifts as you leave.
+        // Scroll parallax: content recedes + fades, grid drifts, lights go out.
         const parallax = gsap.timeline({
           scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: 0.5 },
         });
         parallax
           .to('.hero-content', { yPercent: -14, autoAlpha: 0.25, ease: 'none' }, 0)
-          .to('.hero-grid', { yPercent: 16, ease: 'none' }, 0);
+          .to('.hero-grid', { yPercent: 16, ease: 'none' }, 0)
+          .to('.hero-horizon', { autoAlpha: 0, ease: 'none' }, 0);
 
         return () => {
           root.current?.removeEventListener('mousemove', onMove);
-          split1.revert();
+          revertSplit();
         };
       });
     },
     { scope: root },
   );
 
-  // Ember light sweep across "reality": the word sits solid, and every few
-  // seconds a warm highlight travels across it. Lives in its own effect keyed
-  // to `lang` so it re-attaches when the <h1> remounts on a language toggle.
+  // Ember light sweep across "reality", plus the cursor spotlight on "concept".
+  // Both live here, keyed to `lang`, so they re-attach when the <h1> remounts on
+  // a language toggle.
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
@@ -107,7 +152,49 @@ export default function StudioHero() {
             delay: 2.4,
           },
         );
-        return () => sweep.kill();
+
+        const line = root.current?.querySelector<HTMLElement>('.hero-line1-inner');
+        if (!line || window.matchMedia('(pointer: coarse)').matches) {
+          return () => sweep.kill();
+        }
+
+        // On a language toggle the entrance has already run, so re-arm at once.
+        if (litReady.current) line.classList.add('is-lit');
+
+        const setX = gsap.quickSetter(line, '--sx', 'px');
+        const setY = gsap.quickSetter(line, '--sy', 'px');
+        let targetX = -9999;
+        let targetY = -9999;
+        let currentX = -9999;
+        let currentY = -9999;
+        let bounds = line.getBoundingClientRect();
+
+        const refresh = () => {
+          bounds = line.getBoundingClientRect();
+        };
+        const onMove = (e: MouseEvent) => {
+          targetX = e.clientX - bounds.left - SPOT / 2;
+          targetY = e.clientY - bounds.top - SPOT / 2;
+        };
+        const tick = () => {
+          currentX += (targetX - currentX) * 0.14;
+          currentY += (targetY - currentY) * 0.14;
+          setX(currentX);
+          setY(currentY);
+        };
+
+        window.addEventListener('mousemove', onMove, { passive: true });
+        window.addEventListener('scroll', refresh, { passive: true });
+        window.addEventListener('resize', refresh);
+        gsap.ticker.add(tick);
+
+        return () => {
+          sweep.kill();
+          window.removeEventListener('mousemove', onMove);
+          window.removeEventListener('scroll', refresh);
+          window.removeEventListener('resize', refresh);
+          gsap.ticker.remove(tick);
+        };
       });
     },
     { dependencies: [lang], scope: root },
@@ -115,37 +202,46 @@ export default function StudioHero() {
 
   return (
     <section ref={root} id="top" className="relative flex min-h-[90vh] items-center overflow-hidden pb-24 pt-28">
-      {/* Blueprint grid — cool structural underlayer (cursor-reactive canvas). */}
+      {/* Blueprint grid, embers and the cursor light all live on one canvas. */}
       <div className="hero-grid absolute inset-0">
-        <InteractiveBlueprint />
+        <HeroField />
       </div>
 
-      {/* Studio lighting rig: a warm key light and a cool fill light, framed by a
-          vignette and finished with film grain, so the section reads like a lit
-          set rather than a flat dark page. Ambient layers stay static — the
-          "room lights" are on while the headline assembles over them. */}
+      {/* Studio lighting rig: a warm key light, a cool fill, and two ember cores
+          breathing on different periods so the room never pulses mechanically. */}
       <div
-        className="hero-wash pointer-events-none absolute left-1/2 top-[-18%] h-[78vh] w-[78vh] -translate-x-1/2 rounded-full opacity-30 blur-[130px]"
-        style={{ background: 'radial-gradient(circle, rgba(255,138,61,0.32), transparent 68%)' }}
+        className="hero-wash pointer-events-none absolute left-1/2 top-[-10%] h-[62vh] w-[62vh] -translate-x-1/2 rounded-full opacity-[0.42] blur-[90px]"
+        style={{ background: 'radial-gradient(circle, rgba(255,138,61,0.34), transparent 66%)' }}
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute bottom-[-12%] left-[10%] h-[46vh] w-[46vh] rounded-full opacity-25 blur-[120px]"
-        style={{ background: 'radial-gradient(circle, rgba(107,138,255,0.30), transparent 70%)' }}
+        className="hero-fill pointer-events-none absolute bottom-[-12%] left-[6%] h-[48vh] w-[48vh] rounded-full opacity-30 blur-[110px]"
+        style={{ background: 'radial-gradient(circle, rgba(107,138,255,0.32), transparent 70%)' }}
         aria-hidden="true"
       />
       <div
-        className="hero-glow pointer-events-none absolute inset-0 m-auto h-[44vh] w-[44vh] rounded-full opacity-50 blur-[110px]"
-        style={{ background: 'radial-gradient(circle, rgba(255,106,26,0.55), transparent 70%)' }}
+        className="hero-pulse pointer-events-none absolute inset-0 m-auto h-[52vh] w-[52vh] rounded-full opacity-[0.18] blur-[130px]"
+        style={{ background: 'radial-gradient(circle, rgba(255,138,61,0.5), transparent 72%)' }}
+        aria-hidden="true"
+      />
+      <div
+        className="hero-glow pointer-events-none absolute inset-0 m-auto h-[42vh] w-[42vh] rounded-full opacity-[0.38] blur-[100px]"
+        style={{ background: 'radial-gradient(circle, rgba(255,106,26,0.6), transparent 70%)' }}
         aria-hidden="true"
       />
 
-      {/* Rising ember light beams — the "come to life" layer, adapted to the
-          studio's warm palette and kept restrained (14, thin, slow). */}
-      <div className="hero-beams pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        {beams.map((b) => (
-          <span key={b.id} className={b.accent ? 'hero-beam hero-beam--accent' : 'hero-beam'} style={b.style} />
-        ))}
+      {/* The one hard edge in the composition: a lit floor for the set. Without
+          it every layer is a soft blur and the eye reads the section as empty. */}
+      <div
+        className="hero-horizon pointer-events-none absolute inset-x-0"
+        style={{ top: `${HERO_HORIZON * 100}%` }}
+        aria-hidden="true"
+      >
+        <div
+          className="hero-horizon-bloom absolute inset-x-0 -top-[55px] h-[110px]"
+          style={{ background: 'radial-gradient(58% 100% at 50% 50%, rgba(255,106,26,0.18), transparent 72%)' }}
+        />
+        <div className="hero-horizon-line relative h-px" />
       </div>
 
       <div
@@ -209,11 +305,11 @@ export default function StudioHero() {
 
       <a
         href="#services"
-        aria-label={lang === 'es' ? 'Bajar a servicios' : 'Scroll to services'}
+        aria-label={t('hero.scrollAria')}
         className="hero-scrollcue group absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
       >
         <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-fg-muted/60 transition-colors group-hover:text-fg-muted">
-          scroll
+          {t('hero.scroll')}
         </span>
         <span className="scroll-cue-line h-10 w-px bg-gradient-to-b from-ember-500/70 to-transparent" aria-hidden="true" />
       </a>

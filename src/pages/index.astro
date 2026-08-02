@@ -43,7 +43,9 @@ const orgJsonLd = {
 <Layout title={seoContent[lang].title} lang={lang}>
 	<StudioNav client:idle />
 	<main>
-		<StudioHero client:visible />
+		<!-- client:load, not client:visible: the hero is above the fold and its
+		     ignition sequence should not wait on an IntersectionObserver. -->
+		<StudioHero client:load />
 		<!-- Phase C/D placeholder anchors so hero/nav CTAs resolve -->
 		<StudioAI client:visible />
 		<StudioServices client:visible />

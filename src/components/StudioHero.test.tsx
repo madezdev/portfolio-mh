@@ -1,10 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import StudioHero from './StudioHero';
-
-vi.mock('../hooks/usePrefersReducedMotion', () => ({
-  usePrefersReducedMotion: () => true, // assert static content renders even with motion off
-}));
 
 describe('StudioHero', () => {
   it('renders the full tagline and both CTAs as real links', () => {
@@ -15,5 +11,12 @@ describe('StudioHero', () => {
       .toHaveAttribute('href', '#ai');
     expect(screen.getByRole('link', { name: /ver casos|see our work/i }))
       .toHaveAttribute('href', '#cases');
+  });
+
+  it('labels the scroll cue from i18n rather than a hardcoded literal', () => {
+    render(<StudioHero />);
+    const cue = screen.getByRole('link', { name: /bajar a servicios|scroll to services/i });
+    expect(cue).toHaveAttribute('href', '#services');
+    expect(cue).toHaveTextContent('scroll');
   });
 });

@@ -31,22 +31,6 @@ html {
   font-family: var(--font-sans);
 }
 
-/* Hero accent-word entrance — CSS-based so it never flashes on SSR/hydration. */
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translateY(0.3em);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.hero-reveal {
-  animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
 /* Ambient down-drift for the scroll cue. */
 @keyframes scroll-cue {
   0%,
@@ -65,52 +49,59 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-reveal,
   .scroll-cue-line {
     animation: none;
   }
 }
 
-/* Ambient ember light beams rising behind the hero headline. Count and
-   positions are generated on the client; each beam reads its own duration and
-   delay from CSS custom properties so the motion never looks uniform. */
-.hero-beam {
-  position: absolute;
-  bottom: -18%;
-  height: 46vh;
+/* The hero's only hard edge: a lit floor for the set. Everything else in the
+   section is a soft blur, and a composition with no edges reads as empty. The
+   scaleX entrance is driven by GSAP at ignition time. */
+.hero-horizon-line {
+  transform-origin: center;
+  opacity: 0.55;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 138, 61, 0.55) 22%,
+    rgba(255, 227, 207, 0.85) 50%,
+    rgba(255, 138, 61, 0.55) 78%,
+    transparent
+  );
+}
+
+/* Cursor spotlight on the headline's first line. Only `background-position`
+   changes per frame, so the browser never re-parses the gradient. Applied by
+   StudioHero *after* SplitText has been reverted — `background-clip: text` and
+   transformed per-character spans do not coexist.
+   `--hero-spot` must stay in sync with SPOT in StudioHero.tsx. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero-line1-inner.is-lit {
+    --hero-spot: 460px;
+    background-color: var(--color-fg);
+    background-image: radial-gradient(
+      circle closest-side,
+      rgba(255, 179, 122, 0.95) 0%,
+      rgba(255, 179, 122, 0.55) 42%,
+      rgba(255, 179, 122, 0) 100%
+    );
+    background-size: var(--hero-spot) var(--hero-spot);
+    background-repeat: no-repeat;
+    background-position: var(--sx, -9999px) var(--sy, -9999px);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+/* The hero CTAs are the page's primary conversion path — they must be visible
+   to keyboard users. */
+.hero-cta:focus-visible,
+.hero-scrollcue:focus-visible {
+  outline: 2px solid var(--color-ember-400);
+  outline-offset: 4px;
   border-radius: 9999px;
-  background: linear-gradient(to top, transparent, rgba(255, 138, 61, 0.5), transparent);
-  opacity: 0;
-  will-change: transform, opacity;
-  animation: hero-beam-rise var(--beam-dur, 7s) linear var(--beam-delay, 0s) infinite;
-}
-
-.hero-beam--accent {
-  background: linear-gradient(to top, transparent, rgba(255, 227, 207, 0.7), transparent);
-}
-
-@keyframes hero-beam-rise {
-  0% {
-    transform: translateY(0);
-    opacity: 0;
-  }
-  12% {
-    opacity: 1;
-  }
-  82% {
-    opacity: 0.85;
-  }
-  100% {
-    transform: translateY(-165%);
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-beam {
-    animation: none;
-    opacity: 0;
-  }
 }
 
 /* Section reveals are driven by GSAP ScrollTrigger (see src/hooks/useReveal.ts)
