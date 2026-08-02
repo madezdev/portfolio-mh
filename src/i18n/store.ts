@@ -15,6 +15,6 @@ currentLanguage.listen((lang) => {
   document.documentElement.lang = lang;
 });
 
-export const toggleLanguage = () => {
-  currentLanguage.set(currentLanguage.get() === 'es' ? 'en' : 'es');
+export const setLanguage = (lang: Language) => {
+  currentLanguage.set(lang);
 };
