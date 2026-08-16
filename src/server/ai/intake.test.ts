@@ -2,8 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { intakeInstructions, INTAKE_MODEL, MAX_INPUT_MESSAGES } from './intake';
 
 describe('intake config', () => {
-  it('uses the gateway model string and a sane turn cap', () => {
-    expect(INTAKE_MODEL).toBe('anthropic/claude-haiku-4.5');
+  it('uses a gateway model string and a sane turn cap', () => {
+    // `provider/model` is the Gateway's routing format — a bare model id resolves to
+    // no provider. The provider itself is free to change (it did, when the account's
+    // free tier turned out not to reach Claude Haiku), so pin the shape, not the name.
+    expect(INTAKE_MODEL).toMatch(/^[a-z0-9-]+\/[a-z0-9.\-]+$/);
     expect(MAX_INPUT_MESSAGES).toBeGreaterThan(0);
   });
   it('scopes the assistant: madezdev intake, no pricing, reply in user language', () => {

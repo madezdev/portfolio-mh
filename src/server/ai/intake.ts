@@ -1,4 +1,15 @@
-export const INTAKE_MODEL = 'anthropic/claude-haiku-4.5';
+/**
+ * Routed through the Vercel AI Gateway. `anthropic/claude-haiku-4.5` was the first
+ * choice but the Gateway rejects it with 403 `RestrictedModelsError` — that model is
+ * gated behind paid credits, and this account has none. The failure surfaces as a
+ * stream that opens 200 and then carries an error frame, so the panel renders its
+ * fallback rather than reporting a network error.
+ *
+ * This one is reachable on the free tier and was checked against the Gateway directly.
+ * Switch back to Claude Haiku here the moment the account has credits; nothing else
+ * in the route depends on the provider.
+ */
+export const INTAKE_MODEL = 'openai/gpt-4o-mini';
 export const MAX_INPUT_MESSAGES = 24;
 export const MAX_OUTPUT_TOKENS = 600;
 /** Reject a single message longer than this (cost / abuse control). */
