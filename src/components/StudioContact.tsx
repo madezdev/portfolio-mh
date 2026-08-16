@@ -44,48 +44,61 @@ export default function StudioContact() {
   return (
     <Section id="contact" className="border-t border-ink-800">
       <Container>
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-blueprint-300">{t('contact.eyebrow')}</p>
-          <h2 className="font-display text-4xl font-bold text-fg md:text-5xl">{t('contact.title')}</h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-fg-muted">{t('contact.subtitle')}</p>
-        </div>
+        {/* Two columns from lg so the header can sit on the same left rail as every
+            other section without leaving half the row empty beside the form. Below
+            lg they stack and the grid gap replaces the form's old top margin. */}
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
+          {/* Sticky on lg: the form is the taller column, so a static header would
+              scroll away and leave the left half blank while the user is still
+              filling it in. */}
+          <div className="lg:sticky lg:top-28">
+            <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-blueprint-300">{t('contact.eyebrow')}</p>
+            <h2 className="font-display text-4xl font-bold text-fg md:text-5xl">{t('contact.title')}</h2>
+            <p className="mt-4 max-w-xl text-lg text-fg-muted">{t('contact.subtitle')}</p>
+          </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mx-auto mt-10 max-w-xl space-y-5 rounded-2xl border border-ink-800 bg-ink-900/40 p-6 text-left md:p-8"
-          noValidate
-        >
-          <div>
-            <label htmlFor="name" className="mb-2 block text-sm text-fg-muted">{t('contact.form.name')}</label>
-            <input id="name" name="name" type="text" required className={field} placeholder={t('contact.form.namePlaceholder')} />
-          </div>
-          <div>
-            <label htmlFor="email" className="mb-2 block text-sm text-fg-muted">{t('contact.form.email')}</label>
-            <input id="email" name="email" type="email" required autoComplete="email" className={field} placeholder={t('contact.form.emailPlaceholder')} />
-          </div>
-          <div>
-            <label htmlFor="subject" className="mb-2 block text-sm text-fg-muted">{t('contact.form.subject')}</label>
-            <select id="subject" name="subject" required defaultValue="" className={field}>
-              <option value="" disabled>{t('contact.form.subjectPlaceholder')}</option>
-              {SUBJECTS.map((s) => (
-                <option key={s} value={s}>{t(`contact.subjects.${s}`)}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="message" className="mb-2 block text-sm text-fg-muted">{t('contact.form.message')}</label>
-            <textarea id="message" name="message" rows={5} required className={`${field} resize-none`} placeholder={t('contact.form.messagePlaceholder')} />
-          </div>
-          <button
-            type="submit"
-            disabled={status === 'sending'}
-            className="w-full rounded-full bg-ember-500 px-6 py-4 font-semibold text-ink-950 hover:bg-ember-400 disabled:opacity-60"
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-5 rounded-2xl border border-ink-800 bg-ink-900/40 p-6 md:p-8"
+            noValidate
           >
-            {status === 'sending' ? t('contact.form.sending') : t('contact.form.submit')}
-          </button>
-          {status === 'success' && <p className="text-sm text-ember-400">{t('contact.form.success')}</p>}
-          {status === 'error' && <p className="text-sm text-red-400">{t('contact.form.error')}</p>}
-        </form>
+            {/* Paired from sm: two short, related fields on one row shorten the form
+                without cramping either, which keeps it closer in height to the
+                column beside it. */}
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label htmlFor="name" className="mb-2 block text-sm text-fg-muted">{t('contact.form.name')}</label>
+                <input id="name" name="name" type="text" required autoComplete="name" className={field} placeholder={t('contact.form.namePlaceholder')} />
+              </div>
+              <div>
+                <label htmlFor="email" className="mb-2 block text-sm text-fg-muted">{t('contact.form.email')}</label>
+                <input id="email" name="email" type="email" required autoComplete="email" className={field} placeholder={t('contact.form.emailPlaceholder')} />
+              </div>
+            </div>
+            <div>
+              <label htmlFor="subject" className="mb-2 block text-sm text-fg-muted">{t('contact.form.subject')}</label>
+              <select id="subject" name="subject" required defaultValue="" className={field}>
+                <option value="" disabled>{t('contact.form.subjectPlaceholder')}</option>
+                {SUBJECTS.map((s) => (
+                  <option key={s} value={s}>{t(`contact.subjects.${s}`)}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="message" className="mb-2 block text-sm text-fg-muted">{t('contact.form.message')}</label>
+              <textarea id="message" name="message" rows={5} required className={`${field} resize-none`} placeholder={t('contact.form.messagePlaceholder')} />
+            </div>
+            <button
+              type="submit"
+              disabled={status === 'sending'}
+              className="w-full rounded-full bg-ember-500 px-6 py-4 font-semibold text-ink-950 hover:bg-ember-400 disabled:opacity-60"
+            >
+              {status === 'sending' ? t('contact.form.sending') : t('contact.form.submit')}
+            </button>
+            {status === 'success' && <p className="text-sm text-ember-400">{t('contact.form.success')}</p>}
+            {status === 'error' && <p className="text-sm text-red-400">{t('contact.form.error')}</p>}
+          </form>
+        </div>
       </Container>
     </Section>
   );
