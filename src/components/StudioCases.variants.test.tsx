@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import type { Case } from '../data/cases';
 
-// The real case list has no screenshots, live URLs, or stack yet, so the optional
-// branches of the card would otherwise go untested until that data lands.
+// The real case list has no live URLs yet, so those branches of the entry would
+// otherwise go untested until that data lands.
 const state = vi.hoisted(() => ({ list: [] as unknown[] }));
 
 vi.mock('../data/cases', () => ({
@@ -27,74 +27,78 @@ function setCases(...list: Case[]) {
   state.list = list;
 }
 
+// The track renders the list twice so the loop has no seam. Role queries skip the
+// duplicate on their own (it is `aria-hidden`), but text queries do not — so
+// anything asserted by text has to be scoped to the copy that actually counts.
+function source() {
+  const [copy] = Array.from(document.querySelectorAll<HTMLElement>('#cases .cases-track > div'));
+  return within(copy);
+}
+
 describe('StudioCases — optional case fields', () => {
   beforeEach(() => setCases(base));
 
-  it('renders the screenshot with a descriptive alt and intrinsic size', () => {
-    setCases({ ...base, image: '/cases/acme.webp', imageWidth: 1200, imageHeight: 750 });
+  it('renders a complete entry from name, tag and summary alone', () => {
+    // The minimum case carries no stack, no link, no status. It still has to read
+    // as a finished entry rather than as a stub waiting for assets.
     render(<StudioCases />);
-
-    const img = screen.getByRole('img', { name: /acme — plataforma de pagos/i });
-    expect(img).toHaveAttribute('src', '/cases/acme.webp');
-    expect(img).toHaveAttribute('width', '1200');
-    expect(img).toHaveAttribute('height', '750');
-    expect(img).toHaveAttribute('loading', 'lazy');
-    // A centered crop would reduce a UI screenshot to a meaningless middle band.
-    expect(img.className).toContain('object-top');
-  });
-
-  it('falls back to the branded tile, hidden from assistive tech, when there is no screenshot', () => {
-    render(<StudioCases />);
+    expect(screen.getByRole('heading', { name: 'Acme Platform' })).toBeInTheDocument();
+    expect(source().getByText('Fintech · Wallet')).toBeInTheDocument();
+    expect(source().getByText('Plataforma de pagos.')).toBeInTheDocument();
     expect(screen.queryByRole('img')).toBeNull();
-    expect(document.querySelector('#cases [aria-hidden="true"] .case-media')).not.toBeNull();
   });
 
-  it('keeps the parallax hook present in both visual branches', () => {
-    setCases({ ...base, image: '/cases/acme.webp' }, { ...base, id: 'beta', client: 'Beta' });
-    render(<StudioCases />);
-    expect(document.querySelectorAll('#cases .case-media')).toHaveLength(2);
-  });
-
-  it('renders the tag in the card body, not stacked over the media', () => {
-    render(<StudioCases />);
-    const tag = screen.getByText('Fintech · Wallet');
-    expect(tag.closest('.case-media')).toBeNull();
-    expect(document.querySelector('#cases article h3')?.parentElement?.contains(tag)).toBe(true);
-  });
-
-  it('renders one chip per stack entry', () => {
+  it('joins the stack into a single mono line instead of chips', () => {
     setCases({ ...base, stack: ['React', 'Node', 'Postgres'] });
     render(<StudioCases />);
-    const chips = screen.getAllByRole('listitem');
-    expect(chips.map((c) => c.textContent)).toEqual(['React', 'Node', 'Postgres']);
+    expect(source().getByText('React · Node · Postgres')).toBeInTheDocument();
   });
 
-  it('makes the whole card clickable and names the link per client', () => {
+  it('names the live link per client and opens it safely', () => {
     setCases({ ...base, liveUrl: 'https://acme.test' });
     render(<StudioCases />);
 
     const link = screen.getByRole('link', { name: /ver en vivo: acme/i });
     expect(link).toHaveAttribute('href', 'https://acme.test');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    // Stretched link — the ::after overlay is what makes the card clickable.
-    expect(link.className).toContain('after:inset-0');
+    expect(link).toHaveAttribute('target', '_blank');
   });
 
-  it('gives the hover affordance only to cards that actually link somewhere', () => {
-    setCases({ ...base, liveUrl: 'https://acme.test' }, { ...base, id: 'beta', client: 'Beta' });
+  it('keeps the duplicated copy out of the tab order', () => {
+    // Without this a keyboard user tabs through every case twice, and the second
+    // pass lands on links that assistive tech was told do not exist.
+    setCases({ ...base, liveUrl: 'https://acme.test' });
     render(<StudioCases />);
 
-    const [linked, plain] = Array.from(document.querySelectorAll('#cases article > div'));
-    expect(linked.className).toContain('hover:-translate-y-1');
-    expect(plain.className).not.toContain('hover:-translate-y-1');
+    const [source, clone] = Array.from(document.querySelectorAll('#cases .cases-track > div'));
+    expect(clone).toHaveAttribute('aria-hidden', 'true');
+    expect(source.querySelector('a')).not.toHaveAttribute('tabindex');
+    expect(clone.querySelector('a')).toHaveAttribute('tabindex', '-1');
   });
 
   it('states that a private case is in production instead of linking to its login', () => {
     setCases({ ...base, liveUrl: 'https://acme.test', access: 'private' });
     render(<StudioCases />);
 
-    expect(screen.getByText(/en producción · acceso privado|in production · private access/i)).toBeInTheDocument();
+    expect(
+      source().getByText(/en producción · acceso privado|in production · private access/i),
+    ).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /ver en vivo|view live/i })).toBeNull();
-    expect(document.querySelector('#cases article > div')?.className).not.toContain('hover:-translate-y-1');
+  });
+
+  it('hides the duplicate copy when the user asks for reduced motion', () => {
+    // With the tween disabled the strip cannot move, so the duplicate is dead
+    // weight the user would otherwise scroll straight into.
+    render(<StudioCases />);
+    const [, clone] = Array.from(document.querySelectorAll('#cases .cases-track > div'));
+    expect(clone.className).toContain('motion-reduce:hidden');
+    expect(document.querySelector('#cases .cases-marquee')?.className).toContain('motion-reduce:overflow-x-auto');
+  });
+
+  it('renders the empty state instead of an empty track', () => {
+    setCases();
+    render(<StudioCases />);
+    expect(screen.getByText(/casos en camino|case studies coming soon/i)).toBeInTheDocument();
+    expect(document.querySelector('#cases .cases-track')).toBeNull();
   });
 });

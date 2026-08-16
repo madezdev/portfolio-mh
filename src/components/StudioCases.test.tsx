@@ -4,21 +4,32 @@ import StudioCases from './StudioCases';
 import { cases } from '../data/cases';
 
 // Contract against the REAL case data. Branch coverage for the optional fields
-// (image / liveUrl / stack) lives in StudioCases.variants.test.tsx, which mocks
-// the data module — none of the real cases exercise those branches yet.
+// (liveUrl / stack / testimonial) lives in StudioCases.variants.test.tsx, which
+// mocks the data module — the real cases exercise only some of those branches.
 describe('StudioCases', () => {
-  it('renders one card per case with its title', () => {
+  it('renders the marquee track with the list duplicated for a seamless loop', () => {
+    // Half the track is exactly one copy, which is the distance the tween travels.
+    // Any other multiple and the loop restarts on a visible jump.
     render(<StudioCases />);
     expect(document.getElementById('cases')).not.toBeNull();
-    const articles = document.querySelectorAll('#cases article');
-    expect(articles.length).toBe(cases.length);
-    for (const c of cases) expect(screen.getByRole('heading', { name: c.title })).toBeInTheDocument();
+    expect(document.querySelectorAll('#cases .cases-track > div')).toHaveLength(2);
+    expect(document.querySelectorAll('#cases article')).toHaveLength(cases.length * 2);
   });
 
-  it('renders an <img> only for cases that have a screenshot (fallback otherwise)', () => {
+  it('exposes each case exactly once to assistive tech', () => {
+    // The duplicate exists only so the loop has no seam. A screen reader must hear
+    // five cases, not ten.
     render(<StudioCases />);
-    const withImage = cases.filter((c) => c.image).length;
-    expect(screen.queryAllByRole('img')).toHaveLength(withImage);
+    for (const c of cases) expect(screen.getByRole('heading', { name: c.title })).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(cases.length);
+  });
+
+  it('renders no imagery at all — the strip is typographic', () => {
+    // A media-led grid has to fill every tile, and a placeholder tile reads as a
+    // broken image rather than as a case. Nothing here may reintroduce one.
+    render(<StudioCases />);
+    expect(screen.queryAllByRole('img')).toHaveLength(0);
+    expect(document.querySelector('#cases img')).toBeNull();
   });
 
   it('links out only for cases that are reachable, not merely deployed', () => {
@@ -29,33 +40,22 @@ describe('StudioCases', () => {
 
   it('never links a private case, however live it is', () => {
     // A private product resolves to a login form; sending a prospect there spends
-    // the card's only click on a credentials screen.
+    // the entry's only click on a credentials screen.
     render(<StudioCases />);
     for (const c of cases.filter((x) => x.access === 'private')) {
       expect(screen.queryByRole('link', { name: new RegExp(c.client, 'i') })).toBeNull();
-      const article = Array.from(document.querySelectorAll('#cases article')).find((a) =>
-        a.querySelector('h3')?.textContent === c.title,
-      );
-      expect(article?.querySelector(':scope > div')?.className).not.toContain('hover:-translate-y-1');
     }
   });
 
-  it('spans the lead case across two columns so the grid has no orphan cell', () => {
-    // Five cards occupying six slots: 3+3 on lg, 2+2+2 on md.
+  it('keeps the reveal hook off the element the marquee tween owns', () => {
+    // GSAP pins `translate/rotate/scale: none` inline on what it animates. The
+    // reveal owns the viewport, the marquee owns the track — the moment those are
+    // the same element one of the two silently stops running.
     render(<StudioCases />);
-    const articles = Array.from(document.querySelectorAll('#cases article'));
-    expect(articles[0].className).toContain('md:col-span-2');
-    for (const rest of articles.slice(1)) expect(rest.className).not.toContain('col-span-2');
-  });
-
-  it('keeps the reveal hook and the hover lift on separate elements', () => {
-    // GSAP pins `translate/rotate/scale: none` inline on every element it animates,
-    // which beats any Tailwind utility on those properties. So a hover lift on a
-    // `.reveal` element renders nothing at all — and fails silently.
-    render(<StudioCases />);
-    for (const article of document.querySelectorAll('#cases article')) {
-      expect(article.classList.contains('reveal')).toBe(true);
-      expect(article.className).not.toContain('hover:-translate-y-1');
-    }
+    const viewport = document.querySelector('#cases .cases-marquee');
+    const track = document.querySelector('#cases .cases-track');
+    expect(viewport?.classList.contains('reveal')).toBe(true);
+    expect(track?.classList.contains('reveal')).toBe(false);
+    expect(viewport?.contains(track!)).toBe(true);
   });
 });

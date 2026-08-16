@@ -15,3 +15,14 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
     dispatchEvent: () => false,
   })) as unknown as typeof window.matchMedia;
 }
+
+// jsdom does not implement ResizeObserver either. It never reports a resize here
+// (nothing in jsdom lays out), so an inert stub is the honest stand-in: components
+// that observe an element still get their initial measurement and never throw.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof ResizeObserver;
+}
