@@ -14,7 +14,7 @@ function messageText(m: { parts: Array<{ type: string; text?: string }> }): stri
 export default function StudioAI() {
   const lang = useStore(currentLanguage);
   const { t } = useTranslations(lang);
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, error, clearError, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: '/api/chat' }),
   });
   const [input, setInput] = useState('');
@@ -31,11 +31,27 @@ export default function StudioAI() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, status]);
 
+  // Only a turn actually in flight should lock the composer. Gating on
+  // `status !== 'ready'` also caught `error`, so after one failure the field went
+  // dead and the visitor had no way to say anything again — the other half of the
+  // lock, and the half that is invisible because the input still looks normal.
+  const busy = status === 'submitted' || status === 'streaming';
+
   function send(text: string) {
     const value = text.trim();
-    if (!value || status !== 'ready') return;
+    if (!value || busy) return;
+    // A failed turn leaves the hook in `error`, which blocks the next send until it
+    // is cleared. Without this the composer looks live but silently does nothing.
+    if (error) clearError();
     sendMessage({ text: value });
     setInput('');
+  }
+
+  // Re-runs the last user turn rather than asking the visitor to retype it. The
+  // usual failure here is a throttled burst, so the message itself was fine.
+  function retry() {
+    clearError();
+    regenerate();
   }
 
   async function handleCapture(e: React.FormEvent<HTMLFormElement>) {
@@ -83,16 +99,7 @@ export default function StudioAI() {
           <p className="mt-4 max-w-2xl text-lg text-fg-muted">{t('ai.subtitle')}</p>
 
           <div className="mt-10 rounded-2xl border border-ink-800 bg-ink-900/40 p-4 md:p-6">
-            {status === 'error' ? (
-              <div className="py-8 text-center">
-                <p className="text-fg-muted">{t('ai.fallback.text')}</p>
-                <a href="#contact" className="mt-4 inline-block font-semibold text-ember-500 hover:text-ember-400">
-                  {t('ai.fallback.cta')} →
-                </a>
-              </div>
-            ) : (
-              <>
-                {/* `overscroll-contain` stops a flick inside the transcript from
+              {/* `overscroll-contain` stops a flick inside the transcript from
                     chaining to the page once it hits either end — on a phone the panel
                     is most of the screen, so that hand-off is easy to trigger and
                     throws the reader out of the conversation. */}
@@ -155,6 +162,42 @@ export default function StudioAI() {
                   </div>
                 )}
 
+                {/* An inline notice, not a takeover. Replacing the whole panel on the
+                    first failure discarded the conversation and left no way back —
+                    nothing ever reset the status, so one throttled burst ended the
+                    session. The transcript and the composer stay; this sits between
+                    them and clears itself as soon as a turn succeeds. */}
+                {error && (
+                  <div
+                    role="alert"
+                    className="mb-4 rounded-xl border border-ink-700 bg-ink-900/60 p-4 text-sm"
+                  >
+                    <p className="text-fg-muted">
+                      {error.message.includes('ai_busy') ? t('ai.busy') : t('ai.fallback.text')}
+                    </p>
+                    {/* Both actions carry `min-h-11` so they clear the 44px touch
+                        minimum. Padding alone left the retry button at 34px — the
+                        recovery control being the hardest thing to hit is exactly
+                        backwards on the screen where it matters most. */}
+                    <div className="mt-3 flex flex-wrap items-center gap-x-5">
+                      <button
+                        type="button"
+                        onClick={retry}
+                        className="inline-flex min-h-11 items-center rounded-full border border-ember-500/60 px-4 font-semibold text-ember-500 transition-colors hover:border-ember-400 hover:text-ember-400"
+                      >
+                        {t('ai.retry')}
+                      </button>
+                      {/* Kept as the way out for someone who does not want to wait. */}
+                      <a
+                        href="#contact"
+                        className="inline-flex min-h-11 items-center font-semibold text-fg-muted transition-colors hover:text-fg"
+                      >
+                        {t('ai.fallback.cta')} →
+                      </a>
+                    </div>
+                  </div>
+                )}
+
                 {showCapture ? (
                   captured ? (
                     <p className="text-sm text-ember-400">{t('ai.capture.success')}</p>
@@ -186,7 +229,7 @@ export default function StudioAI() {
                     <input
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      disabled={status !== 'ready'}
+                      disabled={busy}
                       // `min-w-0`: a text input carries an intrinsic width, and without
                       // this it refuses to shrink and pushes the row into an overflow.
                       className={`${field} min-w-0 rounded-full`}
@@ -199,7 +242,7 @@ export default function StudioAI() {
                         have. The label returns from sm, where there is room for it. */}
                     <button
                       type="submit"
-                      disabled={status !== 'ready'}
+                      disabled={busy}
                       aria-label={t('ai.send')}
                       className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ember-500 font-semibold text-ink-950 transition-colors hover:bg-ember-400 disabled:opacity-60 sm:h-auto sm:w-auto sm:px-6 sm:py-3"
                     >
@@ -219,8 +262,6 @@ export default function StudioAI() {
                     </button>
                   </form>
                 )}
-              </>
-            )}
           </div>
           <p className="mt-3 font-mono text-[10px] uppercase tracking-widest text-fg-muted/60">{t('ai.disclosure')}</p>
         </div>

@@ -53,6 +53,10 @@ export const translations = {
         text: 'La IA no está disponible en este momento.',
         cta: 'Contanos tu proyecto por el formulario',
       },
+      // Shown when the provider throttled a burst: the assistant is fine, it just
+      // needs a moment, so the copy asks for one instead of declaring it down.
+      busy: 'Hay muchas consultas en este momento. Probá de nuevo en unos segundos.',
+      retry: 'Reintentar',
       disclosure: 'Conversación procesada por IA.',
     },
 
@@ -258,6 +262,9 @@ export const translations = {
         text: 'The AI is unavailable right now.',
         cta: 'Tell us about your project via the form',
       },
+      // See the Spanish note: throttled is not the same as down.
+      busy: 'A lot of requests right now. Try again in a few seconds.',
+      retry: 'Try again',
       disclosure: 'Conversation processed by AI.',
     },
 
