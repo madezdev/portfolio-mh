@@ -13,9 +13,14 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# environment variables
+# environment variables — ignore every .env file (incl. .env.local from
+# `vercel env pull`, which holds the OIDC token); keep the committed example.
 .env
-.env.production
+.env.*
+!.env.example
+
+# vercel
+.vercel
 
 # macOS-specific files
 .DS_Store
@@ -23,5 +28,18 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-.Claude.md 
+.Claude.md
 claude*
+
+# agent skills — version the input, ignore the materialized tree, exactly as
+# with package-lock.json and node_modules. `.agents/` is installed from
+# skills-lock.json (source repo + content hash per skill) and `.claude/skills/*`
+# are symlinks into it. `.atl/skill-registry.md` is auto-generated and pins
+# absolute paths from the machine that generated it, so it is never portable —
+# regenerate with `gentle-ai skill-registry refresh --force`.
+.agents/
+.claude/skills/
+.atl/
+
+# browser verification output (Playwright MCP page snapshots + console logs)
+.playwright-mcp/

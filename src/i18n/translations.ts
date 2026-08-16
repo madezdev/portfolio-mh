@@ -1,29 +1,62 @@
 export const translations = {
   es: {
-    // Navigation
-    nav: {
-      home: 'Inicio',
-      about: 'Sobre mí',
-      services: 'Servicios', 
-      skills: 'Habilidades',
-      contact: 'Contacto'
-    },
-    
-    // Hero Section
-    hero: {
-      greeting: '👋 ¡Hola! Soy Martin',
-      title: {
-        line1: 'Desarrollador',
-        line2: 'Full Stack',
-      },
-      subtitle: 'Junto a mi equipo, creamos experiencias digitales modernas y funcionales utilizando React y Node.js',
-      cta: {
-        primary: '📬 Trabajemos juntos',
-        secondary: 'Conoce más sobre mí'
-      }
+    // Brand
+    brand: {
+      name: 'madezdev',
+      tagline: 'Del concepto a la realidad.',
     },
 
-    // About Section  
+    // Navigation
+    nav: {
+      services: 'Servicios',
+      cases: 'Casos',
+      process: 'Proceso',
+      contactCta: 'Agendá una llamada',
+      // Shown instead of `contactCta` below md. The full label plus the wordmark and
+      // the language toggle need 357px of a 375px topbar, so the long one cannot fit
+      // on a phone at any type size.
+      contactCtaShort: 'Hablemos',
+    },
+
+    // Hero Section
+    hero: {
+      eyebrow: 'Estudio de producto digital',
+      title: {
+        line1: 'Del concepto',
+        line2: 'a la realidad',
+      },
+      subtitle: 'Diseñamos y construimos productos, SaaS y automatizaciones con IA. De la idea a producción.',
+      cta: {
+        primary: 'Definí tu proyecto',
+        secondary: 'Ver casos',
+      },
+      scroll: 'scroll',
+      scrollAria: 'Bajar a servicios',
+    },
+
+    // AI Front Door
+    ai: {
+      eyebrow: '// definí tu idea',
+      title: 'Definamos tu proyecto',
+      subtitle: 'Contanos qué tenés en mente y nuestra IA te ayuda a darle forma. Después el equipo sigue la conversación.',
+      chips: { 0: 'Quiero un SaaS', 1: 'Automatizar un proceso', 2: 'Rehacer mi web', 3: 'Quiero una web nueva' },
+      inputPlaceholder: 'Escribí tu idea...',
+      send: 'Enviar',
+      capture: {
+        prompt: '¿Seguimos? Dejanos tu contacto y el equipo te escribe.',
+        name: 'Tu nombre',
+        email: 'tu@email.com',
+        submit: 'Enviar a madezdev',
+        success: '¡Listo! Te contactamos pronto.',
+      },
+      fallback: {
+        text: 'La IA no está disponible en este momento.',
+        cta: 'Contanos tu proyecto por el formulario',
+      },
+      disclosure: 'Conversación procesada por IA.',
+    },
+
+    // About Section
     about: {
       title: 'Sobre mí',
       description1: 'Soy un apasionado desarrollador Full Stack con experiencia en la creación de interfaces web atractivas y funcionales utilizando React y Node.js. Mi enfoque no se limita solo al código, también soy un diseñador UX/UI que se preocupa por crear experiencias digitales intuitivas y atractivas.',
@@ -55,70 +88,72 @@ export const translations = {
 
     // Services Section
     services: {
-      title: 'Mis Servicios',
-      subtitle: 'Junto a mi equipo, ofrecemos soluciones completas de desarrollo y diseño para llevar tus ideas digitales al siguiente nivel. Para proyectos grandes, colaboramos con otros desarrolladores especializados para acelerar los procesos.',
-      items: {
-        frontend: {
-          title: 'Desarrollo Frontend',
-          description: 'Desarrollamos aplicaciones web modernas y receptivas utilizando React, garantizando una experiencia de usuario suave y eficiente.',
-          features: {
-            0: 'Aplicaciones React modernas',
-            1: 'Componentes reutilizables',
-            2: 'Diseño responsive',
-            3: 'Optimización de performance'
-          }
+      eyebrow: '// servicios',
+      title: 'Lo que construimos',
+      subtitle: 'Diseñamos y desarrollamos el producto completo — de la idea a producción — y lo dejamos listo para crecer.',
+      pillars: {
+        web: {
+          title: 'Webs y sitios que venden',
+          description: 'Sitios y landing pages rápidos, medibles y hechos para convertir, no solo para verse bien.',
+          outcomes: { 0: 'Diseño a medida', 1: 'Performance y SEO', 2: 'Listos para escalar' },
         },
-        backend: {
-          title: 'Desarrollo Backend',
-          description: 'Desarrollo de backend ligero y escalable utilizando Node.js para complementar las aplicaciones frontend.',
-          features: {
-            0: 'APIs RESTful con Node.js',
-            1: 'Bases de datos optimizadas',
-            2: 'Autenticación y seguridad',
-            3: 'Arquitectura escalable'
-          }
+        product: {
+          title: 'Productos y SaaS a medida',
+          description: 'Del concepto al producto en producción: arquitectura sólida, pagos, paneles y multi-tenant.',
+          outcomes: { 0: 'MVP a producción', 1: 'Suscripciones y pagos', 2: 'Arquitectura escalable' },
+        },
+        automation: {
+          title: 'Automatizaciones',
+          description: 'Conectamos tus herramientas y eliminamos el trabajo manual repetitivo que te frena.',
+          outcomes: { 0: 'Integraciones a medida', 1: 'Flujos automáticos', 2: 'Menos errores, más tiempo' },
+        },
+        ai: {
+          title: 'IA aplicada',
+          description: 'Asistentes, agentes y features con IA que mueven de verdad el negocio, no demos de laboratorio.',
+          outcomes: { 0: 'Asistentes y agentes', 1: 'Automatización con IA', 2: 'Integración de modelos' },
+        },
+      },
+    },
+
+    // Cases Section
+    cases: {
+      eyebrow: '// casos',
+      title: 'Del concepto a la realidad',
+      subtitle: 'Algunos productos que llevamos de la idea a producción.',
+      liveLabel: 'Ver en vivo',
+      privateLabel: 'En producción · acceso privado',
+      emptyLabel: 'Casos en camino.',
+    },
+
+    // Process Section
+    process: {
+      eyebrow: '// proceso',
+      title: 'Del concepto a la realidad, paso a paso',
+      subtitle: 'Un proceso claro: sabés qué pasa en cada etapa y ves avances seguido.',
+      steps: {
+        idea: {
+          title: 'Idea',
+          description: 'Entendemos tu negocio y definimos el problema real antes de escribir una línea de código.',
         },
         design: {
-          title: 'Diseño UX/UI',
-          description: 'Diseño interfaces atractivas y fáciles de usar que satisfacen las necesidades de los usuarios y los objetivos del negocio.',
-          features: {
-            0: 'Investigación de usuarios',
-            1: 'Wireframes y prototipos',
-            2: 'Interfaces intuitivas',
-            3: 'Design systems'
-          }
+          title: 'Diseño',
+          description: 'UX/UI y arquitectura primero: prototipamos y decidimos antes de construir.',
         },
-        mobile: {
-          title: 'Desarrollo Móvil',
-          description: 'Aplicaciones móviles nativas y híbridas para iOS y Android con experiencias de usuario excepcionales.',
-          features: {
-            0: 'React Native',
-            1: 'iOS & Android',
-            2: 'Push notifications',
-            3: 'App store deployment'
-          }
+        build: {
+          title: 'Construcción',
+          description: 'Desarrollo iterativo con entregas frecuentes. Vas viendo el producto tomar forma.',
         },
-        saas: {
-          title: 'Desarrollo SaaS',
-          description: 'Plataformas SaaS completas con sistemas de suscripción, dashboard de administración y escalabilidad.',
-          features: {
-            0: 'Multi-tenancy',
-            1: 'Sistemas de pago',
-            2: 'Analytics dashboard',
-            3: 'Cloud deployment'
-          }
+        ship: {
+          title: 'Producción',
+          description: 'Deploy, medición y escala. Tu producto vivo y listo para crecer.',
         },
-        custom: {
-          title: 'Software Personalizado',
-          description: 'Soluciones de software a medida que se adaptan perfectamente a las necesidades específicas de tu negocio.',
-          features: {
-            0: 'Análisis de requisitos',
-            1: 'Arquitectura personalizada',
-            2: 'Integración de sistemas',
-            3: 'Soporte continuo'
-          }
-        }
-      }
+      },
+    },
+
+    // Trust Section
+    trust: {
+      title: 'Confían en nosotros',
+      subtitle: 'Marcas y equipos que ya construyeron con madezdev.',
     },
 
     // Skills Section
@@ -135,104 +170,95 @@ export const translations = {
 
     // Contact Section
     contact: {
-      title: 'Trabajemos Juntos',
-      subtitle: '¿Tienes un proyecto en mente? ¡Estoy disponible para colaborar en proyectos emocionantes y llevar tus ideas digitales a la vida! Para proyectos grandes, trabajo con un equipo especializado.',
-      getInTouch: 'Ponte en contacto',
-      description: 'Junto a mi equipo, somos comunicadores abiertos y colaboradores comprometidos, listos para enfrentar desafíos y llevar tus conceptos digitales al siguiente nivel. Contamos con desarrolladores especializados para acelerar los tiempos de entrega.',
-      methods: {
-        email: {
-          title: 'Email'
-        },
-        whatsapp: {
-          title: 'WhatsApp'
-        },
-        linkedin: {
-          title: 'LinkedIn'
-        },
-        github: {
-          title: 'GitHub'
-        }
-      },
-      availability: {
-        status: 'Disponible para proyectos',
-        description: 'Actualmente acepto nuevos proyectos freelance. Tiempo de respuesta promedio: 24 horas.'
+      eyebrow: '// contacto',
+      title: 'Contanos tu proyecto',
+      subtitle: 'Contanos qué tenés en mente y te respondemos con los próximos pasos. Normalmente en 24 h.',
+      subjects: {
+        web: 'Web o sitio',
+        product: 'Producto / SaaS',
+        automation: 'Automatización',
+        ai: 'IA aplicada',
+        other: 'Otro',
       },
       form: {
-        title: 'Envíame un mensaje',
-        fields: {
-          name: 'Nombre',
-          namePlaceholder: 'Tu nombre',
-          email: 'Email',
-          emailPlaceholder: 'tu@email.com',
-          subject: 'Asunto',
-          subjectPlaceholder: 'Selecciona un tema',
-          budget: 'Presupuesto estimado',
-          budgetPlaceholder: 'Selecciona un rango',
-          message: 'Mensaje',
-          messagePlaceholder: 'Cuéntame sobre tu proyecto...'
-        },
-        subjects: {
-          frontend: 'Desarrollo Frontend',
-          fullstack: 'Proyecto Full Stack',
-          design: 'Diseño UX/UI',
-          mobile: 'Aplicación Móvil',
-          saas: 'Desarrollo SaaS',
-          other: 'Otro'
-        },
-        budgets: {
-          under1k: 'Menos de $1,000',
-          '1k5k': '$1,000 - $5,000',
-          '5k10k': '$5,000 - $10,000',
-          '10kplus': 'Más de $10,000',
-          discuss: 'Prefiero discutirlo'
-        },
-        submit: 'Enviar mensaje',
+        name: 'Nombre',
+        namePlaceholder: 'Tu nombre',
+        email: 'Email',
+        emailPlaceholder: 'tu@email.com',
+        subject: '¿Qué necesitás?',
+        subjectPlaceholder: 'Elegí una opción',
+        message: 'Mensaje',
+        messagePlaceholder: 'Contanos sobre tu proyecto...',
+        submit: 'Enviar',
         sending: 'Enviando...',
-        success: '¡Mensaje enviado correctamente! Te responderé pronto.'
-      }
+        success: '¡Mensaje enviado! Te respondemos pronto.',
+        error: 'No se pudo enviar. Probá de nuevo en un momento.',
+      },
     },
 
     // Footer
     footer: {
-      description: 'Desarrollador Full Stack y Diseñador UX/UI apasionado por crear experiencias digitales excepcionales que combinan funcionalidad y estética.',
-      navigation: 'Navegación',
-      services: 'Servicios',
-      servicesList: {
-        0: 'Desarrollo Frontend',
-        1: 'Desarrollo Backend',
-        2: 'Diseño UX/UI',
-        3: 'Aplicaciones Móviles',
-        4: 'Desarrollo SaaS'
-      },
-      copyright: '© 2024 Martin. Todos los derechos reservados.',
-      availableForProjects: 'Disponible para proyectos',
-      madeWith: 'Hecho con ❤️ y Astro'
+      tagline: 'Llevamos tus ideas digitales del concepto a la realidad.',
+      navTitle: 'Navegación',
+      servicesTitle: 'Servicios',
+      rights: 'Todos los derechos reservados.',
+      builtWith: 'Diseñado y construido por madezdev.',
     }
   },
   
   en: {
+    // Brand
+    brand: {
+      name: 'madezdev',
+      tagline: 'From concept to reality.',
+    },
+
     // Navigation
     nav: {
-      home: 'Home',
-      about: 'About',
       services: 'Services',
-      skills: 'Skills',
-      contact: 'Contact'
+      cases: 'Work',
+      process: 'Process',
+      contactCta: 'Book a call',
+      // See the Spanish note: the full label does not fit a phone topbar.
+      contactCtaShort: "Let's talk",
     },
-    
+
     // Hero Section
     hero: {
-      greeting: '👋 Hi! I\'m Martin',
+      eyebrow: 'Digital product studio',
       title: {
-        line1: 'Full Stack',
-        line2: 'Developer',
-        line3: '& UX/UI Designer'
+        line1: 'From concept',
+        line2: 'to reality',
       },
-      subtitle: 'Together with my team, we create modern and functional digital experiences using React and Node.js',
+      subtitle: 'We design and build products, SaaS, and AI automations. From idea to production.',
       cta: {
-        primary: '📬 Let\'s work together',
-        secondary: 'Learn more about me'
-      }
+        primary: 'Define your project',
+        secondary: 'See our work',
+      },
+      scroll: 'scroll',
+      scrollAria: 'Scroll to services',
+    },
+
+    // AI Front Door
+    ai: {
+      eyebrow: '// define your idea',
+      title: "Let's define your project",
+      subtitle: 'Tell us what you have in mind and our AI helps you shape it. Then the team picks up the conversation.',
+      chips: { 0: 'I want a SaaS', 1: 'Automate a process', 2: 'Rebuild my website', 3: 'I want a new website' },
+      inputPlaceholder: 'Type your idea...',
+      send: 'Send',
+      capture: {
+        prompt: 'Want to continue? Leave your contact and the team will reach out.',
+        name: 'Your name',
+        email: 'you@email.com',
+        submit: 'Send to madezdev',
+        success: "Done! We'll be in touch soon.",
+      },
+      fallback: {
+        text: 'The AI is unavailable right now.',
+        cta: 'Tell us about your project via the form',
+      },
+      disclosure: 'Conversation processed by AI.',
     },
 
     // About Section
@@ -267,70 +293,72 @@ export const translations = {
 
     // Services Section
     services: {
-      title: 'My Services',
-      subtitle: 'Together with my team, we offer complete development and design solutions to take your digital ideas to the next level. For large projects, we collaborate with other specialized developers to accelerate processes.',
-      items: {
-        frontend: {
-          title: 'Frontend Development',
-          description: 'We develop modern and responsive web applications using React, ensuring a smooth and efficient user experience.',
-          features: {
-            0: 'Modern React applications',
-            1: 'Reusable components',
-            2: 'Responsive design',
-            3: 'Performance optimization'
-          }
+      eyebrow: '// services',
+      title: 'What we build',
+      subtitle: 'We design and build the whole product — from idea to production — and leave it ready to grow.',
+      pillars: {
+        web: {
+          title: 'Websites that sell',
+          description: 'Fast, measurable sites and landing pages built to convert, not just to look good.',
+          outcomes: { 0: 'Custom design', 1: 'Performance & SEO', 2: 'Ready to scale' },
         },
-        backend: {
-          title: 'Backend Development',
-          description: 'Lightweight and scalable backend development using Node.js to complement frontend applications.',
-          features: {
-            0: 'RESTful APIs with Node.js',
-            1: 'Optimized databases',
-            2: 'Authentication and security',
-            3: 'Scalable architecture'
-          }
+        product: {
+          title: 'Products & custom SaaS',
+          description: 'From concept to production: solid architecture, payments, dashboards, and multi-tenant.',
+          outcomes: { 0: 'MVP to production', 1: 'Subscriptions & payments', 2: 'Scalable architecture' },
+        },
+        automation: {
+          title: 'Automations',
+          description: 'We connect your tools and remove the repetitive manual work that slows you down.',
+          outcomes: { 0: 'Custom integrations', 1: 'Automated workflows', 2: 'Fewer errors, more time' },
+        },
+        ai: {
+          title: 'Applied AI',
+          description: 'Assistants, agents, and AI features that actually move the business — not lab demos.',
+          outcomes: { 0: 'Assistants & agents', 1: 'AI automation', 2: 'Model integration' },
+        },
+      },
+    },
+
+    // Cases Section
+    cases: {
+      eyebrow: '// work',
+      title: 'From concept to reality',
+      subtitle: 'A few products we took from idea to production.',
+      liveLabel: 'View live',
+      privateLabel: 'In production · private access',
+      emptyLabel: 'Case studies coming soon.',
+    },
+
+    // Process Section
+    process: {
+      eyebrow: '// process',
+      title: 'From concept to reality, step by step',
+      subtitle: 'A clear process: you know what happens at each stage and see progress often.',
+      steps: {
+        idea: {
+          title: 'Idea',
+          description: 'We understand your business and define the real problem before writing a line of code.',
         },
         design: {
-          title: 'UX/UI Design',
-          description: 'I design attractive and user-friendly interfaces that meet user needs while fulfilling business objectives.',
-          features: {
-            0: 'User research',
-            1: 'Wireframes and prototypes',
-            2: 'Intuitive interfaces',
-            3: 'Design systems'
-          }
+          title: 'Design',
+          description: 'UX/UI and architecture first: we prototype and decide before building.',
         },
-        mobile: {
-          title: 'Mobile Development',
-          description: 'Native and hybrid mobile applications for iOS and Android with exceptional user experiences.',
-          features: {
-            0: 'React Native',
-            1: 'iOS & Android',
-            2: 'Push notifications',
-            3: 'App store deployment'
-          }
+        build: {
+          title: 'Build',
+          description: 'Iterative development with frequent releases. You watch the product take shape.',
         },
-        saas: {
-          title: 'SaaS Development',
-          description: 'Complete SaaS platforms with subscription systems, admin dashboards and scalability.',
-          features: {
-            0: 'Multi-tenancy',
-            1: 'Payment systems',
-            2: 'Analytics dashboard',
-            3: 'Cloud deployment'
-          }
+        ship: {
+          title: 'Production',
+          description: 'Deploy, measure, and scale. Your product live and ready to grow.',
         },
-        custom: {
-          title: 'Custom Software',
-          description: 'Tailored software solutions that perfectly adapt to your business specific needs.',
-          features: {
-            0: 'Requirements analysis',
-            1: 'Custom architecture',
-            2: 'System integration',
-            3: 'Ongoing support'
-          }
-        }
-      }
+      },
+    },
+
+    // Trust Section
+    trust: {
+      title: 'Trusted by',
+      subtitle: 'Brands and teams that already built with madezdev.',
     },
 
     // Skills Section
@@ -347,78 +375,39 @@ export const translations = {
 
     // Contact Section
     contact: {
-      title: 'Let\'s Work Together',
-      subtitle: 'Do you have a project in mind? I\'m available to collaborate on exciting projects and bring your digital ideas to life! For large projects, I work with a specialized team.',
-      getInTouch: 'Get in touch',
-      description: 'Together with my team, we are open communicators and committed collaborators, ready to face challenges and take your digital concepts to the next level. We have specialized developers to accelerate delivery times.',
-      methods: {
-        email: {
-          title: 'Email'
-        },
-        whatsapp: {
-          title: 'WhatsApp'
-        },
-        linkedin: {
-          title: 'LinkedIn'
-        },
-        github: {
-          title: 'GitHub'
-        }
-      },
-      availability: {
-        status: 'Available for projects',
-        description: 'Currently accepting new freelance projects. Average response time: 24 hours.'
+      eyebrow: '// contact',
+      title: 'Tell us about your project',
+      subtitle: 'Tell us what you have in mind and we’ll reply with the next steps. Usually within 24h.',
+      subjects: {
+        web: 'Website',
+        product: 'Product / SaaS',
+        automation: 'Automation',
+        ai: 'Applied AI',
+        other: 'Other',
       },
       form: {
-        title: 'Send me a message',
-        fields: {
-          name: 'Name',
-          namePlaceholder: 'Your name',
-          email: 'Email',
-          emailPlaceholder: 'your@email.com',
-          subject: 'Subject',
-          subjectPlaceholder: 'Select a topic',
-          budget: 'Estimated budget',
-          budgetPlaceholder: 'Select a range',
-          message: 'Message',
-          messagePlaceholder: 'Tell me about your project...'
-        },
-        subjects: {
-          frontend: 'Frontend Development',
-          fullstack: 'Full Stack Project',
-          design: 'UX/UI Design',
-          mobile: 'Mobile Application',
-          saas: 'SaaS Development',
-          other: 'Other'
-        },
-        budgets: {
-          under1k: 'Under $1,000',
-          '1k5k': '$1,000 - $5,000',
-          '5k10k': '$5,000 - $10,000',
-          '10kplus': 'Over $10,000',
-          discuss: 'Prefer to discuss'
-        },
-        submit: 'Send message',
+        name: 'Name',
+        namePlaceholder: 'Your name',
+        email: 'Email',
+        emailPlaceholder: 'you@email.com',
+        subject: 'What do you need?',
+        subjectPlaceholder: 'Pick one',
+        message: 'Message',
+        messagePlaceholder: 'Tell us about your project...',
+        submit: 'Send',
         sending: 'Sending...',
-        success: 'Message sent successfully! I\'ll respond soon.'
-      }
+        success: 'Message sent! We’ll get back to you soon.',
+        error: 'Could not send. Please try again in a moment.',
+      },
     },
 
     // Footer
     footer: {
-      description: 'Full Stack Developer and UX/UI Designer passionate about creating exceptional digital experiences that combine functionality and aesthetics.',
-      navigation: 'Navigation',
-      services: 'Services',
-      servicesList: {
-        0: 'Frontend Development',
-        1: 'Backend Development',
-        2: 'UX/UI Design',
-        3: 'Mobile Applications',
-        4: 'SaaS Development'
-      },
-      copyright: '© 2024 Martin. All rights reserved.',
-      availableForProjects: 'Available for projects',
-      madeWith: 'Made with ❤️ and Astro'
+      tagline: 'We turn your digital ideas from concept into reality.',
+      navTitle: 'Navigation',
+      servicesTitle: 'Services',
+      rights: 'All rights reserved.',
+      builtWith: 'Designed and built by madezdev.',
     }
   }
 } as const;

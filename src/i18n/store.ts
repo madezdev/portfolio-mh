@@ -1,31 +1,20 @@
 import { atom } from 'nanostores';
 import type { Language } from './translations';
 
-// Get initial language from localStorage or default to Spanish
-const getInitialLanguage = (): Language => {
-  if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('portfolio-language');
-    if (stored === 'en' || stored === 'es') {
-      return stored;
-    }
-    // Detect browser language
-    const browserLang = navigator.language.toLowerCase();
-    return browserLang.startsWith('en') ? 'en' : 'es';
-  }
-  return 'es'; // Default to Spanish for SSR
-};
+// The site is Spanish-first: server and client both render 'es' so there is
+// never a hydration mismatch. English is opt-in via the toggle (persisted).
+export const currentLanguage = atom<Language>('es');
 
-export const currentLanguage = atom<Language>(getInitialLanguage());
-
-// Save language preference to localStorage when it changes
-currentLanguage.subscribe((lang) => {
-  if (typeof window !== 'undefined') {
+// Persist + reflect on <html lang> when the language CHANGES (listen, not
+// subscribe, so the initial 'es' never overwrites a stored preference).
+currentLanguage.listen((lang) => {
+  if (typeof window === 'undefined') return;
+  if (typeof window.localStorage !== 'undefined') {
     localStorage.setItem('portfolio-language', lang);
-    document.documentElement.lang = lang;
   }
+  document.documentElement.lang = lang;
 });
 
-export const toggleLanguage = () => {
-  const current = currentLanguage.get();
-  currentLanguage.set(current === 'es' ? 'en' : 'es');
+export const setLanguage = (lang: Language) => {
+  currentLanguage.set(lang);
 };
