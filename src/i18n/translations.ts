@@ -12,6 +12,10 @@ export const translations = {
       cases: 'Casos',
       process: 'Proceso',
       contactCta: 'Agendá una llamada',
+      // Shown instead of `contactCta` below md. The full label plus the wordmark and
+      // the language toggle need 357px of a 375px topbar, so the long one cannot fit
+      // on a phone at any type size.
+      contactCtaShort: 'Hablemos',
     },
 
     // Hero Section
@@ -215,6 +219,8 @@ export const translations = {
       cases: 'Work',
       process: 'Process',
       contactCta: 'Book a call',
+      // See the Spanish note: the full label does not fit a phone topbar.
+      contactCtaShort: "Let's talk",
     },
 
     // Hero Section
