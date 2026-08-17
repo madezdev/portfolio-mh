@@ -64,7 +64,14 @@ describe('intake config', () => {
   it('forbids closing the lead before the required fields exist', () => {
     const p = intakeInstructions();
     expect(p).toContain('submitLead');
-    expect(p.toLowerCase()).toMatch(/only.*(name|email).*budget|budget.*name.*email/s);
+    // Isolate the actual gating sentence rather than matching across the whole
+    // joined prompt — a prompt-wide match (previously using the `s` flag) would
+    // still pass even if the gate itself dropped the budget requirement, because
+    // "budget" and "name"/"email" both appear elsewhere in the document.
+    const paragraphs = p.split('\n\n');
+    const gate = paragraphs.find((para) => para.includes('submitLead'));
+    expect(gate).toBeDefined();
+    expect(gate!.toLowerCase()).toMatch(/only.*(name|email).*budget|budget.*name.*email/);
   });
 
   it('asks one thing per turn with concrete alternatives', () => {
@@ -74,9 +81,13 @@ describe('intake config', () => {
   });
 
   it('gives something back rather than only extracting', () => {
-    const p = intakeInstructions().toLowerCase();
-    expect(p).toMatch(/observation|give.*back|in return/);
-    expect(p).toMatch(/never promise|no commitment|not a commitment/);
+    // Both halves must live in the SAME paragraph — a model reading "add one
+    // concrete observation" several paragraphs away from "never promise a
+    // timeline" is much likelier to let the value-add turn into a commitment.
+    const paragraphs = intakeInstructions().split('\n\n');
+    const give = paragraphs.find((para) => /observation|give.*back|in return/i.test(para));
+    expect(give).toBeDefined();
+    expect(give!.toLowerCase()).toMatch(/never promise|no commitment|not a commitment/);
   });
 
   it('keeps the assistant scoped to madezdev topics and declines off-topic requests', () => {

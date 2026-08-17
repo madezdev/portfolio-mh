@@ -11,6 +11,7 @@ vi.mock('@ai-sdk/react', () => ({
 vi.mock('ai', () => ({ DefaultChatTransport: class { constructor(_: unknown) {} } }));
 
 import StudioAI from './StudioAI';
+import { BUDGET_STATES } from '../lib/budget';
 
 describe('StudioAI', () => {
   beforeEach(() => {
@@ -156,8 +157,10 @@ describe('StudioAI', () => {
     };
     render(<StudioAI lang="en" />);
     const budget = screen.getByLabelText(/budget/i);
-    // Three states plus the disabled placeholder.
-    expect(budget.querySelectorAll('option')).toHaveLength(4);
+    // Every BUDGET_STATES entry plus the disabled placeholder. Derived rather
+    // than hardcoded — a hardcoded count here is exactly how adding `declined`
+    // as a fourth state broke this assertion instead of catching a real gap.
+    expect(budget.querySelectorAll('option')).toHaveLength(BUDGET_STATES.length + 1);
     expect(budget.textContent).not.toMatch(/presupuesto/i);
   });
 

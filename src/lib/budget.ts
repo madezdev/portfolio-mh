@@ -10,8 +10,12 @@ import { translations, type Language } from '../i18n/translations';
  *
  * The <select> in StudioAI renders straight from this list, and the labels live in
  * i18n keyed by these ids, so both sides move together.
+ *
+ * `declined` is distinct from `exploring`: it means the visitor was asked twice
+ * and chose not to answer, not that they have no budget yet. Collapsing the two
+ * would put a state the visitor never claimed into the lead the studio reads.
  */
-export const BUDGET_STATES = ['assigned', 'defining', 'exploring'] as const;
+export const BUDGET_STATES = ['assigned', 'defining', 'exploring', 'declined'] as const;
 
 export type BudgetState = (typeof BUDGET_STATES)[number];
 

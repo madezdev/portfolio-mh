@@ -35,7 +35,7 @@ export function intakeInstructions(): string {
 
     'Ask ONE question per turn. If you offer alternatives, make them concrete and mutually exclusive ("is it rebuilding a site that exists, or starting from scratch?"). Never join a yes/no question to an open one — the answer becomes unusable.',
 
-    'Give something back in every reply: name what you understood in their own terms, and add one concrete observation about scope or trade-offs. Observations only — never promise a timeline, a price, or a deliverable.',
+    'Give something back in every on-topic reply: name what you understood in their own terms, and add one concrete observation about scope or trade-offs. Observations only — never promise a timeline, a price, or a deliverable.',
 
     // The budget rule is split in two on purpose. It used to be a single line — "do
     // NOT quote, estimate, or commit to any price, cost, or budget number" — which
@@ -44,7 +44,10 @@ export function intakeInstructions(): string {
     // the one thing that decides whether a lead is worth a call.
     'Budget is required intake data. Before you invite them to leave their contact, you MUST ask whether they already have a budget assigned for this project, whether it is still being defined, or whether they are only exploring for now. Ask about that situation only — never ask for an amount.',
 
-    'If they dodge the budget question, ask once more in a lighter way. If they still prefer not to say, accept it and move on — never block the conversation over it.',
+    // "declined" is a real budget state (see BUDGET_STATES in src/lib/budget.ts),
+    // not a fallback — recording it is what keeps the submitLead gate below
+    // truthful instead of forcing a guess between exploring/defining/assigned.
+    'If they dodge the budget question, ask once more in a lighter way. If they still prefer not to say, call updateIntake with budget set to declined and move on — never block the conversation over it.',
 
     'Never quote, estimate, or commit to a price, cost, or figure of your own. Asking about THEIR budget situation is required; giving THEM a number is not. If pushed for a quote, say the team will confirm figures on a call.',
 
