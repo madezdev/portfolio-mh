@@ -1,8 +1,50 @@
 import type { APIRoute } from 'astro';
-import { convertToModelMessages, streamText, type UIMessage } from 'ai';
-import { intakeInstructions, INTAKE_MODEL, MAX_INPUT_MESSAGES, MAX_MESSAGE_CHARS, MAX_OUTPUT_TOKENS } from '../../server/ai/intake';
+import { convertToModelMessages, isStepCount, streamText, type UIMessage } from 'ai';
+import { intakeInstructions, INTAKE_MODEL, MAX_INPUT_MESSAGES, MAX_MESSAGE_BYTES, MAX_MESSAGE_CHARS, MAX_OUTPUT_TOKENS } from '../../server/ai/intake';
 import { checkRateLimit } from '../../server/ai/rate-limit';
 import { getClientIp } from '../../server/security';
+import { createSubmitLeadTool, updateIntakeTool } from '../../server/ai/tools';
+import { SUBMIT_LEAD_TOOL } from '../../lib/ai-tools';
+
+/**
+ * Registers the tools under the shared name contract (`src/lib/ai-tools.ts`)
+ * rather than a literal object key. `hasSubmittedLead` (server) and `leadSent`
+ * (client) both key off the same constant — a hardcoded literal here is exactly
+ * how a rename previously broke both without failing a single test.
+ */
+export function buildChatTools(opts: { messages: UIMessage[]; ip: string }) {
+  return {
+    updateIntake: updateIntakeTool,
+    [SUBMIT_LEAD_TOOL]: createSubmitLeadTool(opts),
+  };
+}
+
+/**
+ * True when a single message exceeds either of its two bounds.
+ *
+ * Counting only `text` parts was complete coverage before tools existed — `parts`
+ * carried nothing else. Now the history legitimately carries `tool-updateIntake`
+ * / `tool-submitLead` parts whose `input`/`output` are arbitrary JSON, and
+ * `convertToModelMessages` round-trips that JSON straight into the prompt.
+ * `messages` is client-supplied and this route is unauthenticated, so bounding
+ * text alone left a caller free to post `MAX_INPUT_MESSAGES` worth of huge tool
+ * payloads and pay nothing against the cap, at 10 req/min against a paid model.
+ *
+ * Two limits rather than one, because the two shapes are not comparable. The text
+ * cap governs what a visitor types. The bytes cap governs the serialized `parts`,
+ * which include payloads the SERVER generated — a legitimate closing turn carries
+ * its reply plus both tool parts and runs several times the text cap. Measuring
+ * that sum against the typed-message limit rejected the visitor's NEXT message
+ * with a 400, after their lead had already been mailed.
+ */
+export function isMessageTooLong(m: UIMessage): boolean {
+  const parts = m.parts ?? [];
+  const textLength = parts.reduce(
+    (n, p) => n + ('text' in p && typeof p.text === 'string' ? p.text.length : 0),
+    0,
+  );
+  return textLength > MAX_MESSAGE_CHARS || JSON.stringify(parts).length > MAX_MESSAGE_BYTES;
+}
 
 /**
  * Whether the provider failed in a way that a retry a moment later could clear.
@@ -52,14 +94,12 @@ export const POST: APIRoute = async ({ request }) => {
   if (messages.length > MAX_INPUT_MESSAGES) {
     return new Response(JSON.stringify({ error: 'too_long' }), { status: 400 });
   }
-  const tooLong = messages.some(
-    (m) => (m.parts ?? []).reduce((n, p) => n + ('text' in p && typeof p.text === 'string' ? p.text.length : 0), 0) > MAX_MESSAGE_CHARS,
-  );
-  if (tooLong) {
+  if (messages.some(isMessageTooLong)) {
     return new Response(JSON.stringify({ error: 'too_long' }), { status: 400 });
   }
 
-  const { success } = await checkRateLimit(getClientIp(request));
+  const ip = getClientIp(request);
+  const { success } = await checkRateLimit(ip);
   if (!success) {
     return new Response(JSON.stringify({ error: 'rate_limited' }), { status: 429 });
   }
@@ -70,6 +110,11 @@ export const POST: APIRoute = async ({ request }) => {
       instructions: intakeInstructions(),
       messages: await convertToModelMessages(messages),
       maxOutputTokens: MAX_OUTPUT_TOKENS,
+      tools: buildChatTools({ messages, ip }),
+      // Without stopWhen the model stops after the tool call and never produces the
+      // reply that follows it — the panel would go silent every time it records
+      // something. 5 leaves room for a record plus the spoken turn.
+      stopWhen: isStepCount(5),
     });
     return result.toUIMessageStreamResponse({
       onError: (error) => {

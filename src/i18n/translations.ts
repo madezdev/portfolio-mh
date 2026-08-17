@@ -43,19 +43,15 @@ export const translations = {
       inputPlaceholder: 'Escribí tu idea...',
       send: 'Enviar',
       capture: {
-        prompt: '¿Seguimos? Dejanos tu contacto y el equipo te escribe.',
-        name: 'Tu nombre',
-        email: 'tu@email.com',
-        // Estado, no monto: el equipo necesita saber si la plata existe antes de
-        // invertir una llamada. El número se conversa después, con una persona.
-        budgetLabel: '¿Tenés presupuesto asignado?',
+        // Kept as the panel's confirmation line, and as the label source for the
+        // "Presupuesto:" line in the owner email.
+        success: '¡Listo! Te contactamos pronto.',
         budgetOptions: {
           assigned: 'Sí, ya tengo presupuesto asignado',
           defining: 'Está en definición',
           exploring: 'Todavía no, estoy explorando',
+          declined: 'Prefiero no decirlo',
         },
-        submit: 'Enviar a madezdev',
-        success: '¡Listo! Te contactamos pronto.',
       },
       fallback: {
         text: 'La IA no está disponible en este momento.',
@@ -260,18 +256,15 @@ export const translations = {
       inputPlaceholder: 'Type your idea...',
       send: 'Send',
       capture: {
-        prompt: 'Want to continue? Leave your contact and the team will reach out.',
-        name: 'Your name',
-        email: 'you@email.com',
-        // See the Spanish note: the state, never the amount.
-        budgetLabel: 'Do you have a budget assigned?',
+        // See the Spanish note: kept as the confirmation line and the label source
+        // for the owner email.
+        success: "Done! We'll be in touch soon.",
         budgetOptions: {
           assigned: 'Yes, I already have a budget assigned',
           defining: "It's being defined",
           exploring: "Not yet, I'm exploring",
+          declined: "I'd rather not say",
         },
-        submit: 'Send to madezdev',
-        success: "Done! We'll be in touch soon.",
       },
       fallback: {
         text: 'The AI is unavailable right now.',
