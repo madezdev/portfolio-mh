@@ -267,6 +267,9 @@ export function budgetLabel(state: BudgetState, lang: Language): string {
 import { z } from 'zod';
 import { BUDGET_STATES } from '../../lib/budget';
 
+// BUDGET_STATES is a readonly tuple (`as const`). If the installed Zod rejects a
+// readonly tuple here, spread it — `z.enum([...BUDGET_STATES])` — rather than
+// dropping the `as const`, which is what keeps `BudgetState` a union of literals.
 const budget = z.enum(BUDGET_STATES);
 
 /**
@@ -603,6 +606,9 @@ tools: {
   updateIntake: updateIntakeTool,
   submitLead: createSubmitLeadTool({ messages, ip }),
 },
+// KEEP the stopWhen added in Task 3. Editing the tools object is the moment it
+// is easiest to drop, and without it the model falls silent after a tool call.
+stopWhen: isStepCount(5),
 ```
 
 - [ ] **Step 6: Verify the suite and types**
