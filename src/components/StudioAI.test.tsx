@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 const sendMessage = vi.fn();
 const clearError = vi.fn();
@@ -11,7 +11,6 @@ vi.mock('@ai-sdk/react', () => ({
 vi.mock('ai', () => ({ DefaultChatTransport: class { constructor(_: unknown) {} } }));
 
 import StudioAI from './StudioAI';
-import { BUDGET_STATES } from '../lib/budget';
 
 describe('StudioAI', () => {
   beforeEach(() => {
@@ -19,9 +18,7 @@ describe('StudioAI', () => {
     clearError.mockClear();
     regenerate.mockClear();
     mockState = { messages: [], status: 'ready' };
-    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ success: true }) })) as any);
   });
-  afterEach(() => vi.unstubAllGlobals());
 
   it('renders the invitation and the AI disclosure in the #ai section', () => {
     render(<StudioAI lang="es" />);
@@ -98,92 +95,67 @@ describe('StudioAI', () => {
     expect(sendMessage).toHaveBeenCalledWith({ text: 'otra idea' });
   });
 
-  it('posts the captured lead to /api/contact once the capture form is shown', async () => {
-    // two assistant replies → capture form appears
+  it('never hides the composer, however long the conversation runs', () => {
+    // Regression test. The composer used to be REPLACED by the capture form at two
+    // assistant replies, which amputated the conversation and cut the emailed
+    // transcript to four messages.
     mockState = {
       status: 'ready',
       messages: [
         { id: '1', role: 'user', parts: [{ type: 'text', text: 'hola' }] },
         { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'contame mas' }] },
         { id: '3', role: 'user', parts: [{ type: 'text', text: 'un saas' }] },
-        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'genial, dejame tu contacto' }] },
+        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'dale' }] },
       ],
     };
     render(<StudioAI lang="es" />);
-    fireEvent.change(screen.getByPlaceholderText(/tu nombre|your name/i), { target: { value: 'Ada' } });
-    fireEvent.change(screen.getByPlaceholderText(/@email/i), { target: { value: 'ada@x.com' } });
-    fireEvent.change(screen.getByLabelText(/presupuesto|budget/i), { target: { value: 'assigned' } });
-    fireEvent.click(screen.getByRole('button', { name: /enviar a madezdev|send to madezdev/i }));
-    await waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/contact', expect.objectContaining({ method: 'POST' })));
-    const body = JSON.parse((fetch as any).mock.calls[0][1].body);
-    expect(body).toMatchObject({ name: 'Ada', email: 'ada@x.com' });
-    expect(body.subject).toBeTruthy();
-    expect(body.message).toContain('un saas'); // transcript included
-    // The <option> carries the canonical id; what travels to the email is the human
-    // label, because that line is read by a person, not queried.
-    expect(body.budget).toMatch(/presupuesto asignado/i);
-    expect(body.budget).not.toBe('assigned');
+    expect(screen.getByPlaceholderText(/escribí tu idea|type your idea/i)).toBeInTheDocument();
   });
 
-  it('will not submit a lead without a budget answer', () => {
-    // The conversational ask is a prompt instruction, and an instruction to a model is
-    // a suggestion, not a contract. This required field is what actually guarantees the
-    // data lands on every captured lead.
+  it('has no capture form: the assistant asks for contact in conversation', () => {
     mockState = {
       status: 'ready',
       messages: [
         { id: '1', role: 'user', parts: [{ type: 'text', text: 'hola' }] },
         { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'contame mas' }] },
         { id: '3', role: 'user', parts: [{ type: 'text', text: 'un saas' }] },
-        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'genial, dejame tu contacto' }] },
+        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'dale' }] },
       ],
     };
     render(<StudioAI lang="es" />);
-    const budget = screen.getByLabelText(/presupuesto|budget/i) as HTMLSelectElement;
-    expect(budget).toBeRequired();
-    // Nothing preselected: a default would silently answer for the visitor.
-    expect(budget.value).toBe('');
+    expect(screen.queryByPlaceholderText(/tu nombre|your name/i)).toBeNull();
+    expect(screen.queryByLabelText(/presupuesto|budget/i)).toBeNull();
   });
 
-  it('offers every budget state in the visitor language', () => {
+  it('confirms from the submitLead result instead of a boolean flag', () => {
+    // The old success branch required showCapture && captured, which is a
+    // contradiction — it could never render. Derived state cannot go unreachable.
     mockState = {
       status: 'ready',
       messages: [
-        { id: '1', role: 'user', parts: [{ type: 'text', text: 'hi' }] },
-        { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'tell me more' }] },
-        { id: '3', role: 'user', parts: [{ type: 'text', text: 'a saas' }] },
-        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'leave your contact' }] },
+        { id: '1', role: 'user', parts: [{ type: 'text', text: 'ada@x.com' }] },
+        {
+          id: '2', role: 'assistant',
+          parts: [{ type: 'tool-submitLead', state: 'output-available', output: { sent: true } }],
+        },
       ],
     };
-    render(<StudioAI lang="en" />);
-    const budget = screen.getByLabelText(/budget/i);
-    // Every BUDGET_STATES entry plus the disabled placeholder. Derived rather
-    // than hardcoded — a hardcoded count here is exactly how adding `declined`
-    // as a fourth state broke this assertion instead of catching a real gap.
-    expect(budget.querySelectorAll('option')).toHaveLength(BUDGET_STATES.length + 1);
-    expect(budget.textContent).not.toMatch(/presupuesto/i);
-  });
-
-  it('shows the fallback CTA instead of the success message when /api/contact fails', async () => {
-    mockState = {
-      status: 'ready',
-      messages: [
-        { id: '1', role: 'user', parts: [{ type: 'text', text: 'hola' }] },
-        { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'contame mas' }] },
-        { id: '3', role: 'user', parts: [{ type: 'text', text: 'un saas' }] },
-        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'genial, dejame tu contacto' }] },
-      ],
-    };
-    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, json: async () => ({ success: false }) })) as any);
     render(<StudioAI lang="es" />);
-    fireEvent.change(screen.getByPlaceholderText(/tu nombre|your name/i), { target: { value: 'Ada' } });
-    fireEvent.change(screen.getByPlaceholderText(/@email/i), { target: { value: 'ada@x.com' } });
-    fireEvent.change(screen.getByLabelText(/presupuesto|budget/i), { target: { value: 'exploring' } });
-    fireEvent.click(screen.getByRole('button', { name: /enviar a madezdev|send to madezdev/i }));
-    await waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/contact', expect.objectContaining({ method: 'POST' })));
-    const cta = await screen.findByRole('link', { name: /formulario|form/i });
-    expect(cta).toHaveAttribute('href', '#contact');
-    expect(screen.queryByText(/contactamos pronto|in touch soon/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/contactamos pronto|in touch soon/i)).toBeInTheDocument();
+  });
+
+  it('does not confirm when the lead was not sent', () => {
+    mockState = {
+      status: 'ready',
+      messages: [
+        {
+          id: '1', role: 'assistant',
+          parts: [{ type: 'tool-submitLead', state: 'output-available', output: { sent: false, reason: 'rate_limited' } }],
+        },
+      ],
+    };
+    render(<StudioAI lang="es" />);
+    expect(screen.queryByText(/contactamos pronto|in touch soon/i)).toBeNull();
   });
 
   it('shows a typing indicator while the assistant is responding', () => {
