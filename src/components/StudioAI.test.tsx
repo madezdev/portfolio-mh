@@ -11,6 +11,7 @@ vi.mock('@ai-sdk/react', () => ({
 vi.mock('ai', () => ({ DefaultChatTransport: class { constructor(_: unknown) {} } }));
 
 import StudioAI from './StudioAI';
+import { setLanguage } from '../i18n/store';
 
 describe('StudioAI', () => {
   beforeEach(() => {
@@ -18,6 +19,9 @@ describe('StudioAI', () => {
     clearError.mockClear();
     regenerate.mockClear();
     mockState = { messages: [], status: 'ready' };
+    // The language atom is module-level, so a test that switches it would leak
+    // into every test after it. Reset to the site default before each one.
+    setLanguage('es');
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ success: true }) })) as any);
   });
   afterEach(() => vi.unstubAllGlobals());
@@ -111,12 +115,55 @@ describe('StudioAI', () => {
     render(<StudioAI />);
     fireEvent.change(screen.getByPlaceholderText(/tu nombre|your name/i), { target: { value: 'Ada' } });
     fireEvent.change(screen.getByPlaceholderText(/@email/i), { target: { value: 'ada@x.com' } });
+    fireEvent.change(screen.getByLabelText(/presupuesto|budget/i), { target: { value: 'assigned' } });
     fireEvent.click(screen.getByRole('button', { name: /enviar a madezdev|send to madezdev/i }));
     await waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/contact', expect.objectContaining({ method: 'POST' })));
     const body = JSON.parse((fetch as any).mock.calls[0][1].body);
     expect(body).toMatchObject({ name: 'Ada', email: 'ada@x.com' });
     expect(body.subject).toBeTruthy();
     expect(body.message).toContain('un saas'); // transcript included
+    // The <option> carries the canonical id; what travels to the email is the human
+    // label, because that line is read by a person, not queried.
+    expect(body.budget).toMatch(/presupuesto asignado/i);
+    expect(body.budget).not.toBe('assigned');
+  });
+
+  it('will not submit a lead without a budget answer', () => {
+    // The conversational ask is a prompt instruction, and an instruction to a model is
+    // a suggestion, not a contract. This required field is what actually guarantees the
+    // data lands on every captured lead.
+    mockState = {
+      status: 'ready',
+      messages: [
+        { id: '1', role: 'user', parts: [{ type: 'text', text: 'hola' }] },
+        { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'contame mas' }] },
+        { id: '3', role: 'user', parts: [{ type: 'text', text: 'un saas' }] },
+        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'genial, dejame tu contacto' }] },
+      ],
+    };
+    render(<StudioAI />);
+    const budget = screen.getByLabelText(/presupuesto|budget/i) as HTMLSelectElement;
+    expect(budget).toBeRequired();
+    // Nothing preselected: a default would silently answer for the visitor.
+    expect(budget.value).toBe('');
+  });
+
+  it('offers every budget state in the visitor language', () => {
+    mockState = {
+      status: 'ready',
+      messages: [
+        { id: '1', role: 'user', parts: [{ type: 'text', text: 'hi' }] },
+        { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'tell me more' }] },
+        { id: '3', role: 'user', parts: [{ type: 'text', text: 'a saas' }] },
+        { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'leave your contact' }] },
+      ],
+    };
+    setLanguage('en');
+    render(<StudioAI />);
+    const budget = screen.getByLabelText(/budget/i);
+    // Three states plus the disabled placeholder.
+    expect(budget.querySelectorAll('option')).toHaveLength(4);
+    expect(budget.textContent).not.toMatch(/presupuesto/i);
   });
 
   it('shows the fallback CTA instead of the success message when /api/contact fails', async () => {
@@ -133,6 +180,7 @@ describe('StudioAI', () => {
     render(<StudioAI />);
     fireEvent.change(screen.getByPlaceholderText(/tu nombre|your name/i), { target: { value: 'Ada' } });
     fireEvent.change(screen.getByPlaceholderText(/@email/i), { target: { value: 'ada@x.com' } });
+    fireEvent.change(screen.getByLabelText(/presupuesto|budget/i), { target: { value: 'exploring' } });
     fireEvent.click(screen.getByRole('button', { name: /enviar a madezdev|send to madezdev/i }));
     await waitFor(() => expect(fetch).toHaveBeenCalledWith('/api/contact', expect.objectContaining({ method: 'POST' })));
     const cta = await screen.findByRole('link', { name: /formulario|form/i });
