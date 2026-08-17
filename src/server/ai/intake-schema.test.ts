@@ -35,7 +35,7 @@ describe('leadSchema', () => {
     expect(leadSchema.safeParse({ ...valid, budget: 'maybe' }).success).toBe(false);
   });
 
-  it('rejects an empty summary so the studio always gets a synthesis', () => {
+  it('rejects a summary too short to be a synthesis', () => {
     expect(leadSchema.safeParse({ ...valid, summary: 'ok' }).success).toBe(false);
   });
 });
