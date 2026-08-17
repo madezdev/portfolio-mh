@@ -108,7 +108,12 @@ export default function StudioCases({ lang }: { lang: Language }) {
   // copy before it resets, so everything behind the first copy has to cover the
   // viewport on its own. With five short entries on a 1920px screen it does not,
   // and the tail of the cycle shows empty page. Hence: measure, then repeat.
-  const [copyCount, setCopyCount] = useState(2);
+  //
+  // It starts at one so the copies the loop needs are added on the client and the
+  // served HTML carries each case exactly once. Rendering the duplicates on the
+  // server put every case heading in the document twice — invisible to assistive
+  // tech, which reads `aria-hidden`, but not to a crawler, which does not.
+  const [copyCount, setCopyCount] = useState(1);
 
   useEffect(() => {
     const viewport = viewportRef.current;

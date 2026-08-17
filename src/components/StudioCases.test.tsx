@@ -7,13 +7,16 @@ import { cases } from '../data/cases';
 // (liveUrl / stack / testimonial) lives in StudioCases.variants.test.tsx, which
 // mocks the data module — the real cases exercise only some of those branches.
 describe('StudioCases', () => {
-  it('renders the marquee track with the list duplicated for a seamless loop', () => {
-    // Half the track is exactly one copy, which is the distance the tween travels.
-    // Any other multiple and the loop restarts on a visible jump.
+  it('renders the marquee track with one copy of the list per cycle', () => {
+    // Each track child is exactly one copy, which is the distance the tween
+    // travels. Any other division and the loop restarts on a visible jump.
+    // The copies past the first are added on the client, once the strip has been
+    // measured — jsdom reports no widths, so here that leaves the served copy.
     render(<StudioCases lang="es" />);
     expect(document.getElementById('cases')).not.toBeNull();
-    expect(document.querySelectorAll('#cases .cases-track > div')).toHaveLength(2);
-    expect(document.querySelectorAll('#cases article')).toHaveLength(cases.length * 2);
+    const copies = document.querySelectorAll('#cases .cases-track > div');
+    expect(copies).toHaveLength(1);
+    expect(document.querySelectorAll('#cases article')).toHaveLength(cases.length);
   });
 
   it('exposes each case exactly once to assistive tech', () => {
