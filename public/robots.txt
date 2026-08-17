@@ -2,3 +2,21 @@ User-agent: *
 Allow: /
 
 Sitemap: https://www.madez.dev/sitemap.xml
+
+# AI crawlers, stated explicitly rather than left to the wildcard above. A studio
+# that sells services benefits from being citable in ChatGPT, Perplexity and
+# Claude. Switch a group to Disallow to opt it out.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
