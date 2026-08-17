@@ -20,13 +20,15 @@ export const updateIntakeTool = tool({
  * The transcript is built here rather than taken as a tool argument. The route
  * already holds the real history, so the studio receives the conversation as it
  * actually stands — a model-supplied copy is how the previous design lost every
- * message after the fourth.
+ * message after the fourth. `parts` can be absent on a message shape the SDK
+ * still allows, which is why `chat.ts` itself defaults it to `[]` — this does
+ * the same.
  */
 export function transcriptOf(messages: UIMessage[]): string {
   return messages
     .filter((m) => m.role === 'user' || m.role === 'assistant')
     .map((m) => {
-      const text = m.parts
+      const text = (m.parts ?? [])
         .filter((p: any) => p.type === 'text')
         .map((p: any) => p.text ?? '')
         .join('');
@@ -46,40 +48,74 @@ export function hasSubmittedLead(messages: UIMessage[]): boolean {
 }
 
 /**
- * Closes the lead. The only tool in this file with a side effect, so every
- * guard runs before `sendLeadEmails` is touched: idempotency against the real
- * history, then the CONTACT rate limiter (stricter than the chat one, because
- * this is the path that sends mail), then schema validation via `inputSchema`.
+ * Closes the lead. The only tool in this file with a side effect, so every guard
+ * runs before `sendLeadEmails` is touched:
+ *
+ * 1. Idempotency — against the real history (`hasSubmittedLead`, covers repeat
+ *    requests) AND against a per-request flag (`claimedThisRequest`, covers the
+ *    same request: `stopWhen: isStepCount(5)` leaves room for several tool calls,
+ *    and the AI SDK can run parallel tool calls from one assistant step
+ *    concurrently — two `submitLead` calls in the same step would each see a
+ *    clean, unchanged `opts.messages` and neither would notice the other).
+ * 2. Schema validation — cheap and I/O-free, so it runs before the rate limiter
+ *    spends one of its 5-per-hour tokens on input that was never going to mail.
+ * 3. The CONTACT rate limiter (stricter than the chat one, because this is the
+ *    path that sends mail).
+ * 4. `sendLeadEmails` itself, wrapped: a syntactically valid but undeliverable
+ *    visitor address can reject the confirmation half of its `Promise.all` after
+ *    the owner mail already went out, and an uncaught rejection here would leave
+ *    `execute` throwing — which the AI SDK turns into an `output-error` part with
+ *    no `output` field, dropping this tool's result out of the contract Task 6
+ *    reads. Catching keeps every outcome inside `{ sent, reason? }`.
  */
 export function createSubmitLeadTool(opts: { messages: UIMessage[]; ip: string }) {
+  let claimedThisRequest = false;
+
   return tool({
     description:
       'Send the lead to the studio. Call this ONLY once you have their name, their email, and their budget situation, and after you have summarized the project back to them. Never call it earlier.',
     inputSchema: leadSchema,
     execute: async (input) => {
-      if (hasSubmittedLead(opts.messages)) {
+      if (hasSubmittedLead(opts.messages) || claimedThisRequest) {
         return { sent: false, reason: 'already_sent' as const };
       }
-      const { success } = await checkContactRateLimit(opts.ip);
-      if (!success) {
-        return { sent: false, reason: 'rate_limited' as const };
-      }
-      // Belt and braces: `inputSchema` already has the AI SDK validate the model's
-      // tool call before `execute` runs, but `execute` is a plain function reachable
-      // by any caller — re-validating here means the mailer is never touched on
-      // malformed input regardless of how `execute` was invoked.
+
+      // Defense-in-depth: the AI SDK already validates a model's tool call against
+      // `inputSchema` before `execute` runs in production, but `execute` itself is
+      // exported and directly callable by any code that gets a handle on this
+      // tool — re-validating here keeps the mailer unreachable on malformed input
+      // regardless of how `execute` was invoked, at no I/O cost.
       const parsed = leadSchema.safeParse(input);
       if (!parsed.success) {
         return { sent: false, reason: 'invalid_input' as const };
       }
-      await sendLeadEmails({
-        name: parsed.data.name,
-        email: parsed.data.email,
-        subject: 'Lead desde la IA',
-        budget: budgetLabel(parsed.data.budget, parsed.data.language),
-        message: `${parsed.data.summary}\n\nConversación de intake:\n\n${transcriptOf(opts.messages)}`,
-        language: parsed.data.language,
-      });
+
+      // Claimed here, synchronously and before the first `await` below: whichever
+      // of two concurrently-dispatched `submitLead` calls reaches this line first
+      // sets the flag before yielding, so the other sees it already claimed the
+      // next time it checks (at the top of its own `execute` call) instead of both
+      // racing past the rate limiter and mailing twice.
+      claimedThisRequest = true;
+
+      const { success } = await checkContactRateLimit(opts.ip);
+      if (!success) {
+        return { sent: false, reason: 'rate_limited' as const };
+      }
+
+      try {
+        await sendLeadEmails({
+          name: parsed.data.name,
+          email: parsed.data.email,
+          subject: 'Lead desde la IA',
+          budget: budgetLabel(parsed.data.budget, parsed.data.language),
+          message: `${parsed.data.summary}\n\nConversación de intake:\n\n${transcriptOf(opts.messages)}`,
+          language: parsed.data.language,
+        });
+      } catch (error) {
+        console.error('submitLead: sendLeadEmails failed', error);
+        return { sent: false, reason: 'send_failed' as const };
+      }
+
       return { sent: true as const };
     },
   });

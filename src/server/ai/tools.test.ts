@@ -79,16 +79,74 @@ describe('submitLead tool', () => {
     expect(sendLeadEmails).not.toHaveBeenCalled();
   });
 
-  it('validates against leadSchema and sends nothing when the input is malformed', async () => {
+  it('validates against leadSchema before the rate limiter, and sends nothing when the input is malformed', async () => {
     const t = createSubmitLeadTool({ messages: convo, ip: '1.2.3.4' });
     const out = await t.execute!({ ...lead, email: 'not-an-email' } as any, {} as any);
     expect(out).toMatchObject({ sent: false });
     expect(sendLeadEmails).not.toHaveBeenCalled();
+    // The reordered guard: invalid input never burns a rate-limit token.
+    expect(checkContactRateLimit).not.toHaveBeenCalled();
+  });
+
+  it('catches a rejecting mailer and returns send_failed instead of throwing', async () => {
+    sendLeadEmails.mockRejectedValueOnce(new Error('SMTP timeout'));
+    const t = createSubmitLeadTool({ messages: convo, ip: '1.2.3.4' });
+    const out = await t.execute!({ ...lead }, {} as any);
+    expect(out).toMatchObject({ sent: false, reason: 'send_failed' });
+  });
+
+  it('closes the same-request race: two execute calls dispatched together on the same tool instance only send once', async () => {
+    const t = createSubmitLeadTool({ messages: convo, ip: '1.2.3.4' });
+    const [first, second] = await Promise.all([
+      t.execute!({ ...lead }, {} as any),
+      t.execute!({ ...lead }, {} as any),
+    ]);
+    expect(sendLeadEmails).toHaveBeenCalledTimes(1);
+    const results = [first, second] as any[];
+    expect(results.filter((r) => r.sent === true)).toHaveLength(1);
+    expect(results.filter((r) => r.sent === false && r.reason === 'already_sent')).toHaveLength(1);
+  });
+
+  it('description forbids calling before name, email and budget are all in hand', () => {
+    const t = createSubmitLeadTool({ messages: convo, ip: '1.2.3.4' });
+    const d = (t.description as string).toLowerCase();
+    expect(d).toMatch(/(?=.*name)(?=.*email)(?=.*budget)/);
+  });
+});
+
+describe('transcriptOf', () => {
+  it('renders the real conversation with role labels', () => {
+    expect(transcriptOf(convo)).toBe('Visitante: quiero una web\nIA: contame mas');
+  });
+
+  it('skips a message with no parts at all', () => {
+    const messages = [{ id: '1', role: 'user' }] as any[];
+    expect(transcriptOf(messages)).toBe('');
+  });
+
+  it('skips a message with an empty parts array', () => {
+    const messages = [{ id: '1', role: 'user', parts: [] }] as any[];
+    expect(transcriptOf(messages)).toBe('');
+  });
+
+  it('ignores parts whose type is not text', () => {
+    const messages = [
+      { id: '1', role: 'assistant', parts: [{ type: 'tool-updateIntake', state: 'output-available' }] },
+    ] as any[];
+    expect(transcriptOf(messages)).toBe('');
   });
 });
 
 describe('hasSubmittedLead', () => {
   it('is false for an ordinary conversation', () => {
     expect(hasSubmittedLead(convo)).toBe(false);
+  });
+
+  it('is true once a completed submitLead result is in the history', () => {
+    const already = [...convo, {
+      id: '3', role: 'assistant',
+      parts: [{ type: 'tool-submitLead', state: 'output-available', output: { sent: true } }],
+    }] as any[];
+    expect(hasSubmittedLead(already)).toBe(true);
   });
 });
