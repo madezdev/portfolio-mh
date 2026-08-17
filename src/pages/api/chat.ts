@@ -1,8 +1,9 @@
 import type { APIRoute } from 'astro';
-import { convertToModelMessages, streamText, type UIMessage } from 'ai';
+import { convertToModelMessages, isStepCount, streamText, type UIMessage } from 'ai';
 import { intakeInstructions, INTAKE_MODEL, MAX_INPUT_MESSAGES, MAX_MESSAGE_CHARS, MAX_OUTPUT_TOKENS } from '../../server/ai/intake';
 import { checkRateLimit } from '../../server/ai/rate-limit';
 import { getClientIp } from '../../server/security';
+import { updateIntakeTool } from '../../server/ai/tools';
 
 /**
  * Whether the provider failed in a way that a retry a moment later could clear.
@@ -70,6 +71,11 @@ export const POST: APIRoute = async ({ request }) => {
       instructions: intakeInstructions(),
       messages: await convertToModelMessages(messages),
       maxOutputTokens: MAX_OUTPUT_TOKENS,
+      tools: { updateIntake: updateIntakeTool },
+      // Without stopWhen the model stops after the tool call and never produces the
+      // reply that follows it — the panel would go silent every time it records
+      // something. 5 leaves room for a record plus the spoken turn.
+      stopWhen: isStepCount(5),
     });
     return result.toUIMessageStreamResponse({
       onError: (error) => {
