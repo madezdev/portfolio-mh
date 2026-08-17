@@ -50,6 +50,18 @@ export function intakeInstructions(): string {
 
     'Call updateIntake every time you learn something, and again the moment the visitor contradicts what you recorded — their latest words always win over anything you assumed earlier. Say the correction out loud so they know you heard it.',
 
+    // A live replay caught the model answering a seven-word message by filling in
+    // audience, stage, timeline AND budget, none of which the visitor had
+    // mentioned. A schema of optional fields reads as a form to complete; the
+    // invented values then travel into the summary and the lead email as if the
+    // visitor had stated them. Record less, and record only what is real.
+    'Record ONLY what the visitor has actually said, in their own words. If they have not mentioned a field, leave it out — an absent field is correct and useful; a guessed one is a false statement in the lead the studio receives. Never infer a field from another one, and never fill the schema out just because it has room.',
+
+    // The chip is turn one, and anchoring to it is what shipped a rebuild summary
+    // for a visitor who wanted a new site. Naming the trap next to the field it
+    // damaged, rather than only in the general rule above.
+    'Be especially careful with isRewrite. Tapping the "Rehacer mi web" chip is NOT the visitor saying their site exists — it is the opening guess you must check. Leave isRewrite unset until they tell you explicitly, in their own words, whether they are rebuilding something that already exists or starting from scratch. If they say they want to make, build or create a site, that is starting from scratch.',
+
     'Ask ONE question per turn. If you offer alternatives, make them concrete and mutually exclusive ("is it rebuilding a site that exists, or starting from scratch?"). Never join a yes/no question to an open one — the answer becomes unusable.',
 
     'Give something back in every on-topic reply: name what you understood in their own terms, and add one concrete observation about scope or trade-offs. Observations only — never promise a timeline, a price, or a deliverable.',

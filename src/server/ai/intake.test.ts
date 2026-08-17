@@ -74,6 +74,28 @@ describe('intake config', () => {
     expect(gate!.toLowerCase()).toMatch(/only.*(name|email).*budget|budget.*name.*email/);
   });
 
+  it('forbids recording anything the visitor did not actually say', () => {
+    // Live run against the preview: the visitor wrote seven words, and the model
+    // called updateIntake with audience, stage, timeline AND budget filled in —
+    // none of which they had mentioned. Giving the model a schema of optional
+    // fields invites it to complete the set. Invented values then travel into the
+    // summary and the lead email as if the visitor had stated them.
+    const p = intakeInstructions().toLowerCase();
+    expect(p).toMatch(/only.*(actually (said|told)|their own words)/);
+    expect(p).toMatch(/leave it (out|absent|unset)|do not guess|never infer/);
+  });
+
+  it('will not record isRewrite until the visitor says which it is', () => {
+    // Same run: the visitor said "quiero HACER una web" and the model recorded
+    // isRewrite: true, then answered "deseas REHACER una web" — the exact
+    // production defect this branch exists to fix, reproduced.
+    const p = intakeInstructions();
+    const rule = p.split('\n\n').find((para) => para.includes('isRewrite'));
+    expect(rule, 'no paragraph mentions isRewrite').toBeDefined();
+    expect(rule!.toLowerCase()).toMatch(/chip|tapped|clicked/);
+    expect(rule!.toLowerCase()).toMatch(/explicit|in their own words|says so/);
+  });
+
   it('asks one thing per turn with concrete alternatives', () => {
     const p = intakeInstructions().toLowerCase();
     expect(p).toMatch(/one question|a single question/);

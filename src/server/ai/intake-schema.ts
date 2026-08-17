@@ -12,15 +12,15 @@ export const intakeStateSchema = z.object({
   projectType: z.string().max(120).optional()
     .describe('What they want built, in their words: "sitio corporativo", "SaaS de turnos"'),
   isRewrite: z.boolean().optional()
-    .describe('true = rebuilding a site that already exists. false = building from scratch. Correct this the moment the visitor contradicts it.'),
+    .describe('true = rebuilding a site that already exists. false = building from scratch. Omit until the visitor states which, in their own words — tapping the "Rehacer mi web" chip is not a statement. "Quiero hacer una web" means from scratch (false).'),
   audience: z.string().max(120).optional()
-    .describe('Who the project is for: their own customers, internal staff, the visitor themself.'),
+    .describe('Who the project is for, if they said: their own customers, internal staff, themself. Omit if they have not told you.'),
   stage: z.string().max(120).optional()
-    .describe('How far along the project is: idea, has designs, has a site already, mid-build.'),
+    .describe('How far along the project is, if they said: idea, has designs, has a site already, mid-build. Omit if they have not told you.'),
   timeline: z.string().max(80).optional()
-    .describe('When they want or need this live, in their words: "ASAP", "next quarter", "no rush".'),
+    .describe('When they want this live, in their words: "ASAP", "next quarter", "no rush". Omit if they have not told you.'),
   budget: budget.optional()
-    .describe('The budget situation as the visitor described it. Correct this if they revise it later in the conversation.'),
+    .describe('The budget situation as the visitor described it. Omit until you have asked and they have answered. Correct it if they revise it later.'),
 });
 
 /** The close. Required fields are the contract that replaces the removed form. */
