@@ -208,10 +208,17 @@ actually stands at the moment of the call, not a copy the model reconstructed.
 
 **Budget reaches the email as a sentence, not a slug.** The tool carries the
 canonical `BudgetState`, but the owner email currently reads
-"Presupuesto: Sí, ya tengo presupuesto asignado". `sendLeadEmails` resolves the
-state to its localized label using `language`, so that line is unchanged for the
-reader. This is why the `ai.capture.budgetOptions` translation keys survive — they
-stop being form copy and become the label source for the email.
+"Presupuesto: Sí, ya tengo presupuesto asignado". A `budgetLabel(state, lang)`
+helper in `src/lib/budget.ts` resolves it, and the tool calls that helper before
+handing the lead to `sendLeadEmails`, which keeps taking a plain string.
+
+Resolving at the tool rather than inside `sendLeadEmails` is deliberate: it lets
+the email extraction stay a pure refactor with no behaviour change, so
+`contact.test.ts` can serve as its safety net. `sendLeadEmails` never learns what
+a budget state is.
+
+This is why the `ai.capture.budgetOptions` translation keys survive — they stop
+being form copy and become the label source for the email.
 
 ### Close condition
 
