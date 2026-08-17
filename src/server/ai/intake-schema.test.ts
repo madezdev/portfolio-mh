@@ -11,25 +11,53 @@ describe('intakeStateSchema', () => {
     expect(intakeStateSchema.safeParse({ isRewrite: 'no' }).success).toBe(false);
   });
 
-  it('rejects an empty string instead of storing it as a recorded answer', () => {
+  it('drops an empty string rather than recording it — and does not fail the turn', () => {
     // A live replay recorded `timeline: ""`. An omitted field means "not asked
-    // yet"; an empty string is indistinguishable from an answer in the summary
-    // and the lead. The schema now refuses to carry the ambiguity.
+    // yet"; an empty string is indistinguishable from an answer downstream.
+    //
+    // Dropped, not rejected. Rejecting surfaced an InvalidToolInputError through
+    // the stream, which onError mapped to `ai_unavailable`, so production showed
+    // the visitor "La IA no está disponible" while the conversation was working.
+    // This is a scratchpad: "we do not know that" is a correct outcome, not an
+    // error worth interrupting anyone over.
     for (const field of ['projectType', 'audience', 'stage', 'timeline'] as const) {
-      expect(intakeStateSchema.safeParse({ [field]: '' }).success, field).toBe(false);
-      expect(intakeStateSchema.safeParse({ [field]: 'x' }).success, field).toBe(true);
+      const empty = intakeStateSchema.safeParse({ [field]: '   ' });
+      expect(empty.success, field).toBe(true);
+      // Zod leaves the key present holding `undefined`. What decides whether the
+      // model sees it again is the JSON round-trip into the message history, and
+      // that is where `undefined` disappears — so assert the trip, not the shape.
+      expect(JSON.parse(JSON.stringify(empty.data)), field).not.toHaveProperty(field);
+
+      const real = intakeStateSchema.safeParse({ [field]: 'x' });
+      expect(real.success, field).toBe(true);
+      expect(real.data, field).toHaveProperty(field, 'x');
     }
   });
 
-  it('cannot record declined — no single turn proves a refusal', () => {
-    // Three prompt revisions asked the model not to assert this prematurely; a
-    // replay then recorded `declined` on the turn BEFORE it asked the question.
-    // `declined` is a claim about the whole conversation, so the incremental
-    // recorder is not allowed to express it.
-    expect(intakeStateSchema.safeParse({ budget: 'declined' }).success).toBe(false);
+  it('drops declined — no single turn proves a refusal', () => {
+    // `declined` is a claim about the whole conversation (asked, asked again,
+    // still refused), so the incremental recorder cannot express it. A replay
+    // recorded it on the turn BEFORE the question was first asked.
+    const declined = intakeStateSchema.safeParse({ budget: 'declined' });
+    expect(declined.success).toBe(true);
+    expect(JSON.parse(JSON.stringify(declined.data))).not.toHaveProperty('budget');
+
+    // Same for a value that is not a state at all — production sent `budget: ""`.
+    const blank = intakeStateSchema.safeParse({ budget: '' });
+    expect(blank.success).toBe(true);
+    expect(JSON.parse(JSON.stringify(blank.data))).not.toHaveProperty('budget');
+
     for (const state of ['assigned', 'defining', 'exploring'] as const) {
-      expect(intakeStateSchema.safeParse({ budget: state }).success, state).toBe(true);
+      expect(intakeStateSchema.safeParse({ budget: state }).data, state).toHaveProperty('budget', state);
     }
+  });
+
+  it('still refuses a value it cannot silently reinterpret', () => {
+    // Dropping is for values that mean "unknown". A wrong TYPE is a different
+    // thing — it means the model misunderstood the field, and quietly discarding
+    // that would hide the misunderstanding.
+    expect(intakeStateSchema.safeParse({ isRewrite: 'no' }).success).toBe(false);
+    expect(intakeStateSchema.safeParse({ projectType: 42 }).success).toBe(false);
   });
 });
 
