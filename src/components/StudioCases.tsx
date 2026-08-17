@@ -20,9 +20,10 @@ function cx(...classes: (string | false | undefined)[]) {
  * from assistive tech and pulled out of the tab order, so a screen reader hears
  * five cases and a keyboard user tabs through five links, not ten.
  */
-function CaseEntry({ item, cloned, liveLabel, privateLabel }: {
+function CaseEntry({ item, cloned, lang, liveLabel, privateLabel }: {
   item: Case;
   cloned: boolean;
+  lang: Language;
   liveLabel: string;
   privateLabel: string;
 }) {
@@ -40,7 +41,7 @@ function CaseEntry({ item, cloned, liveLabel, privateLabel }: {
 
       {/* Clamped so every entry occupies the same block and the strip keeps a
           steady baseline as it travels. */}
-      <p className="mt-3 line-clamp-2 text-sm text-fg-muted">{item.summary}</p>
+      <p className="mt-3 line-clamp-2 text-sm text-fg-muted">{item.summary[lang]}</p>
 
       {item.stack && item.stack.length > 0 && (
         <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.15em] text-fg-muted/70">
@@ -221,6 +222,7 @@ export default function StudioCases({ lang }: { lang: Language }) {
                       key={c.id}
                       item={c}
                       cloned={cloned}
+                      lang={lang}
                       liveLabel={t('cases.liveLabel')}
                       privateLabel={t('cases.privateLabel')}
                     />

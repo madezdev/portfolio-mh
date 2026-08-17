@@ -1,3 +1,5 @@
+import type { Language } from '../i18n/translations';
+
 export type Case = {
   id: string;
   client: string;
@@ -5,7 +7,7 @@ export type Case = {
   category: 'web' | 'product' | 'automation' | 'ai';
   /** Short human-readable type label shown on the card, e.g. "Fintech · Wallet". */
   tag?: string;
-  summary: string;
+  summary: Record<Language, string>;
   /** Two or three technologies listed under the entry, e.g. ['React', 'Node', 'Postgres']. */
   stack?: string[];
   /**
@@ -33,7 +35,10 @@ export const cases: Case[] = [
     title: 'Billetera País',
     category: 'product',
     tag: 'Fintech · Wallet',
-    summary: 'Billetera digital y medios de pago para el día a día.',
+    summary: {
+      es: 'Billetera digital y medios de pago para el día a día.',
+      en: 'A digital wallet and everyday payment methods.',
+    },
   },
   {
     id: 'maspay',
@@ -41,7 +46,10 @@ export const cases: Case[] = [
     title: 'MasPay',
     category: 'product',
     tag: 'Fintech · Wallet',
-    summary: 'Plataforma de pagos y billetera virtual.',
+    summary: {
+      es: 'Plataforma de pagos y billetera virtual.',
+      en: 'A payments platform and virtual wallet.',
+    },
   },
   {
     id: 'ses-sa',
@@ -49,7 +57,10 @@ export const cases: Case[] = [
     title: 'SES-SA',
     category: 'product',
     tag: 'SaaS',
-    summary: 'Plataforma SaaS a medida para gestión operativa.',
+    summary: {
+      es: 'Plataforma SaaS a medida para gestión operativa.',
+      en: 'A custom SaaS platform for operations management.',
+    },
     // No `liveUrl`: the root redirects straight to /login, so there is no public
     // surface to send a prospect to. Without a reachable URL there is no status
     // to report either — the entry stands on its name and what it does.
@@ -60,7 +71,10 @@ export const cases: Case[] = [
     title: 'Consultora Mutual',
     category: 'product',
     tag: 'SaaS',
-    summary: 'Plataforma de gestión para una mutual.',
+    summary: {
+      es: 'Plataforma de gestión para una mutual.',
+      en: 'A management platform for a member-owned mutual society.',
+    },
   },
   {
     id: 'mercado-solar',
@@ -68,7 +82,10 @@ export const cases: Case[] = [
     title: 'Mercado Solar',
     category: 'web',
     tag: 'E-commerce',
-    summary: 'Tienda online de productos de energía solar.',
+    summary: {
+      es: 'Tienda online de productos de energía solar.',
+      en: 'An online store for solar energy products.',
+    },
   },
 ];
 

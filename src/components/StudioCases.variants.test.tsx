@@ -20,7 +20,7 @@ const base: Case = {
   title: 'Acme Platform',
   category: 'product',
   tag: 'Fintech · Wallet',
-  summary: 'Plataforma de pagos.',
+  summary: { es: 'Plataforma de pagos.', en: 'A payments platform.' },
 };
 
 function setCases(...list: Case[]) {
@@ -46,6 +46,12 @@ describe('StudioCases — optional case fields', () => {
     expect(source().getByText('Fintech · Wallet')).toBeInTheDocument();
     expect(source().getByText('Plataforma de pagos.')).toBeInTheDocument();
     expect(screen.queryByRole('img')).toBeNull();
+  });
+
+  it('renders the summary in the requested locale', () => {
+    render(<StudioCases lang="en" />);
+    expect(source().getByText('A payments platform.')).toBeInTheDocument();
+    expect(source().queryByText('Plataforma de pagos.')).toBeNull();
   });
 
   it('joins the stack into a single mono line instead of chips', () => {

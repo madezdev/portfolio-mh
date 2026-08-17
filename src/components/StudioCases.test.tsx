@@ -73,4 +73,16 @@ describe('StudioCases', () => {
     const { container } = render(<StudioCases lang="en" />);
     expect(container.textContent).not.toContain('Del concepto a la realidad');
   });
+
+  it('renders each case summary in the requested locale, not the other one', () => {
+    // The section title alone is not enough of a guard — it caught nothing when
+    // the case DATA (summary) shipped Spanish-only into the English route.
+    const { container: es } = render(<StudioCases lang="es" />);
+    expect(es.textContent).toContain(cases[0].summary.es);
+    expect(es.textContent).not.toContain(cases[0].summary.en);
+
+    const { container: en } = render(<StudioCases lang="en" />);
+    expect(en.textContent).toContain(cases[0].summary.en);
+    expect(en.textContent).not.toContain(cases[0].summary.es);
+  });
 });
