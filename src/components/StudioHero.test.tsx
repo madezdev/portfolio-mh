@@ -4,7 +4,7 @@ import StudioHero from './StudioHero';
 
 describe('StudioHero', () => {
   it('renders the full tagline and both CTAs as real links', () => {
-    render(<StudioHero />);
+    render(<StudioHero lang="es" />);
     expect(screen.getByText(/del concepto|from concept/i)).toBeInTheDocument();
     expect(screen.getByText(/la realidad|to reality/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /definí tu proyecto|define your project/i }))
@@ -14,9 +14,24 @@ describe('StudioHero', () => {
   });
 
   it('labels the scroll cue from i18n rather than a hardcoded literal', () => {
-    render(<StudioHero />);
+    render(<StudioHero lang="es" />);
     const cue = screen.getByRole('link', { name: /bajar a servicios|scroll to services/i });
     expect(cue).toHaveAttribute('href', '#services');
     expect(cue).toHaveTextContent('scroll');
+  });
+
+  it('renders the headline in Spanish', () => {
+    render(<StudioHero lang="es" />);
+    expect(screen.getByText('Del concepto')).toBeInTheDocument();
+  });
+
+  it('renders the headline in English', () => {
+    render(<StudioHero lang="en" />);
+    expect(screen.getByText('From concept')).toBeInTheDocument();
+  });
+
+  it('does not leak the other locale into the output', () => {
+    const { container } = render(<StudioHero lang="en" />);
+    expect(container.textContent).not.toContain('Del concepto');
   });
 });

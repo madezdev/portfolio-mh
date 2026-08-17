@@ -1,13 +1,11 @@
 import { useRef } from 'react';
-import { useStore } from '@nanostores/react';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap';
 import { useMagnetic } from '../hooks/useMagnetic';
 import LanguageToggle from './LanguageToggle';
 
-export default function StudioNav() {
-  const lang = useStore(currentLanguage);
+export default function StudioNav({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   const headerRef = useRef<HTMLElement>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.4);
@@ -67,7 +65,7 @@ export default function StudioNav() {
           {/* Never let the segmented control absorb the squeeze: it is the only
               element here that can shrink, so without this it is the one that breaks. */}
           <div className="shrink-0">
-            <LanguageToggle />
+            <LanguageToggle lang={lang} />
           </div>
           <a
             ref={ctaRef}

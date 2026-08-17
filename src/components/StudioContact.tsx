@@ -1,14 +1,12 @@
 import { useState } from 'react';
-import { useStore } from '@nanostores/react';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
 
 const SUBJECTS = ['web', 'product', 'automation', 'ai', 'other'] as const;
 
-export default function StudioContact() {
-  const lang = useStore(currentLanguage);
+export default function StudioContact({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 

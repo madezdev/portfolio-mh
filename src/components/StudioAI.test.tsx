@@ -23,7 +23,7 @@ describe('StudioAI', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('renders the invitation and the AI disclosure in the #ai section', () => {
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
     expect(document.getElementById('ai')).not.toBeNull();
     expect(screen.getByText(/definamos tu proyecto|let's define your project/i)).toBeInTheDocument();
     expect(screen.getByText(/procesada por ia|processed by ai/i)).toBeInTheDocument();
@@ -31,7 +31,7 @@ describe('StudioAI', () => {
 
   it('shows a fallback CTA to the contact form when the chat errors', () => {
     mockState = { messages: [], status: 'error', error: new Error('ai_unavailable') };
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
     const cta = screen.getByRole('link', { name: /formulario|form/i });
     expect(cta).toHaveAttribute('href', '#contact');
   });
@@ -48,7 +48,7 @@ describe('StudioAI', () => {
         { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'contame mas' }] },
       ],
     };
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
 
     expect(screen.getByText('quiero un saas')).toBeInTheDocument();
     expect(screen.getByText('contame mas')).toBeInTheDocument();
@@ -62,12 +62,12 @@ describe('StudioAI', () => {
 
   it('distinguishes a throttled burst from the assistant being down', () => {
     mockState = { messages: [], status: 'error', error: new Error('ai_busy') };
-    const { unmount } = render(<StudioAI />);
+    const { unmount } = render(<StudioAI lang="es" />);
     expect(screen.getByText(/muchas consultas|a lot of requests/i)).toBeInTheDocument();
     unmount();
 
     mockState = { messages: [], status: 'error', error: new Error('ai_unavailable') };
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
     expect(screen.getByText(/no está disponible|unavailable/i)).toBeInTheDocument();
   });
 
@@ -77,7 +77,7 @@ describe('StudioAI', () => {
       error: new Error('ai_busy'),
       messages: [{ id: '1', role: 'user', parts: [{ type: 'text', text: 'quiero un saas' }] }],
     };
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
 
     fireEvent.click(screen.getByRole('button', { name: /reintentar|try again/i }));
     // Clearing first matters: the hook refuses to run while it holds an error.
@@ -87,7 +87,7 @@ describe('StudioAI', () => {
 
   it('clears a held error before sending a fresh message', () => {
     mockState = { messages: [], status: 'error', error: new Error('ai_unavailable') };
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
 
     const input = screen.getByPlaceholderText(/escribí tu idea|type your idea/i);
     fireEvent.change(input, { target: { value: 'otra idea' } });
@@ -108,7 +108,7 @@ describe('StudioAI', () => {
         { id: '4', role: 'assistant', parts: [{ type: 'text', text: 'genial, dejame tu contacto' }] },
       ],
     };
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
     fireEvent.change(screen.getByPlaceholderText(/tu nombre|your name/i), { target: { value: 'Ada' } });
     fireEvent.change(screen.getByPlaceholderText(/@email/i), { target: { value: 'ada@x.com' } });
     fireEvent.click(screen.getByRole('button', { name: /enviar a madezdev|send to madezdev/i }));
@@ -130,7 +130,7 @@ describe('StudioAI', () => {
       ],
     };
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, json: async () => ({ success: false }) })) as any);
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
     fireEvent.change(screen.getByPlaceholderText(/tu nombre|your name/i), { target: { value: 'Ada' } });
     fireEvent.change(screen.getByPlaceholderText(/@email/i), { target: { value: 'ada@x.com' } });
     fireEvent.click(screen.getByRole('button', { name: /enviar a madezdev|send to madezdev/i }));
@@ -145,7 +145,22 @@ describe('StudioAI', () => {
       status: 'submitted',
       messages: [{ id: '1', role: 'user', parts: [{ type: 'text', text: 'hola' }] }],
     };
-    render(<StudioAI />);
+    render(<StudioAI lang="es" />);
     expect(screen.getByLabelText(/escribiendo|typing/i)).toBeInTheDocument();
+  });
+
+  it('renders the invitation title in Spanish', () => {
+    render(<StudioAI lang="es" />);
+    expect(screen.getByText('Definamos tu proyecto')).toBeInTheDocument();
+  });
+
+  it('renders the invitation title in English', () => {
+    render(<StudioAI lang="en" />);
+    expect(screen.getByText("Let's define your project")).toBeInTheDocument();
+  });
+
+  it('does not leak the other locale into the output', () => {
+    const { container } = render(<StudioAI lang="en" />);
+    expect(container.textContent).not.toContain('Definamos tu proyecto');
   });
 });

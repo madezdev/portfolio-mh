@@ -1,5 +1,4 @@
-import { useStore } from '@nanostores/react';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 
 const SOCIALS = [
@@ -7,8 +6,7 @@ const SOCIALS = [
   { name: 'LinkedIn', href: 'https://www.linkedin.com/company/madezdev' },
 ];
 
-export default function StudioFooter() {
-  const lang = useStore(currentLanguage);
+export default function StudioFooter({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   const year = new Date().getFullYear();
 

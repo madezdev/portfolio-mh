@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useStore } from '@nanostores/react';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { useReveal } from '../hooks/useReveal';
 import { gsap, useGSAP } from '../lib/gsap';
@@ -95,8 +94,7 @@ function CaseEntry({ item, cloned, liveLabel, privateLabel }: {
  * unreadable and a moving link is unclickable, so the motion has to yield as soon
  * as someone actually wants the content.
  */
-export default function StudioCases() {
-  const lang = useStore(currentLanguage);
+export default function StudioCases({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   useReveal('cases');
 

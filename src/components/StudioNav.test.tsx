@@ -4,13 +4,13 @@ import StudioNav from './StudioNav';
 
 describe('StudioNav', () => {
   it('renders the studio brand and the primary CTA', () => {
-    render(<StudioNav />);
+    render(<StudioNav lang="es" />);
     expect(screen.getByText('madezdev')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /agendá una llamada|book a call/i })).toBeInTheDocument();
   });
 
   it('links the CTA to the contact anchor', () => {
-    render(<StudioNav />);
+    render(<StudioNav lang="es" />);
     const cta = screen.getByRole('link', { name: /agendá una llamada|book a call/i });
     expect(cta).toHaveAttribute('href', '#contact');
   });
@@ -19,7 +19,7 @@ describe('StudioNav', () => {
     // jsdom has no layout, so guard the structure that produces the centring:
     // three tracks with equal outer columns beats `justify-between`, which offsets
     // the links by half the excess width of the actions over the wordmark.
-    render(<StudioNav />);
+    render(<StudioNav lang="es" />);
     const nav = document.querySelector('header nav');
     expect(nav?.className).toContain('md:grid-cols-[1fr_auto_1fr]');
 
@@ -34,7 +34,7 @@ describe('StudioNav', () => {
     // Below md the links are hidden, so there is nothing to centre — but the equal
     // outer track still capped the actions at the wordmark's width and squeezed the
     // segmented toggle from 88px down to 10px.
-    render(<StudioNav />);
+    render(<StudioNav lang="es" />);
     const nav = document.querySelector('header nav');
     expect(nav?.className).toContain('justify-between');
     expect(nav?.className).toContain('md:justify-normal');
@@ -46,14 +46,14 @@ describe('StudioNav', () => {
   it('shrinks nothing but keeps the toggle at its natural width', () => {
     // The toggle is the only flex child that can shrink, so it is the one that
     // breaks unless it is explicitly pinned.
-    render(<StudioNav />);
+    render(<StudioNav lang="es" />);
     const toggle = document.querySelector('header [role="group"]');
     expect(toggle?.parentElement?.className).toContain('shrink-0');
   });
 
   it('swaps to a short CTA label on phones without changing its accessible name', () => {
     // The full label plus the wordmark and the toggle need 357px of a 375px bar.
-    render(<StudioNav />);
+    render(<StudioNav lang="es" />);
     const cta = screen.getByRole('link', { name: /agendá una llamada|book a call/i });
     const [short, full] = Array.from(cta.querySelectorAll('span'));
     expect(short.className).toContain('md:hidden');
@@ -67,8 +67,23 @@ describe('StudioNav', () => {
   it('keeps the CTA label on a single line', () => {
     // The equal outer track is narrower than the actions' natural width on small
     // desktops, and a wrappable label gets squeezed into two lines there.
-    render(<StudioNav />);
+    render(<StudioNav lang="es" />);
     const cta = screen.getByRole('link', { name: /agendá una llamada|book a call/i });
     expect(cta.className).toContain('whitespace-nowrap');
+  });
+
+  it('renders the section links in Spanish', () => {
+    render(<StudioNav lang="es" />);
+    expect(screen.getByText('Servicios')).toBeInTheDocument();
+  });
+
+  it('renders the section links in English', () => {
+    render(<StudioNav lang="en" />);
+    expect(screen.getByText('Services')).toBeInTheDocument();
+  });
+
+  it('does not leak the other locale into the output', () => {
+    const { container } = render(<StudioNav lang="en" />);
+    expect(container.textContent).not.toContain('Servicios');
   });
 });

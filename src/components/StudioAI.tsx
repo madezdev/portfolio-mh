@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { useStore } from '@nanostores/react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
@@ -11,8 +10,7 @@ function messageText(m: { parts: Array<{ type: string; text?: string }> }): stri
   return m.parts.filter((p) => p.type === 'text').map((p) => p.text ?? '').join('');
 }
 
-export default function StudioAI() {
-  const lang = useStore(currentLanguage);
+export default function StudioAI({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   const { messages, sendMessage, status, error, clearError, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: '/api/chat' }),

@@ -10,7 +10,7 @@ describe('StudioCases', () => {
   it('renders the marquee track with the list duplicated for a seamless loop', () => {
     // Half the track is exactly one copy, which is the distance the tween travels.
     // Any other multiple and the loop restarts on a visible jump.
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     expect(document.getElementById('cases')).not.toBeNull();
     expect(document.querySelectorAll('#cases .cases-track > div')).toHaveLength(2);
     expect(document.querySelectorAll('#cases article')).toHaveLength(cases.length * 2);
@@ -19,7 +19,7 @@ describe('StudioCases', () => {
   it('exposes each case exactly once to assistive tech', () => {
     // The duplicate exists only so the loop has no seam. A screen reader must hear
     // five cases, not ten.
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     for (const c of cases) expect(screen.getByRole('heading', { name: c.title })).toBeInTheDocument();
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(cases.length);
   });
@@ -27,13 +27,13 @@ describe('StudioCases', () => {
   it('renders no imagery at all — the strip is typographic', () => {
     // A media-led grid has to fill every tile, and a placeholder tile reads as a
     // broken image rather than as a case. Nothing here may reintroduce one.
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     expect(screen.queryAllByRole('img')).toHaveLength(0);
     expect(document.querySelector('#cases img')).toBeNull();
   });
 
   it('links out only for cases that are reachable, not merely deployed', () => {
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     const reachable = cases.filter((c) => c.liveUrl && c.access !== 'private').length;
     expect(screen.queryAllByRole('link', { name: /ver en vivo|view live/i })).toHaveLength(reachable);
   });
@@ -41,7 +41,7 @@ describe('StudioCases', () => {
   it('never links a private case, however live it is', () => {
     // A private product resolves to a login form; sending a prospect there spends
     // the entry's only click on a credentials screen.
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     for (const c of cases.filter((x) => x.access === 'private')) {
       expect(screen.queryByRole('link', { name: new RegExp(c.client, 'i') })).toBeNull();
     }
@@ -51,11 +51,26 @@ describe('StudioCases', () => {
     // GSAP pins `translate/rotate/scale: none` inline on what it animates. The
     // reveal owns the viewport, the marquee owns the track — the moment those are
     // the same element one of the two silently stops running.
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     const viewport = document.querySelector('#cases .cases-marquee');
     const track = document.querySelector('#cases .cases-track');
     expect(viewport?.classList.contains('reveal')).toBe(true);
     expect(track?.classList.contains('reveal')).toBe(false);
     expect(viewport?.contains(track!)).toBe(true);
+  });
+
+  it('renders the section title in Spanish', () => {
+    render(<StudioCases lang="es" />);
+    expect(screen.getByText('Del concepto a la realidad')).toBeInTheDocument();
+  });
+
+  it('renders the section title in English', () => {
+    render(<StudioCases lang="en" />);
+    expect(screen.getByText('From concept to reality')).toBeInTheDocument();
+  });
+
+  it('does not leak the other locale into the output', () => {
+    const { container } = render(<StudioCases lang="en" />);
+    expect(container.textContent).not.toContain('Del concepto a la realidad');
   });
 });

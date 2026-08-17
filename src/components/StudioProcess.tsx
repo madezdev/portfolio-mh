@@ -1,6 +1,5 @@
 import { useRef } from 'react';
-import { useStore } from '@nanostores/react';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { useReveal } from '../hooks/useReveal';
 import { gsap, useGSAP } from '../lib/gsap';
@@ -9,8 +8,7 @@ import { Container } from './primitives/Container';
 
 const STEPS = ['idea', 'design', 'build', 'ship'] as const;
 
-export default function StudioProcess() {
-  const lang = useStore(currentLanguage);
+export default function StudioProcess({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   const trackRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);

@@ -41,7 +41,7 @@ describe('StudioCases — optional case fields', () => {
   it('renders a complete entry from name, tag and summary alone', () => {
     // The minimum case carries no stack, no link, no status. It still has to read
     // as a finished entry rather than as a stub waiting for assets.
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     expect(screen.getByRole('heading', { name: 'Acme Platform' })).toBeInTheDocument();
     expect(source().getByText('Fintech · Wallet')).toBeInTheDocument();
     expect(source().getByText('Plataforma de pagos.')).toBeInTheDocument();
@@ -50,13 +50,13 @@ describe('StudioCases — optional case fields', () => {
 
   it('joins the stack into a single mono line instead of chips', () => {
     setCases({ ...base, stack: ['React', 'Node', 'Postgres'] });
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     expect(source().getByText('React · Node · Postgres')).toBeInTheDocument();
   });
 
   it('names the live link per client and opens it safely', () => {
     setCases({ ...base, liveUrl: 'https://acme.test' });
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
 
     const link = screen.getByRole('link', { name: /ver en vivo: acme/i });
     expect(link).toHaveAttribute('href', 'https://acme.test');
@@ -68,7 +68,7 @@ describe('StudioCases — optional case fields', () => {
     // Without this a keyboard user tabs through every case twice, and the second
     // pass lands on links that assistive tech was told do not exist.
     setCases({ ...base, liveUrl: 'https://acme.test' });
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
 
     const [source, clone] = Array.from(document.querySelectorAll('#cases .cases-track > div'));
     expect(clone).toHaveAttribute('aria-hidden', 'true');
@@ -78,7 +78,7 @@ describe('StudioCases — optional case fields', () => {
 
   it('states that a private case is in production instead of linking to its login', () => {
     setCases({ ...base, liveUrl: 'https://acme.test', access: 'private' });
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
 
     expect(
       source().getByText(/en producción · acceso privado|in production · private access/i),
@@ -89,7 +89,7 @@ describe('StudioCases — optional case fields', () => {
   it('hides the duplicate copy when the user asks for reduced motion', () => {
     // With the tween disabled the strip cannot move, so the duplicate is dead
     // weight the user would otherwise scroll straight into.
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     const [, clone] = Array.from(document.querySelectorAll('#cases .cases-track > div'));
     expect(clone.className).toContain('motion-reduce:hidden');
     expect(document.querySelector('#cases .cases-marquee')?.className).toContain('motion-reduce:overflow-x-auto');
@@ -97,7 +97,7 @@ describe('StudioCases — optional case fields', () => {
 
   it('renders the empty state instead of an empty track', () => {
     setCases();
-    render(<StudioCases />);
+    render(<StudioCases lang="es" />);
     expect(screen.getByText(/casos en camino|case studies coming soon/i)).toBeInTheDocument();
     expect(document.querySelector('#cases .cases-track')).toBeNull();
   });
