@@ -30,7 +30,8 @@ export const leadSchema = z.object({
   budget,
   summary: z.string().min(20).max(1200)
     .describe('One short paragraph: what they need, for whom, at what stage.'),
-  language: z.enum(['es', 'en']),
+  language: z.enum(['es', 'en'])
+    .describe('The language the VISITOR has been writing in. Selects the confirmation email they receive.'),
 });
 
 export type IntakeState = z.infer<typeof intakeStateSchema>;

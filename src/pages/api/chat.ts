@@ -4,6 +4,37 @@ import { intakeInstructions, INTAKE_MODEL, MAX_INPUT_MESSAGES, MAX_MESSAGE_CHARS
 import { checkRateLimit } from '../../server/ai/rate-limit';
 import { getClientIp } from '../../server/security';
 import { createSubmitLeadTool, updateIntakeTool } from '../../server/ai/tools';
+import { SUBMIT_LEAD_TOOL } from '../../lib/ai-tools';
+
+/**
+ * Registers the tools under the shared name contract (`src/lib/ai-tools.ts`)
+ * rather than a literal object key. `hasSubmittedLead` (server) and `leadSent`
+ * (client) both key off the same constant — a hardcoded literal here is exactly
+ * how a rename previously broke both without failing a single test.
+ */
+export function buildChatTools(opts: { messages: UIMessage[]; ip: string }) {
+  return {
+    updateIntake: updateIntakeTool,
+    [SUBMIT_LEAD_TOOL]: createSubmitLeadTool(opts),
+  };
+}
+
+/**
+ * True when a single message's `parts` serialize to more than `MAX_MESSAGE_CHARS`.
+ *
+ * Counting only `text` parts was complete coverage before this branch — `parts`
+ * carried nothing else. Now the history legitimately carries `tool-updateIntake`
+ * / `tool-submitLead` parts whose `input`/`output` are arbitrary JSON, and
+ * `convertToModelMessages` round-trips that JSON straight into the prompt sent to
+ * the model. `messages` is client-supplied and this route is unauthenticated, so
+ * bounding text alone left a caller free to post `MAX_INPUT_MESSAGES` worth of
+ * huge tool payloads and pay nothing against the cap, at 10 req/min against a
+ * paid model. Serializing the whole `parts` array bounds every shape parts can
+ * take, not just the one that existed when the cap was written.
+ */
+export function isMessageTooLong(m: UIMessage): boolean {
+  return JSON.stringify(m.parts ?? []).length > MAX_MESSAGE_CHARS;
+}
 
 /**
  * Whether the provider failed in a way that a retry a moment later could clear.
@@ -53,10 +84,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (messages.length > MAX_INPUT_MESSAGES) {
     return new Response(JSON.stringify({ error: 'too_long' }), { status: 400 });
   }
-  const tooLong = messages.some(
-    (m) => (m.parts ?? []).reduce((n, p) => n + ('text' in p && typeof p.text === 'string' ? p.text.length : 0), 0) > MAX_MESSAGE_CHARS,
-  );
-  if (tooLong) {
+  if (messages.some(isMessageTooLong)) {
     return new Response(JSON.stringify({ error: 'too_long' }), { status: 400 });
   }
 
@@ -72,10 +100,7 @@ export const POST: APIRoute = async ({ request }) => {
       instructions: intakeInstructions(),
       messages: await convertToModelMessages(messages),
       maxOutputTokens: MAX_OUTPUT_TOKENS,
-      tools: {
-        updateIntake: updateIntakeTool,
-        submitLead: createSubmitLeadTool({ messages, ip }),
-      },
+      tools: buildChatTools({ messages, ip }),
       // Without stopWhen the model stops after the tool call and never produces the
       // reply that follows it — the panel would go silent every time it records
       // something. 5 leaves room for a record plus the spoken turn.

@@ -1,5 +1,5 @@
 import { transporter, mailOptions } from '@server/nodemailer';
-import { escapeHtml } from '@server/security';
+import { escapeHtml, isValidEmail } from '@server/security';
 
 /** A lead ready to be mailed. `budget` is already a human sentence, not a state id. */
 export interface Lead {
@@ -204,8 +204,19 @@ const emailTemplates = {
  * Sends both mails for one lead: the notification to the studio and the
  * confirmation to the visitor. Escaping happens here because this is where the
  * HTML lives — callers pass raw values.
+ *
+ * `lead.email` is validated here, not just by callers. Both current callers
+ * already validate — `isValidEmail` on the contact route, `z.email()` on the AI
+ * path — so this closes no live hole today. But this is a shared primitive with
+ * two callers on different validation stacks, and a THIRD caller is exactly the
+ * kind of thing that gets it wrong: this guard throws before `to` or `replyTo`
+ * is ever built from an unvalidated address, regardless of what the caller did.
  */
 export async function sendLeadEmails(lead: Lead): Promise<void> {
+  if (!isValidEmail(lead.email)) {
+    throw new Error('sendLeadEmails: invalid lead.email');
+  }
+
   const templates = emailTemplates[lead.language || 'es'];
   const safe: Lead = {
     ...lead,

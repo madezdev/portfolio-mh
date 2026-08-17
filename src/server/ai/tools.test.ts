@@ -95,6 +95,54 @@ describe('submitLead tool', () => {
     expect(out).toMatchObject({ sent: false, reason: 'send_failed' });
   });
 
+  it('a failed send stays failed on retry: never reports already_sent once the mailer has rejected', async () => {
+    // The bug this closes: a boolean `claimedThisRequest` was set before the
+    // outcome was known and never reset on failure, so a same-turn retry (an
+    // ordinary reaction to `send_failed`) read the claim back as `already_sent`
+    // — telling the visitor they were captured while the studio has nothing.
+    sendLeadEmails.mockRejectedValueOnce(new Error('SMTP timeout'));
+    const t = createSubmitLeadTool({ messages: convo, ip: '1.2.3.4' });
+
+    const first = await t.execute!({ ...lead }, {} as any);
+    expect(first).toMatchObject({ sent: false, reason: 'send_failed' });
+
+    const second = (await t.execute!({ ...lead }, {} as any)) as any;
+    expect(second).toMatchObject({ sent: false, reason: 'send_failed' });
+    expect(second.reason).not.toBe('already_sent');
+    // The owner mail may already be out from the first attempt (`Promise.all`) —
+    // what must never happen is a SECOND attempt at sending it.
+    expect(sendLeadEmails).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the claim when rate-limited, so a same-turn retry is not mistaken for already_sent', async () => {
+    (checkContactRateLimit as any).mockResolvedValueOnce({ success: false });
+    const t = createSubmitLeadTool({ messages: convo, ip: '1.2.3.4' });
+
+    const first = await t.execute!({ ...lead }, {} as any);
+    expect(first).toMatchObject({ sent: false, reason: 'rate_limited' });
+
+    const second = (await t.execute!({ ...lead }, {} as any)) as any;
+    expect(second.reason).not.toBe('already_sent');
+    expect(second).toMatchObject({ sent: true });
+    expect(sendLeadEmails).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not let checkContactRateLimit throw past execute — a malformed store config propagates from outside the limiter\'s internal try/catch', async () => {
+    // `checkContactRateLimit` wraps `limiter.limit()` internally, but `getRedis()`
+    // and `build(redis)` (constructing the client / the limiter itself) run
+    // OUTSIDE that try — a malformed `KV_REST_API_URL` rejects here, not there.
+    (checkContactRateLimit as any).mockRejectedValueOnce(new Error('ECONNREFUSED'));
+    const t = createSubmitLeadTool({ messages: convo, ip: '1.2.3.4' });
+
+    const out = await t.execute!({ ...lead }, {} as any);
+    expect(out).toMatchObject({ sent: false });
+    expect(sendLeadEmails).not.toHaveBeenCalled();
+
+    // Nothing was sent, so the claim must be released for a same-turn retry.
+    const retry = (await t.execute!({ ...lead }, {} as any)) as any;
+    expect(retry.reason).not.toBe('already_sent');
+  });
+
   it('closes the same-request race: two execute calls dispatched together on the same tool instance only send once', async () => {
     const t = createSubmitLeadTool({ messages: convo, ip: '1.2.3.4' });
     const [first, second] = await Promise.all([

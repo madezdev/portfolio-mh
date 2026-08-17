@@ -38,4 +38,11 @@ describe('leadSchema', () => {
   it('rejects a summary too short to be a synthesis', () => {
     expect(leadSchema.safeParse({ ...valid, summary: 'ok' }).success).toBe(false);
   });
+
+  it('describes language as the VISITOR\'s language, not the site\'s', () => {
+    // Every other semantically loaded field is `.describe()`d; this one was not,
+    // and a model can plausibly read a bare `'es' | 'en'` enum as the site's
+    // language rather than the language to reply and confirm in.
+    expect(leadSchema.shape.language.description).toMatch(/visitor/i);
+  });
 });
