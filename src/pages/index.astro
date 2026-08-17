@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import StudioPage from '../components/StudioPage.astro';
-import { orgJsonLdFor, pageMeta } from '../i18n/seo';
+import { pageMeta, siteJsonLdFor } from '../i18n/seo';
 
 // Static HTML: nothing on this page depends on the request. The API routes
 // under /api stay server-rendered.
@@ -10,10 +10,10 @@ export const prerender = true;
 const lang = 'es' as const;
 const { title, description } = pageMeta(lang);
 
-const orgJsonLd = orgJsonLdFor(lang);
+const jsonLd = siteJsonLdFor(lang);
 ---
 
 <Layout lang={lang} title={title} description={description}>
   <StudioPage lang={lang} />
-  <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
 </Layout>

@@ -1,0 +1,280 @@
+<!doctype html>
+<!--
+  Source of public/og-es.png and public/og-en.png — the 1200x630 share cards.
+
+  Regenerate after a copy or palette change:
+    1. open this file in a browser at a 1200x630 viewport
+    2. ?lang=es -> public/og-es.png,  ?lang=en -> public/og-en.png
+
+  Every colour and typeface here is read off src/styles/global.css. The card
+  restates the hero's own argument rather than a new one: the blueprint grid runs
+  cool at the top, the ember horizon is the single hard edge, and the studio name
+  sits below it — concept above the line, the built thing under it.
+-->
+<html lang="es" data-lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>madezdev — Open Graph card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400;500&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink-950: #0a0a0b;
+        --ember-500: #ff6a1a;
+        --blueprint-300: #9db0ff;
+        --blueprint-400: #6b8aff;
+        --fg: #f5f5f4;
+        --fg-muted: #a1a1aa;
+        --horizon: 70%;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        background: var(--ink-950);
+      }
+
+      .card {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--ink-950);
+        font-family: 'Space Grotesk', system-ui, sans-serif;
+      }
+
+      /* Two grids, one drawing, split at the horizon: the journey is the
+         background rather than a sentence about the background. */
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(to right, currentColor 1px, transparent 1px),
+          linear-gradient(to bottom, currentColor 1px, transparent 1px);
+        background-size: 74px 74px;
+      }
+      .grid-cool {
+        color: color-mix(in oklab, var(--blueprint-400) 17%, transparent);
+        -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.4) 52%, transparent 70%);
+        mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.4) 52%, transparent 70%);
+      }
+      .grid-warm {
+        color: color-mix(in oklab, var(--ember-500) 16%, transparent);
+        -webkit-mask-image: linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.75) 70%, rgba(0, 0, 0, 0.1) 100%);
+        mask-image: linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.75) 70%, rgba(0, 0, 0, 0.1) 100%);
+      }
+
+      /* The hero's lighting rig: warm key from above, cool fill from below left. */
+      .wash {
+        position: absolute;
+        left: 50%;
+        top: -26%;
+        width: 900px;
+        height: 720px;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        opacity: 0.6;
+        filter: blur(80px);
+        background: radial-gradient(circle, rgba(255, 138, 61, 0.42), transparent 68%);
+      }
+      .fill {
+        position: absolute;
+        left: -6%;
+        bottom: -30%;
+        width: 620px;
+        height: 620px;
+        border-radius: 50%;
+        opacity: 0.32;
+        filter: blur(110px);
+        background: radial-gradient(circle, rgba(107, 138, 255, 0.34), transparent 70%);
+      }
+      /* Closes the corners without swallowing the key light: the falloff starts
+         late and stops short of opaque. */
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(135% 105% at 50% 30%, transparent 52%, rgba(5, 5, 6, 0.62) 100%);
+      }
+      .grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.07;
+        mix-blend-mode: soft-light;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      /* The one hard edge in the composition. Everything else is a soft field. */
+      .horizon {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: var(--horizon);
+      }
+      /* Light spilling downward off the edge, not a symmetrical halo around it.
+         Centred, the bloom rendered as an orange oval floating mid-card and the
+         line it was meant to support disappeared inside it. */
+      .horizon .bloom {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 104px;
+        background: linear-gradient(to bottom, rgba(255, 106, 26, 0.26), transparent 82%);
+        -webkit-mask-image: linear-gradient(to right, transparent, #000 26%, #000 74%, transparent);
+        mask-image: linear-gradient(to right, transparent, #000 26%, #000 74%, transparent);
+      }
+      /* The site's own horizon gradient, at full strength: near-white at the
+         centre is what makes it read as an edge instead of a glow. */
+      .horizon .line {
+        position: relative;
+        height: 1px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          rgba(255, 138, 61, 0.55) 22%,
+          rgba(255, 227, 207, 0.95) 50%,
+          rgba(255, 138, 61, 0.55) 78%,
+          transparent
+        );
+      }
+
+      .content {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: var(--horizon);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Bottom-aligned so the headline rests on the lit floor. Centred in the
+           upper band it floated, with dead space between the type and the edge
+           that is supposed to be holding it up. */
+        justify-content: flex-end;
+        padding: 0 72px 52px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 19px;
+        font-weight: 500;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: var(--blueprint-300);
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        font-size: 94px;
+        font-weight: 700;
+        line-height: 1.03;
+        letter-spacing: -0.022em;
+      }
+      h1 span {
+        display: block;
+      }
+      .l1 {
+        color: var(--fg);
+      }
+      /* The site sweeps a light across this line on a loop. A still card catches
+         it mid-pass rather than showing the flat state. */
+      .l2 {
+        background-image: linear-gradient(
+          100deg,
+          #ff6a1a 0%,
+          #ff6a1a 42%,
+          #ffe4cf 50%,
+          #ff6a1a 58%,
+          #ff6a1a 100%
+        );
+        background-size: 250% 100%;
+        /* The gradient is sized against the line, so the same offset lands the
+           streak at a different letter in each language. Tuned per line: on the
+           shorter English one it fell on the descender of "reality" and bleached
+           it. Streak position across the line is 1.25 - 1.5 * offset. */
+        background-position: 34% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+      }
+
+      .base {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: var(--horizon);
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 72px;
+      }
+      .wordmark {
+        font-size: 31px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        color: var(--fg);
+      }
+      .domain {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 19px;
+        letter-spacing: 0.06em;
+        color: var(--fg-muted);
+      }
+
+      /* "to reality" is one long word, so a streak anywhere past the start
+         splits it. Catching the leading edge instead keeps the word solid ember. */
+      [data-lang='en'] .l2 {
+        background-position: 68% 0;
+      }
+
+      [data-lang='es'] .en,
+      [data-lang='en'] .es {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="grid grid-cool"></div>
+      <div class="grid grid-warm"></div>
+      <div class="wash"></div>
+      <div class="fill"></div>
+      <div class="vignette"></div>
+      <div class="grain"></div>
+
+      <div class="content">
+        <p class="eyebrow es">// estudio de producto digital</p>
+        <p class="eyebrow en">// digital product studio</p>
+        <h1 class="es"><span class="l1">Del concepto</span><span class="l2">a la realidad</span></h1>
+        <h1 class="en"><span class="l1">From concept</span><span class="l2">to reality</span></h1>
+      </div>
+
+      <div class="horizon">
+        <div class="bloom"></div>
+        <div class="line"></div>
+      </div>
+
+      <div class="base">
+        <span class="wordmark">madezdev</span>
+        <span class="domain">madez.dev</span>
+      </div>
+    </div>
+
+    <script>
+      const lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'es';
+      document.documentElement.dataset.lang = lang;
+      document.documentElement.lang = lang;
+    </script>
+  </body>
+</html>
