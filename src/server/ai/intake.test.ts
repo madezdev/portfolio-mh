@@ -46,4 +46,36 @@ describe('intake config', () => {
     expect(p).toMatch(/once more|one more time/);
     expect(p).toMatch(/move on/);
   });
+
+  it('treats the opening message as a hypothesis, not a fact', () => {
+    const p = intakeInstructions().toLowerCase();
+    // The visitor clicked "Rehacer mi web", said "quiero hacer una web" one turn
+    // later, and the summary still said "rehacer". The chip is not their words.
+    expect(p).toMatch(/suggestion chip|canned|starter/);
+    expect(p).toContain('hypothesis');
+  });
+
+  it('requires recording and correcting state through the tool', () => {
+    const p = intakeInstructions();
+    expect(p).toContain('updateIntake');
+    expect(p.toLowerCase()).toMatch(/latest words|most recent words/);
+  });
+
+  it('forbids closing the lead before the required fields exist', () => {
+    const p = intakeInstructions();
+    expect(p).toContain('submitLead');
+    expect(p.toLowerCase()).toMatch(/only.*(name|email).*budget|budget.*name.*email/s);
+  });
+
+  it('asks one thing per turn with concrete alternatives', () => {
+    const p = intakeInstructions().toLowerCase();
+    expect(p).toMatch(/one question|a single question/);
+    expect(p).toMatch(/yes\/no/);
+  });
+
+  it('gives something back rather than only extracting', () => {
+    const p = intakeInstructions().toLowerCase();
+    expect(p).toMatch(/observation|give.*back|in return/);
+    expect(p).toMatch(/never promise|no commitment|not a commitment/);
+  });
 });
