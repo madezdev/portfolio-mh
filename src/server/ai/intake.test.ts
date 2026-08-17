@@ -96,6 +96,30 @@ describe('intake config', () => {
     expect(rule!.toLowerCase()).toMatch(/explicit|in their own words|says so/);
   });
 
+  it('does not recite the three budget states as one compound question', () => {
+    // Live run: the assistant asked "¿asignado, o todavía definiéndolo o
+    // explorando?" and the visitor answered "no", which fits none of the three.
+    // It was obeying this prompt — the ONE-question rule forbade compound asks,
+    // then the budget rule spelled out a three-branch question a few paragraphs
+    // later. The model followed the more specific instruction.
+    const p = intakeInstructions();
+    const ask = p.split('\n\n').find((para) => /Budget is required/.test(para));
+    expect(ask, 'no paragraph opens the budget ask').toBeDefined();
+    expect(ask!.toLowerCase()).not.toMatch(/exploring/);
+    expect(ask!.toLowerCase()).toMatch(/one question|single question|yes.*no|binary/);
+  });
+
+  it('reserves declined for a refusal, not for having no budget', () => {
+    // Same run: the visitor said "no" to having a budget assigned and the model
+    // recorded `declined`, which means "asked twice and would not answer". The
+    // studio would read "Prefiero no decirlo" for someone who answered honestly.
+    const p = intakeInstructions();
+    const rule = p.split('\n\n').find((para) => para.includes('declined'));
+    expect(rule, 'no paragraph mentions declined').toBeDefined();
+    expect(rule!.toLowerCase()).toMatch(/refus|will not say|prefer not/);
+    expect(rule!.toLowerCase()).toMatch(/not the same as|never.*(mean|record).*no\b|"no" is not/);
+  });
+
   it('asks one thing per turn with concrete alternatives', () => {
     const p = intakeInstructions().toLowerCase();
     expect(p).toMatch(/one question|a single question/);

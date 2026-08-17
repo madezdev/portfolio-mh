@@ -20,7 +20,7 @@ export const intakeStateSchema = z.object({
   timeline: z.string().max(80).optional()
     .describe('When they want this live, in their words: "ASAP", "next quarter", "no rush". Omit if they have not told you.'),
   budget: budget.optional()
-    .describe('The budget situation as the visitor described it. Omit until you have asked and they have answered. Correct it if they revise it later.'),
+    .describe('The budget situation as the visitor described it. Omit until you have asked and they have answered. "declined" means they REFUSED to answer — a plain "no" is an answer meaning defining or exploring, never declined. Correct it if they revise it later.'),
 });
 
 /** The close. Required fields are the contract that replaces the removed form. */

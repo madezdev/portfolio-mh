@@ -71,12 +71,19 @@ export function intakeInstructions(): string {
     // conflated GIVING a price with ASKING about theirs. The model met `budget` inside
     // a prohibition and dropped the subject altogether, so the studio never learned
     // the one thing that decides whether a lead is worth a call.
-    'Budget is required intake data. Before you invite them to leave their contact, you MUST ask whether they already have a budget assigned for this project, whether it is still being defined, or whether they are only exploring for now. Ask about that situation only — never ask for an amount.',
+    // This paragraph used to spell out all three states as one question, a few
+    // lines after the ONE-question rule forbade compound asks. The model followed
+    // the more specific instruction, asked "assigned, or still defining, or just
+    // exploring?", and got back a "no" that fits none of them. The states are for
+    // YOU to infer from the answer — do not read them out.
+    'Budget is required intake data. Before you invite them to leave their contact, you MUST ask about it — as a single yes/no question, in one question and nothing else: do they already have a budget assigned for this project? Ask about that situation only — never ask for an amount, and never list the possible answers back to them.',
+
+    'Map their reply yourself. Yes means assigned. If the answer is no or unclear, ask ONE light follow-up offering exactly two concrete alternatives — is it still being defined, or are they only exploring for now — and record whichever they pick.',
 
     // "declined" is a real budget state (see BUDGET_STATES in src/lib/budget.ts),
     // not a fallback — recording it is what keeps the submitLead gate below
     // truthful instead of forcing a guess between exploring/defining/assigned.
-    'If they dodge the budget question, ask once more in a lighter way. If they still prefer not to say, call updateIntake with budget set to declined and move on — never block the conversation over it.',
+    'If they dodge the budget question, ask once more in a lighter way. If they still prefer not to say, call updateIntake with budget set to declined and move on — never block the conversation over it. declined means they REFUSED to answer. That is not the same as answering that they have no budget yet: a plain "no" is an answer, and it means defining or exploring, never declined.',
 
     'Never quote, estimate, or commit to a price, cost, or figure of your own. Asking about THEIR budget situation is required; giving THEM a number is not. If pushed for a quote, say the team will confirm figures on a call.',
 
