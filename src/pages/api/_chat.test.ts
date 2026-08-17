@@ -1,3 +1,8 @@
+// The leading underscore is what keeps this file out of the route table.
+// Anything else under src/pages/ becomes a public URL, so named `chat.test.ts`
+// this compiled into an /api/chat.test endpoint that shipped test code to
+// production and answered 500. Astro documents the prefix for exactly this:
+// co-locating tests with the page they cover. Do not rename it back.
 import { describe, it, expect } from 'vitest';
 import { isTransient, buildChatTools, isMessageTooLong } from './chat';
 import { SUBMIT_LEAD_TOOL } from '../../lib/ai-tools';

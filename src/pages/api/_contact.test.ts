@@ -1,3 +1,8 @@
+// The leading underscore is what keeps this file out of the route table.
+// Anything else under src/pages/ becomes a public URL, so named
+// `contact.test.ts` this compiled into an /api/contact.test endpoint that
+// shipped test code to production. Astro documents the prefix for exactly
+// this: co-locating tests with the page they cover. Do not rename it back.
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const { sendMail } = vi.hoisted(() => ({ sendMail: vi.fn(async (_options: { html?: string }) => ({})) }));
