@@ -1,17 +1,16 @@
-import { useStore } from '@nanostores/react';
-import { currentLanguage, setLanguage } from '../i18n/store';
 import type { Language } from '../i18n/translations';
+import { LOCALE_PATH } from '../i18n/seo';
 
 // Segmented control: both languages are always visible and the active one is
 // highlighted, so the chip reads as state instead of as a hidden action.
+// The options are anchors, not buttons: language lives in the URL, and these
+// links are how a crawler discovers the other locale.
 const OPTIONS: ReadonlyArray<{ value: Language; code: string; name: string }> = [
   { value: 'es', code: 'ES', name: 'Español' },
   { value: 'en', code: 'EN', name: 'English' },
 ];
 
-export default function LanguageToggle() {
-  const lang = useStore(currentLanguage);
-
+export default function LanguageToggle({ lang }: { lang: Language }) {
   return (
     <div
       role="group"
@@ -27,19 +26,19 @@ export default function LanguageToggle() {
       {OPTIONS.map((option) => {
         const isActive = lang === option.value;
         return (
-          <button
+          <a
             key={option.value}
-            type="button"
+            href={LOCALE_PATH[option.value]}
+            hrefLang={option.value}
             lang={option.value}
-            onClick={() => setLanguage(option.value)}
-            aria-pressed={isActive}
+            aria-current={isActive ? 'page' : undefined}
             aria-label={option.name}
-            className={`relative z-10 rounded-full px-3 py-1 font-mono text-xs font-semibold tracking-wide transition-colors duration-300 motion-reduce:transition-none ${
+            className={`relative z-10 rounded-full px-3 py-1 text-center font-mono text-xs font-semibold tracking-wide transition-colors duration-300 motion-reduce:transition-none ${
               isActive ? 'text-ink-950' : 'text-fg-muted hover:text-fg'
             }`}
           >
             {option.code}
-          </button>
+          </a>
         );
       })}
     </div>
