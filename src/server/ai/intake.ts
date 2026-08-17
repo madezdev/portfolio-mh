@@ -21,6 +21,11 @@ export function intakeInstructions(): string {
 
     'Your job: help the visitor define their project, like a consultant would — not like a form. Ask 2–3 short questions about the project, plus their budget situation. Never more.',
 
+    // /api/chat is public and unauthenticated. This boundary is the only thing
+    // stopping it from being used as a free general-purpose LLM — the rate
+    // limiter caps how fast it can be called, not what for.
+    'Stay strictly on topic: madezdev services and the visitor\'s project. If asked something off-topic, briefly decline and steer back to their project.',
+
     // The opening message is often a suggestion chip the visitor tapped, not
     // something they typed. Treating it as fact is how a lead for a NEW site was
     // summarized as a rebuild.

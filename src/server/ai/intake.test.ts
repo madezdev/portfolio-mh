@@ -78,4 +78,15 @@ describe('intake config', () => {
     expect(p).toMatch(/observation|give.*back|in return/);
     expect(p).toMatch(/never promise|no commitment|not a commitment/);
   });
+
+  it('keeps the assistant scoped to madezdev topics and declines off-topic requests', () => {
+    // /api/chat is public and unauthenticated. This rule is the only thing
+    // stopping it from being used as a free general-purpose LLM — the rate
+    // limiter caps HOW FAST it can be called, not WHAT FOR. It was previously
+    // unpinned, which is exactly why an earlier edit could drop it silently.
+    const p = intakeInstructions().toLowerCase();
+    expect(p).toMatch(/off-topic/);
+    expect(p).toMatch(/decline/);
+    expect(p).toMatch(/steer.*back/);
+  });
 });
