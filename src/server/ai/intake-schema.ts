@@ -1,7 +1,10 @@
 import { z } from 'zod';
-import { BUDGET_STATES } from '../../lib/budget';
+import { BUDGET_STATES, OBSERVABLE_BUDGET_STATES } from '../../lib/budget';
 
+/** Every state, including `declined`. Only the close may assert that one. */
 const budget = z.enum(BUDGET_STATES);
+/** What a turn can observe. Excludes `declined` by construction. */
+const observableBudget = z.enum(OBSERVABLE_BUDGET_STATES);
 
 /**
  * What the assistant has understood so far. Everything is optional because it
@@ -9,18 +12,22 @@ const budget = z.enum(BUDGET_STATES);
  * value rather than add a new one.
  */
 export const intakeStateSchema = z.object({
-  projectType: z.string().max(120).optional()
+  projectType: z.string().min(1).max(120).optional()
     .describe('What they want built, in their words: "sitio corporativo", "SaaS de turnos"'),
   isRewrite: z.boolean().optional()
     .describe('true = rebuilding a site that already exists. false = building from scratch. Omit until the visitor states which, in their own words — tapping the "Rehacer mi web" chip is not a statement. "Quiero hacer una web" means from scratch (false).'),
-  audience: z.string().max(120).optional()
+  audience: z.string().min(1).max(120).optional()
     .describe('Who the project is for, if they said: their own customers, internal staff, themself. Omit if they have not told you.'),
-  stage: z.string().max(120).optional()
+  stage: z.string().min(1).max(120).optional()
     .describe('How far along the project is, if they said: idea, has designs, has a site already, mid-build. Omit if they have not told you.'),
-  timeline: z.string().max(80).optional()
+  timeline: z.string().min(1).max(80).optional()
     .describe('When they want this live, in their words: "ASAP", "next quarter", "no rush". Omit if they have not told you.'),
-  budget: budget.optional()
-    .describe('The budget situation as the visitor described it. Omit until you have asked and they have answered. "declined" means they REFUSED to answer — a plain "no" is an answer meaning defining or exploring, never declined. Correct it if they revise it later.'),
+  // Deliberately narrower than `leadSchema.budget`: no `declined`. See
+  // OBSERVABLE_BUDGET_STATES — a refusal is a fact about the whole conversation,
+  // not something a turn can observe, and a replay caught this field being set to
+  // `declined` on the turn before the question was first asked.
+  budget: observableBudget.optional()
+    .describe('The budget situation as the visitor answered it. Omit until you have asked AND they have answered.'),
 });
 
 /** The close. Required fields are the contract that replaces the removed form. */

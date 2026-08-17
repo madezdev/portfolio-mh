@@ -21,6 +21,24 @@ export const BUDGET_STATES = ['assigned', 'defining', 'exploring', 'declined'] a
 export type BudgetState = (typeof BUDGET_STATES)[number];
 
 /**
+ * The states a single turn can actually establish, which is every one except
+ * `declined`.
+ *
+ * `declined` is not something a visitor says — it is a claim ABOUT the
+ * conversation: that they were asked, asked again, and still would not answer.
+ * No individual turn contains the evidence for it, and a live replay caught the
+ * assistant recording it before it had asked the question even once. So the
+ * incremental recorder cannot express it at all; only the close, which sees the
+ * whole conversation, may assert it.
+ *
+ * This is a constraint, not an instruction. Three prompt revisions asked the
+ * model not to guess here and it found a new way each time.
+ */
+export const OBSERVABLE_BUDGET_STATES = ['assigned', 'defining', 'exploring'] as const;
+
+export type ObservableBudgetState = (typeof OBSERVABLE_BUDGET_STATES)[number];
+
+/**
  * The tool carries the canonical state; the owner email is read by a person.
  * Resolving here keeps "Presupuesto: Sí, ya tengo presupuesto asignado" in the
  * mail instead of the bare id.

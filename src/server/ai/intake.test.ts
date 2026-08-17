@@ -68,10 +68,16 @@ describe('intake config', () => {
     // joined prompt — a prompt-wide match (previously using the `s` flag) would
     // still pass even if the gate itself dropped the budget requirement, because
     // "budget" and "name"/"email" both appear elsewhere in the document.
-    const paragraphs = p.split('\n\n');
-    const gate = paragraphs.find((para) => para.includes('submitLead'));
-    expect(gate).toBeDefined();
-    expect(gate!.toLowerCase()).toMatch(/only.*(name|email).*budget|budget.*name.*email/);
+    // `some`, not `find`: more than one paragraph legitimately mentions the tool
+    // now, and picking the first would test whichever happens to come earlier.
+    // Each candidate is still judged ALONE, which is what keeps a stray "budget"
+    // elsewhere in the prompt from rescuing the match.
+    const candidates = p.split('\n\n').filter((para) => para.includes('submitLead'));
+    expect(candidates.length).toBeGreaterThan(0);
+    const gated = candidates.some((para) =>
+      /only.*(name|email).*budget|budget.*name.*email/.test(para.toLowerCase()),
+    );
+    expect(gated, 'no paragraph carries the name+email+budget gate').toBe(true);
   });
 
   it('forbids recording anything the visitor did not actually say', () => {
@@ -118,6 +124,11 @@ describe('intake config', () => {
     expect(rule, 'no paragraph mentions declined').toBeDefined();
     expect(rule!.toLowerCase()).toMatch(/refus|will not say|prefer not/);
     expect(rule!.toLowerCase()).toMatch(/not the same as|never.*(mean|record).*no\b|"no" is not/);
+    // The prompt must not send the model at a tool that will reject it:
+    // updateIntake's schema no longer accepts `declined`, so instructing it to
+    // record one there would spend a step on a guaranteed validation failure.
+    expect(rule!).toMatch(/submitLead/);
+    expect(rule!.toLowerCase()).toMatch(/does not accept|cannot accept|leave budget unset/);
   });
 
   it('asks one thing per turn with concrete alternatives', () => {

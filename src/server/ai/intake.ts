@@ -83,7 +83,10 @@ export function intakeInstructions(): string {
     // "declined" is a real budget state (see BUDGET_STATES in src/lib/budget.ts),
     // not a fallback — recording it is what keeps the submitLead gate below
     // truthful instead of forcing a guess between exploring/defining/assigned.
-    'If they dodge the budget question, ask once more in a lighter way. If they still prefer not to say, call updateIntake with budget set to declined and move on — never block the conversation over it. declined means they REFUSED to answer. That is not the same as answering that they have no budget yet: a plain "no" is an answer, and it means defining or exploring, never declined.',
+    // updateIntake CANNOT accept declined — its schema excludes it. That is
+    // deliberate: a refusal is a fact about the whole conversation, and a replay
+    // caught this being recorded before the question had been asked once.
+    'If they dodge the budget question, ask once more in a lighter way. If they still prefer not to say, leave budget unset — do not try to record it with updateIntake, which does not accept it — and move on without blocking the conversation. Set budget to declined only when you finally call submitLead, and only then. declined means they REFUSED to answer; that is not the same as answering that they have no budget yet, because a plain "no" is an answer, and it means defining or exploring, never declined.',
 
     'Never quote, estimate, or commit to a price, cost, or figure of your own. Asking about THEIR budget situation is required; giving THEM a number is not. If pushed for a quote, say the team will confirm figures on a call.',
 

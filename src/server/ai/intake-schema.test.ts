@@ -10,9 +10,37 @@ describe('intakeStateSchema', () => {
   it('keeps isRewrite a boolean so a correction is an explicit act', () => {
     expect(intakeStateSchema.safeParse({ isRewrite: 'no' }).success).toBe(false);
   });
+
+  it('rejects an empty string instead of storing it as a recorded answer', () => {
+    // A live replay recorded `timeline: ""`. An omitted field means "not asked
+    // yet"; an empty string is indistinguishable from an answer in the summary
+    // and the lead. The schema now refuses to carry the ambiguity.
+    for (const field of ['projectType', 'audience', 'stage', 'timeline'] as const) {
+      expect(intakeStateSchema.safeParse({ [field]: '' }).success, field).toBe(false);
+      expect(intakeStateSchema.safeParse({ [field]: 'x' }).success, field).toBe(true);
+    }
+  });
+
+  it('cannot record declined — no single turn proves a refusal', () => {
+    // Three prompt revisions asked the model not to assert this prematurely; a
+    // replay then recorded `declined` on the turn BEFORE it asked the question.
+    // `declined` is a claim about the whole conversation, so the incremental
+    // recorder is not allowed to express it.
+    expect(intakeStateSchema.safeParse({ budget: 'declined' }).success).toBe(false);
+    for (const state of ['assigned', 'defining', 'exploring'] as const) {
+      expect(intakeStateSchema.safeParse({ budget: state }).success, state).toBe(true);
+    }
+  });
 });
 
 describe('leadSchema', () => {
+  it('still accepts declined — the close is the one place that can assert it', () => {
+    expect(leadSchema.safeParse({
+      name: 'Ada Lovelace', email: 'ada@studio.dev', budget: 'declined',
+      summary: 'Sitio corporativo nuevo para una pyme, sin diseño previo.', language: 'es',
+    }).success).toBe(true);
+  });
+
   const valid = {
     name: 'Ada Lovelace',
     email: 'ada@studio.dev',
