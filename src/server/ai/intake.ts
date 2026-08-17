@@ -12,8 +12,25 @@
 export const INTAKE_MODEL = 'openai/gpt-4o-mini';
 export const MAX_INPUT_MESSAGES = 24;
 export const MAX_OUTPUT_TOKENS = 600;
-/** Reject a single message longer than this (cost / abuse control). */
+/** Reject a single message whose TEXT is longer than this (cost / abuse control). */
 export const MAX_MESSAGE_CHARS = 2000;
+/**
+ * Reject a single message whose serialized `parts` exceed this.
+ *
+ * Separate from `MAX_MESSAGE_CHARS` because the two bound different things. That
+ * one caps what a visitor can type. This one caps the whole `parts` array, which
+ * now also carries tool payloads the SERVER generated — and those legitimately
+ * dwarf a typed message: an assistant turn can hold its reply (up to
+ * `MAX_OUTPUT_TOKENS`) plus an `updateIntake` part whose input is echoed back as
+ * its output, plus a `submitLead` part whose schema alone permits ~1750 chars.
+ * Applying the 2000 text cap to that sum rejected the message AFTER the lead had
+ * already been mailed, ending a successful session on a 400.
+ *
+ * The abuse case this guards is orders of magnitude above a legitimate turn, so
+ * the gap between the two limits costs nothing: 24 messages at this size is still
+ * a bounded request.
+ */
+export const MAX_MESSAGE_BYTES = 12000;
 
 export function intakeInstructions(): string {
   return [

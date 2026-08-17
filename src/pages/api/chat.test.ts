@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { isTransient, buildChatTools, isMessageTooLong } from './chat';
 import { SUBMIT_LEAD_TOOL } from '../../lib/ai-tools';
-import { MAX_MESSAGE_CHARS } from '../../server/ai/intake';
+import { MAX_MESSAGE_BYTES, MAX_MESSAGE_CHARS } from '../../server/ai/intake';
 
 /**
  * The client shows "try again in a moment" or "the assistant is down" based on this
@@ -89,11 +89,43 @@ describe('buildChatTools', () => {
  */
 describe('isMessageTooLong', () => {
   it('bounds the serialized size of tool payloads, not just text', () => {
-    const huge = 'x'.repeat(MAX_MESSAGE_CHARS + 1);
+    const huge = 'x'.repeat(MAX_MESSAGE_BYTES + 1);
     const m = {
       id: '1', role: 'assistant',
       parts: [{ type: 'tool-updateIntake', state: 'output-available', input: { note: huge }, output: {} }],
     } as any;
+    expect(isMessageTooLong(m)).toBe(true);
+  });
+
+  it('accepts a legitimate closing turn carrying a reply and both tool parts', () => {
+    // Regression: the bytes bound used to be MAX_MESSAGE_CHARS, so a real
+    // assistant turn — its reply, plus updateIntake (whose input is echoed back
+    // as its output, counting twice), plus a submitLead part near its schema
+    // maxima — blew the typed-message cap. The visitor's NEXT message then 400'd
+    // AFTER their lead had already been mailed, ending a successful session on
+    // an error. The two limits exist so a server-generated turn is not measured
+    // against what a visitor can type.
+    const intake = { projectType: 'x'.repeat(120), audience: 'y'.repeat(120), stage: 'z'.repeat(120), timeline: 'w'.repeat(80), isRewrite: false, budget: 'assigned' };
+    const m = {
+      id: '1', role: 'assistant',
+      parts: [
+        { type: 'text', text: 'a'.repeat(1200) },
+        { type: 'tool-updateIntake', state: 'output-available', input: intake, output: intake },
+        {
+          type: 'tool-submitLead', state: 'output-available',
+          input: { name: 'n'.repeat(200), email: 'ada@studio.dev', budget: 'assigned', summary: 's'.repeat(1200), language: 'es' },
+          output: { sent: true },
+        },
+      ],
+    } as any;
+    expect(isMessageTooLong(m)).toBe(false);
+  });
+
+  it('still rejects an oversized text part even when the serialized total fits', () => {
+    // The text cap is not made redundant by the bytes cap: 2001 chars of typed
+    // text serializes well under MAX_MESSAGE_BYTES, so only the text bound catches it.
+    const m = { id: '1', role: 'user', parts: [{ type: 'text', text: 'x'.repeat(MAX_MESSAGE_CHARS + 1) }] } as any;
+    expect(JSON.stringify(m.parts).length).toBeLessThan(MAX_MESSAGE_BYTES);
     expect(isMessageTooLong(m)).toBe(true);
   });
 

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { convertToModelMessages, isStepCount, streamText, type UIMessage } from 'ai';
-import { intakeInstructions, INTAKE_MODEL, MAX_INPUT_MESSAGES, MAX_MESSAGE_CHARS, MAX_OUTPUT_TOKENS } from '../../server/ai/intake';
+import { intakeInstructions, INTAKE_MODEL, MAX_INPUT_MESSAGES, MAX_MESSAGE_BYTES, MAX_MESSAGE_CHARS, MAX_OUTPUT_TOKENS } from '../../server/ai/intake';
 import { checkRateLimit } from '../../server/ai/rate-limit';
 import { getClientIp } from '../../server/security';
 import { createSubmitLeadTool, updateIntakeTool } from '../../server/ai/tools';
@@ -20,20 +20,30 @@ export function buildChatTools(opts: { messages: UIMessage[]; ip: string }) {
 }
 
 /**
- * True when a single message's `parts` serialize to more than `MAX_MESSAGE_CHARS`.
+ * True when a single message exceeds either of its two bounds.
  *
- * Counting only `text` parts was complete coverage before this branch — `parts`
+ * Counting only `text` parts was complete coverage before tools existed — `parts`
  * carried nothing else. Now the history legitimately carries `tool-updateIntake`
  * / `tool-submitLead` parts whose `input`/`output` are arbitrary JSON, and
- * `convertToModelMessages` round-trips that JSON straight into the prompt sent to
- * the model. `messages` is client-supplied and this route is unauthenticated, so
- * bounding text alone left a caller free to post `MAX_INPUT_MESSAGES` worth of
- * huge tool payloads and pay nothing against the cap, at 10 req/min against a
- * paid model. Serializing the whole `parts` array bounds every shape parts can
- * take, not just the one that existed when the cap was written.
+ * `convertToModelMessages` round-trips that JSON straight into the prompt.
+ * `messages` is client-supplied and this route is unauthenticated, so bounding
+ * text alone left a caller free to post `MAX_INPUT_MESSAGES` worth of huge tool
+ * payloads and pay nothing against the cap, at 10 req/min against a paid model.
+ *
+ * Two limits rather than one, because the two shapes are not comparable. The text
+ * cap governs what a visitor types. The bytes cap governs the serialized `parts`,
+ * which include payloads the SERVER generated — a legitimate closing turn carries
+ * its reply plus both tool parts and runs several times the text cap. Measuring
+ * that sum against the typed-message limit rejected the visitor's NEXT message
+ * with a 400, after their lead had already been mailed.
  */
 export function isMessageTooLong(m: UIMessage): boolean {
-  return JSON.stringify(m.parts ?? []).length > MAX_MESSAGE_CHARS;
+  const parts = m.parts ?? [];
+  const textLength = parts.reduce(
+    (n, p) => n + ('text' in p && typeof p.text === 'string' ? p.text.length : 0),
+    0,
+  );
+  return textLength > MAX_MESSAGE_CHARS || JSON.stringify(parts).length > MAX_MESSAGE_BYTES;
 }
 
 /**
