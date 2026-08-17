@@ -1,25 +1,24 @@
 import { translations, type Language } from './translations';
-import { currentLanguage } from './store';
 
-// Helper function to get translation
-export function t(key: string, lang?: Language): string {
-  const language = lang || currentLanguage.get();
+/**
+ * `lang` is required on purpose. When it was optional, any call site that
+ * forgot it silently fell back to a global store and rendered the wrong
+ * language with no error. Required turns that mistake into a compile error.
+ */
+export function t(key: string, lang: Language): string {
   const keys = key.split('.');
-  let value: any = translations[language];
-  
+  let value: unknown = translations[lang];
+
   for (const k of keys) {
-    value = value?.[k];
+    value = (value as Record<string, unknown> | undefined)?.[k];
   }
-  
-  return value || key;
+
+  return typeof value === 'string' ? value : key;
 }
 
-// Hook for components to get translations
-export function useTranslations(lang?: Language) {
-  const language = lang || currentLanguage.get();
-  
+export function useTranslations(lang: Language) {
   return {
-    t: (key: string) => t(key, language),
-    lang: language
+    t: (key: string) => t(key, lang),
+    lang,
   };
 }

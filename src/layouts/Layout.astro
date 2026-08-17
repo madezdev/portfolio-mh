@@ -1,5 +1,4 @@
 ---
-import { currentLanguage } from '../i18n/store';
 import '../styles/global.css';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -88,16 +87,6 @@ const canonicalURL = Astro.url;
 	<body class="bg-ink-950 text-fg font-sans antialiased">
 		<slot />
 		<Analytics />
-		<script>
-			// Initialize language on page load
-			import { currentLanguage } from '../i18n/store.ts';
-			import type { Language } from '../i18n/translations';
-			
-			// Set document language based on store
-			currentLanguage.subscribe((lang: Language) => {
-				document.documentElement.lang = lang;
-			});
-		</script>
 	</body>
 </html>
 
