@@ -8,8 +8,9 @@ import { translations, type Language } from '../i18n/translations';
  * on that call. Keeping figures out of the picker also means the assistant's
  * "never quote a price" rule stays intact: there is no number anywhere to anchor to.
  *
- * The <select> in StudioAI renders straight from this list, and the labels live in
- * i18n keyed by these ids, so both sides move together.
+ * The Zod schema (`src/server/ai/intake-schema.ts`) builds its enum straight from
+ * this list, and the labels live in i18n keyed by these ids, so schema and copy
+ * move together.
  *
  * `declined` is distinct from `exploring`: it means the visitor was asked twice
  * and chose not to answer, not that they have no budget yet. Collapsing the two

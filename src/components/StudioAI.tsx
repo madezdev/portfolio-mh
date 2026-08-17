@@ -5,9 +5,15 @@ import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
+import { SUBMIT_LEAD_TOOL_PART } from '../lib/ai-tools';
 
-function messageText(m: { parts: Array<{ type: string; text?: string }> }): string {
-  return m.parts.filter((p) => p.type === 'text').map((p) => p.text ?? '').join('');
+// Guarded the same way as `leadSent` below: `parts` is typed as required on
+// `UIMessage`, but is defensively treated as possibly absent at runtime
+// throughout this codebase (see `transcriptOf` in `src/server/ai/tools.ts`).
+// This runs for every rendered message, so an unguarded access here was the
+// riskier of the two identical assumptions.
+function messageText(m: { parts?: Array<{ type: string; text?: string }> }): string {
+  return (m.parts ?? []).filter((p) => p.type === 'text').map((p) => p.text ?? '').join('');
 }
 
 export default function StudioAI({ lang }: { lang: Language }) {
@@ -23,7 +29,7 @@ export default function StudioAI({ lang }: { lang: Language }) {
   // because a rejected tool call arrives as `state: 'output-error'` with no `output`.
   const leadSent = messages.some((m) =>
     m.parts?.some(
-      (p: any) => p.type === 'tool-submitLead' && p.state === 'output-available' && p.output?.sent,
+      (p: any) => p.type === SUBMIT_LEAD_TOOL_PART && p.state === 'output-available' && p.output?.sent,
     ),
   );
 
@@ -80,23 +86,32 @@ export default function StudioAI({ lang }: { lang: Language }) {
                     throws the reader out of the conversation. */}
                 {messages.length > 0 && (
                   <div ref={scrollRef} className="mb-4 max-h-80 space-y-4 overflow-y-auto overscroll-contain">
-                    {messages.map((m) => (
-                      <div key={m.id} className={m.role === 'user' ? 'text-right' : 'text-left'}>
-                        <span
-                          className={
-                            // `break-words`: a URL or any long unbroken token is wider
-                            // than the 85% cap and spills straight out of the bubble.
-                            // `text-left`: only the bubble's SIDE should change with the
-                            // role. Inheriting `text-right` ragged-lefts the user's own
-                            // text, which is where wrapping is worst on a narrow screen.
-                            'inline-block max-w-[85%] break-words rounded-2xl px-4 py-2 text-left text-sm ' +
-                            (m.role === 'user' ? 'bg-ember-500 text-ink-950' : 'bg-ink-800 text-fg')
-                          }
-                        >
-                          {messageText(m)}
-                        </span>
-                      </div>
-                    ))}
+                    {messages.map((m) => {
+                      // An assistant message carrying only tool parts (updateIntake,
+                      // submitLead) has no text, and there is nothing to show for it —
+                      // the confirmation line below already renders from the
+                      // submitLead result. Skipping the whole row, not just the span,
+                      // keeps `space-y-4` from opening a blank gap for it.
+                      const text = messageText(m);
+                      if (!text) return null;
+                      return (
+                        <div key={m.id} className={m.role === 'user' ? 'text-right' : 'text-left'}>
+                          <span
+                            className={
+                              // `break-words`: a URL or any long unbroken token is wider
+                              // than the 85% cap and spills straight out of the bubble.
+                              // `text-left`: only the bubble's SIDE should change with the
+                              // role. Inheriting `text-right` ragged-lefts the user's own
+                              // text, which is where wrapping is worst on a narrow screen.
+                              'inline-block max-w-[85%] break-words rounded-2xl px-4 py-2 text-left text-sm ' +
+                              (m.role === 'user' ? 'bg-ember-500 text-ink-950' : 'bg-ink-800 text-fg')
+                            }
+                          >
+                            {text}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 

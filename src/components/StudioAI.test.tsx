@@ -144,6 +144,22 @@ describe('StudioAI', () => {
     expect(screen.getByText(/contactamos pronto|in touch soon/i)).toBeInTheDocument();
   });
 
+  it('does not render an empty bubble for a message that carries only tool parts', () => {
+    // `messageText` returns '' for a tool-only message, but the bubble used to
+    // render unconditionally — an empty styled span with nothing in it.
+    mockState = {
+      status: 'ready',
+      messages: [
+        {
+          id: '1', role: 'assistant',
+          parts: [{ type: 'tool-updateIntake', state: 'output-available', output: {} }],
+        },
+      ],
+    };
+    const { container } = render(<StudioAI lang="es" />);
+    expect(container.querySelector('.rounded-2xl.px-4.py-2')).toBeNull();
+  });
+
   it('does not confirm when the lead was not sent', () => {
     mockState = {
       status: 'ready',
