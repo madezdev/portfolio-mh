@@ -221,6 +221,8 @@ export async function sendLeadEmails(lead: Lead): Promise<void> {
       ...mailOptions,
       from: emailUser,
       to: 'madezdev@gmail.com',
+      // Deliberately raw, not `safe.subject`: this is a mail header, not HTML.
+      // Escaping it would corrupt the visible subject line (e.g. "Tom & Jerry" -> "Tom &amp; Jerry").
       subject: templates.toOwner.subject(lead.subject),
       html: templates.toOwner.html(safe),
       replyTo: lead.email,
