@@ -1,13 +1,29 @@
 /**
- * Routed through the Vercel AI Gateway. `anthropic/claude-haiku-4.5` was the first
- * choice but the Gateway rejects it with 403 `RestrictedModelsError` — that model is
- * gated behind paid credits, and this account has none. The failure surfaces as a
- * stream that opens 200 and then carries an error frame, so the panel renders its
- * fallback rather than reporting a network error.
+ * Routed through the Vercel AI Gateway, reached by Vercel's OIDC token — there is
+ * no gateway or provider key in this project's environment.
  *
- * This one is reachable on the free tier and was checked against the Gateway directly.
- * Switch back to Claude Haiku here the moment the account has credits; nothing else
- * in the route depends on the provider.
+ * What the free tier actually does, measured against the Gateway rather than
+ * inferred from the symptom: it RATE-LIMITS per model. The error is a 429
+ * `GatewayRateLimitError` ("Free tier requests on this model are rate-limited"),
+ * which the route classifies as transient and the panel shows as "busy". It is
+ * not an empty balance and not a restricted model, which is what the earlier note
+ * here claimed. In practice one four-turn conversation exhausts it and it needs
+ * several minutes to recover, so any live verification has to be planned as a
+ * single pass.
+ *
+ * The failure surfaces as a stream that opens 200 and then carries an error
+ * frame, so the panel renders its notice rather than reporting a network error.
+ *
+ * On the model itself: this one calls tools correctly when handed the real tool
+ * description — an early probe that suggested otherwise had shortened it, and was
+ * measuring its own paraphrase. It does still populate fields the visitor never
+ * mentioned; that state stays in the model's own scratchpad and never reaches the
+ * owner email, which is assembled from `submitLead`'s arguments plus the
+ * server-built transcript.
+ *
+ * If credits are ever added, `openai/gpt-5-nano` is worth measuring against this:
+ * a newer generation at roughly a third of the input price. Nothing else in the
+ * route depends on the provider.
  */
 export const INTAKE_MODEL = 'openai/gpt-4o-mini';
 export const MAX_INPUT_MESSAGES = 24;
