@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { Analytics } from '@vercel/analytics/react';
-import { seoFor } from '../i18n/seo';
+import { pageMeta, seoFor } from '../i18n/seo';
 import type { Language } from '../i18n/translations';
 
 export interface Props {
@@ -18,6 +18,7 @@ const { lang, title, description } = Astro.props;
 // Derived from path constants, never from Astro.url: the request URL used to
 // leak tracking parameters straight into rel=canonical.
 const { canonical, alternates, ogLocale } = seoFor(lang);
+const { imageAlt } = pageMeta(lang);
 const logoUrl = new URL('/logoMadezdev-2.png', canonical).toString();
 ---
 
@@ -48,7 +49,7 @@ const logoUrl = new URL('/logoMadezdev-2.png', canonical).toString();
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={logoUrl} />
-		<meta property="og:image:alt" content={lang === 'es' ? "Martin Hernandez - Desarrollador" : "Martin Hernandez - Developer"} />
+		<meta property="og:image:alt" content={imageAlt} />
 		<meta property="og:site_name" content="madezdev" />
 		<meta property="og:locale" content={ogLocale} />
 

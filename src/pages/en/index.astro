@@ -1,24 +1,14 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import StudioPage from '../../components/StudioPage.astro';
-import { pageMeta, seoFor } from '../../i18n/seo';
+import { orgJsonLdFor, pageMeta } from '../../i18n/seo';
 
 export const prerender = true;
 
 const lang = 'en' as const;
 const { title, description } = pageMeta(lang);
 
-const orgJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'madezdev',
-  url: seoFor(lang).canonical,
-  description,
-  sameAs: [
-    'https://github.com/madezdev',
-    'https://www.linkedin.com/company/madezdev',
-  ],
-};
+const orgJsonLd = orgJsonLdFor(lang);
 ---
 
 <Layout lang={lang} title={title} description={description}>

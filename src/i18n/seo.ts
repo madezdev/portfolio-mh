@@ -19,16 +19,18 @@ const OG_LOCALE: Record<Language, string> = {
   en: 'en_US',
 };
 
-const PAGE_META: Record<Language, { title: string; description: string }> = {
+const PAGE_META: Record<Language, { title: string; description: string; imageAlt: string }> = {
   es: {
     title: 'madezdev — Estudio de producto digital | Del concepto a la realidad',
     description:
       'Estudio que diseña y construye productos web, SaaS y automatizaciones con IA. Del concepto a la realidad.',
+    imageAlt: 'madezdev — Estudio de producto digital',
   },
   en: {
     title: 'madezdev — Digital product studio | From concept to reality',
     description:
       'A studio that designs and builds web products, SaaS, and AI automations. From concept to reality.',
+    imageAlt: 'madezdev — Digital product studio',
   },
 };
 
@@ -50,7 +52,7 @@ export function absoluteUrl(path: string): string {
   return new URL(path, SITE_ORIGIN).toString();
 }
 
-export function pageMeta(lang: Language): { title: string; description: string } {
+export function pageMeta(lang: Language): { title: string; description: string; imageAlt: string } {
   return PAGE_META[lang];
 }
 
@@ -68,5 +70,26 @@ export function seoFor(lang: Language): LocaleSeo {
       { hreflang: 'x-default', href: absoluteUrl(LOCALE_PATH[DEFAULT_LANGUAGE]) },
     ],
     ogLocale: OG_LOCALE[lang],
+  };
+}
+
+/**
+ * An Organization is one real-world entity with one canonical URL, tied
+ * together by a stable @id. `/en/` is a page of that organization's site,
+ * not the organization's own URL — so `url` and `@id` are locale-invariant
+ * even though `description` still varies per locale.
+ */
+export function orgJsonLdFor(lang: Language) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE_ORIGIN}/#organization`,
+    name: 'madezdev',
+    url: absoluteUrl(LOCALE_PATH[DEFAULT_LANGUAGE]),
+    description: pageMeta(lang).description,
+    sameAs: [
+      'https://github.com/madezdev',
+      'https://www.linkedin.com/company/madezdev',
+    ],
   };
 }

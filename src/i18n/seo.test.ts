@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { seoFor, absoluteUrl, pageMeta, LOCALE_PATH, SITE_ORIGIN } from './seo';
+import { seoFor, absoluteUrl, pageMeta, orgJsonLdFor, LOCALE_PATH, SITE_ORIGIN } from './seo';
 
 describe('seoFor', () => {
   it('canonicalises each locale to its own path', () => {
@@ -55,5 +55,39 @@ describe('pageMeta', () => {
     // Regression: Layout fell back to stale pre-redesign copy.
     expect(pageMeta('es').description).toContain('Estudio');
     expect(pageMeta('es').description).not.toContain('Node.js');
+  });
+
+  it('gives each locale a distinct og:image:alt', () => {
+    expect(pageMeta('es').imageAlt).not.toBe(pageMeta('en').imageAlt);
+  });
+
+  it('does not describe the image with the pre-redesign personal byline', () => {
+    // Regression: og:image:alt still read "Martin Hernandez - Desarrollador"
+    // / "Martin Hernandez - Developer" after the site was rebranded to the
+    // madezdev studio.
+    expect(pageMeta('es').imageAlt).not.toContain('Martin Hernandez');
+    expect(pageMeta('en').imageAlt).not.toContain('Martin Hernandez');
+  });
+});
+
+describe('orgJsonLdFor', () => {
+  it('does not vary the entity url by locale', () => {
+    // Regression guard: an Organization is one entity with one canonical
+    // URL. This must fail if seoFor(lang).canonical is reintroduced here,
+    // which would split the entity across / and /en/.
+    expect(orgJsonLdFor('es').url).toBe(orgJsonLdFor('en').url);
+  });
+
+  it('shares the same @id across locales', () => {
+    expect(orgJsonLdFor('es')['@id']).toBe(orgJsonLdFor('en')['@id']);
+  });
+
+  it('varies description per locale', () => {
+    expect(orgJsonLdFor('es').description).not.toBe(orgJsonLdFor('en').description);
+  });
+
+  it('resolves the entity url to the default-locale root, not /en/', () => {
+    expect(orgJsonLdFor('en').url).toBe('https://www.madez.dev/');
+    expect(orgJsonLdFor('en').url).not.toBe('https://www.madez.dev/en/');
   });
 });
