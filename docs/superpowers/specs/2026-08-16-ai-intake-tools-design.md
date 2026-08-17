@@ -139,6 +139,17 @@ effects. Three guards:
    refuse without sending.
 3. Zod validates before the mailer is touched.
 
+**The idempotency check is session-local, plainly stated.** It reads the
+client-supplied `messages` history, not a server-side record — it does not
+survive a page reload, and a client that strips the `tool-submitLead` part
+before resending bypasses it entirely. It is a same-conversation courtesy, not a
+security boundary. `checkContactRateLimit` is the only guard that is bound
+across sessions, and it fails OPEN when its store is unreachable (see
+`rate-limit.ts`): a configured-but-dead store degrades to "allow the request"
+rather than taking the endpoint down. Neither guard is a hard cap on how many
+times a given visitor can reach the mailer; both are deliberately soft, in
+keeping with the non-goal of a Redis-backed cross-session dedupe.
+
 ### Email sending is extracted so both callers share it
 
 `emailTemplates` is a route-private const inside a 273-line `contact.ts` that
@@ -169,7 +180,7 @@ driven by data cannot become unreachable the way a boolean pair could.
 | `src/pages/api/contact.ts` | reduced to HTTP validation and routing; imports `sendLeadEmails` |
 | `src/components/StudioAI.tsx` | capture form removed; composer unconditional; confirmation derived from tool result |
 | `src/i18n/translations.ts` | form copy (`prompt`, `name`, `email`, `submit`, `budgetLabel`) removed; `success` and `budgetOptions` kept — see below |
-| `src/lib/budget.ts` | unchanged — `BUDGET_STATES` now feeds the schema |
+| `src/lib/budget.ts` | `budgetLabel(state, lang)` added — resolves a `BudgetState` to the sentence the owner email renders; `BUDGET_STATES` feeds the schema |
 
 `zod` is added as a dependency; the project has none today.
 
@@ -183,19 +194,29 @@ driven by data cannot become unreachable the way a boolean pair could.
   audience?: string,
   stage?: string,
   timeline?: string,
-  budget?: BudgetState,   // 'assigned' | 'defining' | 'exploring'
+  budget?: BudgetState,   // 'assigned' | 'defining' | 'exploring' | 'declined'
 }
 
 // submitLead — sends the email; required fields are the contract
 {
   name: string,           // min 2
-  email: string,          // z.string().email()
+  email: string,          // z.email()
   budget: BudgetState,    // required
   summary: string,        // min 20 — the assistant's synthesis
-  language: 'es' | 'en',  // which template to send; the assistant already
-                          // tracks the visitor's language to reply in it
+  language: 'es' | 'en',  // the VISITOR's language, not the site's — selects
+                          // which confirmation template they receive; the
+                          // assistant already tracks it to reply in kind
 }
 ```
+
+**`declined` was added mid-branch.** The three states above were the full set at
+design time. `leadSchema`'s `budget` had no value meaning "the visitor was asked
+and chose not to answer" — only `exploring`, which means "no budget yet," a
+different claim. Without a fourth state, the model was forced to either drop a
+qualified lead entirely (never call `submitLead`) or fabricate one of the other
+three, putting a state the visitor never claimed into the lead the studio reads.
+`BUDGET_STATES` in `src/lib/budget.ts` is the source of truth; the schema derives
+its enum from it.
 
 The owner email carries the summary above the transcript, so the team gets both
 the synthesis and the raw conversation.

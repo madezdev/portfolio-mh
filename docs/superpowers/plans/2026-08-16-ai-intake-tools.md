@@ -16,7 +16,7 @@
 - `src/pages/api/contact.test.ts` must pass **without modification** throughout. It is the safety net for touching a shipped email path.
 - `src/components/StudioContact.tsx` and `src/components/StudioContact.test.tsx` must not be touched.
 - Preserved assistant rules, verbatim in intent: never quote/estimate/commit to a price; ask about budget once more in a lighter way if dodged, then move on without blocking; always reply in the visitor's language (Spanish or English).
-- Budget states are exactly `'assigned' | 'defining' | 'exploring'` from `src/lib/budget.ts`.
+- Budget states are exactly `'assigned' | 'defining' | 'exploring' | 'declined'` from `src/lib/budget.ts`. `declined` was added mid-branch: `leadSchema` had no value meaning "the visitor was asked and chose not to answer," forcing a choice between dropping a qualified lead or fabricating a state.
 - `/api/chat` guards: `MAX_INPUT_MESSAGES = 24`, `MAX_MESSAGE_CHARS = 2000`, `MAX_OUTPUT_TOKENS = 600`.
 - Generated artifacts (code, comments, UI copy, commit messages) are in English; user-facing site copy stays ES/EN per the i18n files.
 - Never add AI attribution or `Co-Authored-By` trailers to commits.
