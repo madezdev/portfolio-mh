@@ -30,6 +30,19 @@ describe('StudioHero', () => {
     expect(screen.getByText('From concept')).toBeInTheDocument();
   });
 
+  it('separates the two headline lines in the extracted text', () => {
+    // Regression: the lines are two sibling blocks, so the rendered layout looked
+    // right while `h1.textContent` read "Del conceptoa la realidad" — and that
+    // concatenation is what a crawler indexes as the page's strongest signal.
+    const { container } = render(<StudioHero lang="es" />);
+    expect(container.querySelector('h1')?.textContent).toBe('Del concepto a la realidad');
+  });
+
+  it('separates the two headline lines in English too', () => {
+    const { container } = render(<StudioHero lang="en" />);
+    expect(container.querySelector('h1')?.textContent).toBe('From concept to reality');
+  });
+
   it('does not leak the other locale into the output', () => {
     const { container } = render(<StudioHero lang="en" />);
     expect(container.textContent).not.toContain('Del concepto');

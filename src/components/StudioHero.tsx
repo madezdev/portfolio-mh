@@ -263,6 +263,11 @@ export default function StudioHero({ lang }: { lang: Language }) {
           <span className="block overflow-hidden pb-[0.08em]">
             <span className="hero-line1-inner block text-fg">{t('hero.title.line1')}</span>
           </span>
+          {/* An explicit separator between the two lines. Both spans are blocks,
+              so this whitespace is never rendered — but without it the extracted
+              text of the strongest on-page signal reads "Del conceptoa la
+              realidad", which is what Google was indexing. */}
+          {' '}
           <span className="block overflow-hidden pb-[0.08em]">
             <span
               className="hero-line2-inner block"
