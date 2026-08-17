@@ -83,9 +83,17 @@ export default function StudioAI({ lang }: { lang: Language }) {
               {/* `overscroll-contain` stops a flick inside the transcript from
                     chaining to the page once it hits either end — on a phone the panel
                     is most of the screen, so that hand-off is easy to trigger and
-                    throws the reader out of the conversation. */}
+                    throws the reader out of the conversation.
+
+                    `subtle-scrollbar` (see global.css) replaces the native bar, which
+                    macOS paints as an opaque white rectangle inside this near-black
+                    rounded panel. `pr-2` is part of the same fix: without it the
+                    bubbles run flush into the bar with no gutter. */}
                 {messages.length > 0 && (
-                  <div ref={scrollRef} className="mb-4 max-h-80 space-y-4 overflow-y-auto overscroll-contain">
+                  <div
+                    ref={scrollRef}
+                    className="subtle-scrollbar mb-4 max-h-80 space-y-4 overflow-y-auto overscroll-contain pr-2"
+                  >
                     {messages.map((m) => {
                       // An assistant message carrying only tool parts (updateIntake,
                       // submitLead) has no text, and there is nothing to show for it —

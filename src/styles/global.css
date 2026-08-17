@@ -132,3 +132,37 @@ html {
     opacity: 0.6;
   }
 }
+
+/* A native scrollbar is the loudest thing on a dark panel. macOS draws an opaque
+   white track whenever a mouse is attached — not on a trackpad, which is why it
+   is easy to ship without noticing — and it lands as a bright rectangle with
+   square corners inside a rounded, near-black card.
+
+   This keeps the affordance and only restyles it: transparent track, a thumb
+   mixed from the theme's muted foreground so it reads against any of the ink
+   shades, and a pill radius so it belongs to the same geometry as the panel and
+   the message bubbles. It brightens on hover, so it stays discoverable.
+
+   Both syntaxes are needed: `scrollbar-*` is the standard one (Firefox, and
+   Chrome 121+), `::-webkit-scrollbar` covers Safari and older Chromium. */
+.subtle-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--color-fg-muted) 22%, transparent) transparent;
+}
+
+.subtle-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.subtle-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.subtle-scrollbar::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--color-fg-muted) 22%, transparent);
+  border-radius: 9999px;
+}
+
+.subtle-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--color-fg-muted) 40%, transparent);
+}
