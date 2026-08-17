@@ -1,3 +1,5 @@
+import { translations, type Language } from '../i18n/translations';
+
 /**
  * Budget qualification for the AI intake.
  *
@@ -12,3 +14,12 @@
 export const BUDGET_STATES = ['assigned', 'defining', 'exploring'] as const;
 
 export type BudgetState = (typeof BUDGET_STATES)[number];
+
+/**
+ * The tool carries the canonical state; the owner email is read by a person.
+ * Resolving here keeps "Presupuesto: Sí, ya tengo presupuesto asignado" in the
+ * mail instead of the bare id.
+ */
+export function budgetLabel(state: BudgetState, lang: Language): string {
+  return translations[lang].ai.capture.budgetOptions[state];
+}
