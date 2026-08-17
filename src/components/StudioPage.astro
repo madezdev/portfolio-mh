@@ -1,0 +1,32 @@
+---
+import StudioNav from './StudioNav.tsx';
+import StudioHero from './StudioHero.tsx';
+import StudioAI from './StudioAI.tsx';
+import StudioServices from './StudioServices.tsx';
+import StudioProcess from './StudioProcess.tsx';
+import StudioCases from './StudioCases.tsx';
+import StudioTrust from './StudioTrust.tsx';
+import StudioContact from './StudioContact.tsx';
+import StudioFooter from './StudioFooter.tsx';
+import type { Language } from '../i18n/translations';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+---
+
+<StudioNav client:idle lang={lang} />
+<main>
+  <!-- client:load, not client:visible: the hero is above the fold and its
+       ignition sequence should not wait on an IntersectionObserver. -->
+  <StudioHero client:load lang={lang} />
+  <StudioAI client:visible lang={lang} />
+  <StudioServices client:visible lang={lang} />
+  <StudioProcess client:visible lang={lang} />
+  <StudioCases client:visible lang={lang} />
+  <StudioTrust client:visible lang={lang} />
+  <StudioContact client:visible lang={lang} />
+</main>
+<StudioFooter client:visible lang={lang} />

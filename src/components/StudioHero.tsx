@@ -1,6 +1,5 @@
 import { useRef } from 'react';
-import { useStore } from '@nanostores/react';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { Container } from './primitives/Container';
 import { HeroField, HERO_IGNITE_AT, HERO_HORIZON } from './HeroField';
@@ -10,8 +9,7 @@ import { useMagnetic } from '../hooks/useMagnetic';
 /** Width of the headline spotlight, matching `--hero-spot` in global.css. */
 const SPOT = 460;
 
-export default function StudioHero() {
-  const lang = useStore(currentLanguage);
+export default function StudioHero({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   const root = useRef<HTMLElement>(null);
   const ctaRef = useMagnetic<HTMLAnchorElement>(0.4);

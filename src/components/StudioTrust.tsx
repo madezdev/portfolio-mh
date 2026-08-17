@@ -1,12 +1,10 @@
-import { useStore } from '@nanostores/react';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { getClientLogos, getTestimonials } from '../data/cases';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
 
-export default function StudioTrust() {
-  const lang = useStore(currentLanguage);
+export default function StudioTrust({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   const logos = getClientLogos();
   const testimonials = getTestimonials();

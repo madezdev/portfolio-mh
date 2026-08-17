@@ -3,13 +3,22 @@ import { render, screen } from '@testing-library/react';
 import StudioServices from './StudioServices';
 
 describe('StudioServices', () => {
-  it('renders the four outcome pillars', () => {
-    render(<StudioServices />);
-    expect(screen.getByText(/IA aplicada|Applied AI/i)).toBeInTheDocument();
-    expect(screen.getByText(/Productos y SaaS|Products & custom SaaS/i)).toBeInTheDocument();
-    expect(screen.getByText(/Automatizaciones|Automations/i)).toBeInTheDocument();
-    expect(screen.getByText(/Webs y sitios que venden|Websites that sell/i)).toBeInTheDocument();
-    const section = screen.getByText(/IA aplicada|Applied AI/i).closest('section');
+  it('renders the four outcome pillars in Spanish', () => {
+    render(<StudioServices lang="es" />);
+    expect(screen.getByText('IA aplicada')).toBeInTheDocument();
+    expect(screen.getByText('Automatizaciones')).toBeInTheDocument();
+    const section = screen.getByText('IA aplicada').closest('section');
     expect(section).toHaveAttribute('id', 'services');
+  });
+
+  it('renders the four outcome pillars in English', () => {
+    render(<StudioServices lang="en" />);
+    expect(screen.getByText('Applied AI')).toBeInTheDocument();
+    expect(screen.getByText('Automations')).toBeInTheDocument();
+  });
+
+  it('does not leak the other locale into the output', () => {
+    const { container } = render(<StudioServices lang="en" />);
+    expect(container.textContent).not.toContain('IA aplicada');
   });
 });

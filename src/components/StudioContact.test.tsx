@@ -9,7 +9,7 @@ describe('StudioContact', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('renders in the #contact section with name, email, subject, message and no budget field', () => {
-    render(<StudioContact />);
+    render(<StudioContact lang="es" />);
     expect(document.getElementById('contact')).not.toBeNull();
     expect(screen.getByLabelText(/nombre|name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -18,7 +18,7 @@ describe('StudioContact', () => {
   });
 
   it('posts to /api/contact with name/email/subject/message/language and shows success', async () => {
-    render(<StudioContact />);
+    render(<StudioContact lang="es" />);
     fireEvent.change(screen.getByLabelText(/nombre|name/i), { target: { value: 'Ada' } });
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'ada@x.com' } });
     fireEvent.change(screen.getByLabelText(/mensaje|message/i), { target: { value: 'Hola' } });
@@ -29,5 +29,20 @@ describe('StudioContact', () => {
     expect(body).toHaveProperty('language');
     expect(body).not.toHaveProperty('budget');
     await waitFor(() => expect(screen.getByText(/mensaje enviado|message sent/i)).toBeInTheDocument());
+  });
+
+  it('renders the section title in Spanish', () => {
+    render(<StudioContact lang="es" />);
+    expect(screen.getByText('Contanos tu proyecto')).toBeInTheDocument();
+  });
+
+  it('renders the section title in English', () => {
+    render(<StudioContact lang="en" />);
+    expect(screen.getByText('Tell us about your project')).toBeInTheDocument();
+  });
+
+  it('does not leak the other locale into the output', () => {
+    const { container } = render(<StudioContact lang="en" />);
+    expect(container.textContent).not.toContain('Contanos tu proyecto');
   });
 });

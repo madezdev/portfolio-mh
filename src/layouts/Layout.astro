@@ -1,46 +1,25 @@
 ---
-import { currentLanguage } from '../i18n/store';
 import '../styles/global.css';
 import { Analytics } from '@vercel/analytics/react';
+import { pageMeta, seoFor } from '../i18n/seo';
+import type { Language } from '../i18n/translations';
 
 export interface Props {
-	title?: string;
-	lang?: 'es' | 'en';
+  lang: Language;
+  title: string;
+  description: string;
 }
 
-// Get current language from store or use passed prop
-let lang = Astro.props.lang || 'es';
+// All three are required. The previous Props had no `description`, so pages
+// could not supply one and the layout silently fell back to stale
+// pre-redesign copy that contradicted the title.
+const { lang, title, description } = Astro.props;
 
-// Determine if we're server-side or client-side
-if (Astro.request.headers.get('accept-language')) {
-	const acceptLang = Astro.request.headers.get('accept-language');
-	// Default to Spanish, but use English if browser prefers it
-	if (acceptLang && acceptLang.includes('en')) {
-		lang = 'en';
-	}
-}
-
-// Default SEO metadata by language
-const seoData = {
-	es: {
-		title: "Martin - Desarrollador Full Stack & Diseñador UX/UI",
-		description: "Desarrollo web moderno con React y Node.js. Diseño UX/UI, aplicaciones web rápidas y soluciones personalizadas.",
-		keywords: "desarrollador web, full stack, diseño UX/UI, programador, javascript, react, typescript, portfolio, desarrollo web, frontend, backend"
-	},
-	en: {
-		title: "Martin - Full Stack Developer & UX/UI Designer",
-		description: "Modern web development with React and Node.js. UX/UI design, fast web applications, and custom solutions.",
-		keywords: "web developer, full stack, UX/UI design, programmer, javascript, react, typescript, portfolio, web development, frontend, backend"
-	}
-};
-
-// Use prop title if provided, otherwise use default for language
-const title = Astro.props.title || seoData[lang].title;
-const description = seoData[lang].description;
-const keywords = seoData[lang].keywords;
-const siteName = lang === 'es' ? "Martin - Portfolio" : "Martin - Portfolio";
-const logoUrl = new URL('/logoMadezdev-2.png', Astro.url).toString();
-const canonicalURL = Astro.url;
+// Derived from path constants, never from Astro.url: the request URL used to
+// leak tracking parameters straight into rel=canonical.
+const { canonical, alternates, ogLocale } = seoFor(lang);
+const { imageAlt } = pageMeta(lang);
+const logoUrl = new URL('/logoMadezdev-2.png', canonical).toString();
 ---
 
 <!doctype html>
@@ -49,13 +28,13 @@ const canonicalURL = Astro.url;
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="keywords" content={keywords} />
 		<meta name="author" content="Martin Hernandez" />
 		<meta name="robots" content="index, follow" />
-		<link rel="canonical" href={canonicalURL} />
+		<link rel="canonical" href={canonical} />
 		<meta name="google-site-verification" content="5-x0iD7M26zsL9A-094ygomIQH5oul4kad-4rbn16ys" />
-		<link rel="alternate" hreflang="es" href={new URL(Astro.url.pathname, Astro.site || Astro.url).toString()} />
-		<link rel="alternate" hreflang="en" href={new URL(Astro.url.pathname, Astro.site || Astro.url).toString()} />
+		{alternates.map((alt) => (
+			<link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+		))}
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -63,20 +42,20 @@ const canonicalURL = Astro.url;
 		<meta name="theme-color" content="#0a0a0b" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		
+
 		<!-- Open Graph / Facebook / WhatsApp -->
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:url" content={canonical} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={logoUrl} />
-		<meta property="og:image:alt" content={lang === 'es' ? "Martin Hernandez - Desarrollador" : "Martin Hernandez - Developer"} />
-		<meta property="og:site_name" content={siteName} />
-		<meta property="og:locale" content={lang === "es" ? "es_ES" : "en_US"} />
-		
+		<meta property="og:image:alt" content={imageAlt} />
+		<meta property="og:site_name" content="madezdev" />
+		<meta property="og:locale" content={ogLocale} />
+
 		<!-- Twitter -->
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:url" content={canonicalURL} />
+		<meta name="twitter:url" content={canonical} />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={logoUrl} />
@@ -88,16 +67,6 @@ const canonicalURL = Astro.url;
 	<body class="bg-ink-950 text-fg font-sans antialiased">
 		<slot />
 		<Analytics />
-		<script>
-			// Initialize language on page load
-			import { currentLanguage } from '../i18n/store.ts';
-			import type { Language } from '../i18n/translations';
-			
-			// Set document language based on store
-			currentLanguage.subscribe((lang: Language) => {
-				document.documentElement.lang = lang;
-			});
-		</script>
 	</body>
 </html>
 

@@ -1,5 +1,4 @@
-import { useStore } from '@nanostores/react';
-import { currentLanguage } from '../i18n/store';
+import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
 import { useReveal } from '../hooks/useReveal';
 import { Section } from './primitives/Section';
@@ -7,8 +6,7 @@ import { Container } from './primitives/Container';
 
 const PILLARS = ['web', 'product', 'automation', 'ai'] as const;
 
-export default function StudioServices() {
-  const lang = useStore(currentLanguage);
+export default function StudioServices({ lang }: { lang: Language }) {
   const { t } = useTranslations(lang);
   useReveal('services');
 
