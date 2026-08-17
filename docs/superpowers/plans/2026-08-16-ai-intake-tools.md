@@ -20,6 +20,8 @@
 - `/api/chat` guards: `MAX_INPUT_MESSAGES = 24`, `MAX_MESSAGE_CHARS = 2000`, `MAX_OUTPUT_TOKENS = 600`.
 - Generated artifacts (code, comments, UI copy, commit messages) are in English; user-facing site copy stays ES/EN per the i18n files.
 - Never add AI attribution or `Co-Authored-By` trailers to commits.
+- **Mail headers carry raw values, HTML bodies carry escaped ones.** `contact.ts` states this explicitly and passes the unescaped `subject` to `templates.toOwner.subject(...)` while passing the escaped copy to `.html(...)`. Escaping a header would render `&lt;` in the visible subject line. Preserve the split.
+- **`tsc --noEmit` exits 0 in this repo whether or not there are type errors**, so it cannot gate anything on its own. Use the filtered form given in the verification steps and read its output; the binding gate is `npm test`. Pre-existing type noise from the vite/vitest duplicate installs is not yours to fix.
 - `StudioAI` receives the language as a prop — `StudioAI({ lang }: { lang: Language })` — since the locale-routes work merged in `dcb0335`. Every render in a test is `render(<StudioAI lang="es" />)`; there is no language store to set.
 
 ---
@@ -136,7 +138,7 @@ Note: `ContactFormData` and `Lead` now describe the same shape. Delete `ContactF
 - [ ] **Step 4: Verify the refactor changed nothing**
 
 ```bash
-npm test -- --run src/pages/api/contact.test.ts && npx tsc --noEmit -p tsconfig.json
+npm test -- --run src/pages/api/contact.test.ts && npx tsc --noEmit -p tsconfig.json --ignoreDeprecations 6.0 2>&1 | rg '^src/' && echo 'TYPE ERRORS ABOVE — fix before committing' || echo 'no type errors under src/'
 ```
 
 Expected: PASS, unmodified. If a test needed editing, the refactor changed behaviour — revert and redo.
@@ -413,7 +415,7 @@ const result = streamText({
 - [ ] **Step 6: Verify the suite and types**
 
 ```bash
-npm test && npx tsc --noEmit -p tsconfig.json
+npm test && npx tsc --noEmit -p tsconfig.json --ignoreDeprecations 6.0 2>&1 | rg '^src/' && echo 'TYPE ERRORS ABOVE — fix before committing' || echo 'no type errors under src/'
 ```
 
 Expected: PASS.
@@ -614,7 +616,7 @@ stopWhen: isStepCount(5),
 - [ ] **Step 6: Verify the suite and types**
 
 ```bash
-npm test && npx tsc --noEmit -p tsconfig.json
+npm test && npx tsc --noEmit -p tsconfig.json --ignoreDeprecations 6.0 2>&1 | rg '^src/' && echo 'TYPE ERRORS ABOVE — fix before committing' || echo 'no type errors under src/'
 ```
 
 Expected: PASS.
@@ -876,7 +878,7 @@ Delete `prompt`, `name`, `email`, `submit`, and `budgetLabel` from both blocks.
 - [ ] **Step 5: Run the full suite and types**
 
 ```bash
-npm test && npx tsc --noEmit -p tsconfig.json
+npm test && npx tsc --noEmit -p tsconfig.json --ignoreDeprecations 6.0 2>&1 | rg '^src/' && echo 'TYPE ERRORS ABOVE — fix before committing' || echo 'no type errors under src/'
 ```
 
 Expected: PASS. `StudioContact.test.tsx` and `contact.test.ts` must be green without having been edited.
