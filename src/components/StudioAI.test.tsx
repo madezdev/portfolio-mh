@@ -95,6 +95,23 @@ describe('StudioAI', () => {
     expect(sendMessage).toHaveBeenCalledWith({ text: 'otra idea' });
   });
 
+  it('scrolls the transcript with the themed bar, not the native one', () => {
+    // macOS paints the native scrollbar as an opaque white rectangle whenever a
+    // mouse is attached — invisible on a trackpad, which is how it shipped — and
+    // it landed as the loudest element inside this near-black rounded panel.
+    // `subtle-scrollbar` (global.css) restyles it; pinning the class here because
+    // the fix is a single token in a long className that a refactor would drop
+    // without any other test noticing.
+    mockState = {
+      status: 'ready',
+      messages: [{ id: '1', role: 'user', parts: [{ type: 'text', text: 'quiero un saas' }] }],
+    };
+    render(<StudioAI lang="es" />);
+    const scroller = screen.getByText('quiero un saas').closest('.overflow-y-auto');
+    expect(scroller, 'the transcript is not in a scrollable container').not.toBeNull();
+    expect(scroller).toHaveClass('subtle-scrollbar');
+  });
+
   it('never hides the composer, however long the conversation runs', () => {
     // Regression test. The composer used to be REPLACED by the capture form at two
     // assistant replies, which amputated the conversation and cut the emailed
