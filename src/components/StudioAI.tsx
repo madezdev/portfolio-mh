@@ -3,6 +3,7 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import type { Language } from '../i18n/translations';
 import { useTranslations } from '../i18n/utils';
+import { BUDGET_STATES } from '../lib/budget';
 import { Section } from './primitives/Section';
 import { Container } from './primitives/Container';
 
@@ -58,6 +59,10 @@ export default function StudioAI({ lang }: { lang: Language }) {
     const transcript = messages
       .map((m) => `${m.role === 'user' ? 'Visitante' : 'IA'}: ${messageText(m)}`)
       .join('\n');
+    // The option carries the canonical id so the DOM value survives a copy change;
+    // what travels is the localized sentence, because the owner email renders it as
+    // a line for a person to read, not as a value to query.
+    const budgetState = String(data.get('budget') ?? '');
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
@@ -66,6 +71,7 @@ export default function StudioAI({ lang }: { lang: Language }) {
           name: String(data.get('name') ?? ''),
           email: String(data.get('email') ?? ''),
           subject: 'Lead desde la IA',
+          budget: budgetState ? t(`ai.capture.budgetOptions.${budgetState}`) : '',
           message: `Conversación de intake:\n\n${transcript}`,
           language: lang,
         }),
@@ -211,6 +217,47 @@ export default function StudioAI({ lang }: { lang: Language }) {
                       <p className="text-sm text-fg-muted">{t('ai.capture.prompt')}</p>
                       <input name="name" required autoComplete="name" className={`${field} rounded-lg`} placeholder={t('ai.capture.name')} />
                       <input name="email" type="email" required autoComplete="email" className={`${field} rounded-lg`} placeholder={t('ai.capture.email')} />
+                      {/* The assistant is told to ask this during the conversation, but
+                          an instruction to a model is a suggestion, not a contract —
+                          this required field is what actually guarantees the answer
+                          reaches the team on every captured lead. A <select> takes no
+                          placeholder, and the fields around it carry no <label>, so the
+                          question lives in `aria-label` and in the disabled first
+                          option. `defaultValue=""` keeps it genuinely unanswered:
+                          preselecting a state would answer for the visitor. */}
+                      {/* `appearance-none` is not cosmetic: a native select ignores
+                          `line-height` from the UA stylesheet and measured 48px against
+                          the inputs' 50px, so the stack sat 2px off. Dropping the native
+                          chrome makes it an ordinary box again — and it also stops
+                          Safari from overriding the dark background with system chrome.
+                          The arrow has to come back by hand once it does, otherwise the
+                          field reads as a text input and nobody knows it opens. */}
+                      <div className="relative">
+                        <select
+                          name="budget"
+                          required
+                          defaultValue=""
+                          aria-label={t('ai.capture.budgetLabel')}
+                          className={`${field} appearance-none rounded-lg pr-10`}
+                        >
+                          <option value="" disabled>{t('ai.capture.budgetLabel')}</option>
+                          {BUDGET_STATES.map((state) => (
+                            <option key={state} value={state}>{t(`ai.capture.budgetOptions.${state}`)}</option>
+                          ))}
+                        </select>
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </div>
                       <button type="submit" className="w-full rounded-full bg-ember-500 px-6 py-3 font-semibold text-ink-950 hover:bg-ember-400">
                         {t('ai.capture.submit')}
                       </button>

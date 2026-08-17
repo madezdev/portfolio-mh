@@ -54,6 +54,27 @@ describe('POST /api/contact', () => {
     expect(sendMail).not.toHaveBeenCalled();
   });
 
+  it('puts the budget answer in the owner email', async () => {
+    // The field was built end-to-end here long before anything sent it. This pins the
+    // dormant half now that the AI capture form fills it, so a template edit cannot
+    // drop the line without failing.
+    const res = await POST(req({ ...valid, budget: 'Sí, ya tengo presupuesto asignado' }));
+    expect(res.status).toBe(200);
+    const ownerHtml = sendMail.mock.calls[0][0].html as string;
+    expect(ownerHtml).toContain('Sí, ya tengo presupuesto asignado');
+    expect(ownerHtml).toMatch(/presupuesto/i);
+  });
+
+  it('escapes the budget answer and rejects an oversized one', async () => {
+    await POST(req({ ...valid, budget: '<img src=y>' }));
+    expect(sendMail.mock.calls[0][0].html as string).toContain('&lt;img src=y&gt;');
+
+    sendMail.mockClear();
+    const res = await POST(req({ ...valid, budget: 'x'.repeat(101) }));
+    expect(res.status).toBe(400);
+    expect(sendMail).not.toHaveBeenCalled();
+  });
+
   it('escapes HTML in the outgoing email body', async () => {
     const res = await POST(req({ ...valid, name: '<script>x</script>', message: 'a & b <img src=y>' }));
     expect(res.status).toBe(200);

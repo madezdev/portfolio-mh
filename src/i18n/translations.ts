@@ -46,6 +46,14 @@ export const translations = {
         prompt: '¿Seguimos? Dejanos tu contacto y el equipo te escribe.',
         name: 'Tu nombre',
         email: 'tu@email.com',
+        // Estado, no monto: el equipo necesita saber si la plata existe antes de
+        // invertir una llamada. El número se conversa después, con una persona.
+        budgetLabel: '¿Tenés presupuesto asignado?',
+        budgetOptions: {
+          assigned: 'Sí, ya tengo presupuesto asignado',
+          defining: 'Está en definición',
+          exploring: 'Todavía no, estoy explorando',
+        },
         submit: 'Enviar a madezdev',
         success: '¡Listo! Te contactamos pronto.',
       },
@@ -255,6 +263,13 @@ export const translations = {
         prompt: 'Want to continue? Leave your contact and the team will reach out.',
         name: 'Your name',
         email: 'you@email.com',
+        // See the Spanish note: the state, never the amount.
+        budgetLabel: 'Do you have a budget assigned?',
+        budgetOptions: {
+          assigned: 'Yes, I already have a budget assigned',
+          defining: "It's being defined",
+          exploring: "Not yet, I'm exploring",
+        },
         submit: 'Send to madezdev',
         success: "Done! We'll be in touch soon.",
       },
